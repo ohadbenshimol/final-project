@@ -29,7 +29,7 @@ export function App() {
   return (
     <>
       <GoogleOAuthProvider clientId="<your_client_id>">
-        hi we are here
+        hi we are here.
         <Login />
       </GoogleOAuthProvider>
     </>
