@@ -28,8 +28,8 @@ const analytics = getAnalytics(app);
 export function App() {
   return (
     <>
-      <GoogleOAuthProvider clientId="<your_client_id>">
-        hi we are here.
+      <GoogleOAuthProvider  clientId="<your_client_id>">
+        hi yoel.
         <Login />
       </GoogleOAuthProvider>
     </>
