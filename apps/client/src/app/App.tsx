@@ -1,16 +1,10 @@
 import Login from '../components/login/Login';
+import { ToastContainer } from 'react-toastify';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { initializeApp } from 'firebase/app';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.less';
 
-import { GoogleOAuthProvider } from '@react-oauth/google';
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyBPCx72jB7LSRKlwjE-crBCbBjXHfGwvMU',
   authDomain: 'final-project-502ce.firebaseapp.com',
@@ -23,14 +17,14 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 export function App() {
   return (
     <>
-      <GoogleOAuthProvider  clientId="<your_client_id>">
+      <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
         hi yoel.
         <Login />
+        <ToastContainer position="bottom-left" />
       </GoogleOAuthProvider>
     </>
   );
