@@ -1,9 +1,13 @@
 import {initDB} from "../helpers/init-firebase";
 import Login from '../components/login/Login';
-import './App.less';
+import {ToastContainer} from 'react-toastify';
 import {GoogleOAuthProvider} from '@react-oauth/google';
+import 'react-toastify/dist/ReactToastify.css';
+import './App.less';
 import {QueryClient, QueryClientProvider,} from '@tanstack/react-query'
 import Events from "../components/events/events";
+import 'semantic-ui-css/semantic.min.css'
+
 import EventForm from "../components/event-form/EventForm";
 
 const queryClient = new QueryClient()
@@ -11,16 +15,16 @@ initDB()
 
 export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-
-      <GoogleOAuthProvider clientId="<your_client_id>">
-        hi yoel.
-        <Login/>
-        <Events/>
-        <EventForm/>
+    <>
+      <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
+        <QueryClientProvider client={queryClient}>
+          {/*<Login/>*/}
+          <ToastContainer position="bottom-left"/>
+          <Events/>
+          {/*<EventForm/>*/}
+        </QueryClientProvider>
       </GoogleOAuthProvider>
-    </QueryClientProvider>
-
+    </>
   );
 }
 
