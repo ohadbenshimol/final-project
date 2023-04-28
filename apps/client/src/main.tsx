@@ -1,24 +1,8 @@
-// import { StrictMode } from 'react';
-// import * as ReactDOM from 'react-dom/client';
-// import { BrowserRouter } from 'react-router-dom';
-
-// import App from './app/App';
-
-// const root = ReactDOM.createRoot(
-//   document.getElementById('root') as HTMLElement
-// );
-// root.render(
-//   <StrictMode>
-//     <BrowserRouter>
-//       <App />
-//     </BrowserRouter>
-//   </StrictMode>
-// );
+import App from './app/App';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { store } from '../new-src/store/Store';
-import App from '../new-src/app';
+import { store } from '../src/store/Store';
 import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(

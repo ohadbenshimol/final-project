@@ -2,7 +2,7 @@ import { UserState, setUser } from '../../store/reducers/userSlice';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { auth } from '../../firebase';
+import { auth } from '../../app/firebase';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import {
   signInWithCredential as signInWithCredentialAsync,
@@ -11,24 +11,26 @@ import {
 import jwt_decode from 'jwt-decode';
 import './MainPage.less';
 import { toast } from 'react-toastify';
+import { useCookies } from 'react-cookie';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [cookies, setCookie] = useCookies(['user']);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log('USER', user);
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     if (user) {
+  //       console.log('USER', user);
 
-        // dispatch(setUser(user));
-        navigate('/entry');
-      }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, [history, dispatch]);
+  //       // dispatch(setUser(user));
+  //       navigate('/entry');
+  //     }
+  //   });
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, [history, dispatch]);
 
   // const handleSuccess = async (response: any) => {
   //   console.log('Success:', response);
@@ -69,6 +71,7 @@ const MainPage: React.FC = () => {
       };
 
       toast.success(`welcome ${user.fullName} :)`);
+      setCookie('user', JSON.stringify(user), { path: '/' });
       dispatch(setUser(user));
     }
   };

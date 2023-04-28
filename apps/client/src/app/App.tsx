@@ -1,8 +1,16 @@
-import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
-import MainPage from './components/mainPage/MainPage';
-import Header from './components/header/Header';
-import { FC } from 'react';
+import {
+  Route,
+  Routes,
+  BrowserRouter as Router,
+  useNavigate,
+} from 'react-router-dom';
+import MainPage from '../components/mainPage/MainPage';
+import Header from '../components/header/Header';
+import { CookiesProvider, useCookies } from 'react-cookie';
+import { FC, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { setUser } from '../store/reducers/userSlice';
+import { useDispatch } from 'react-redux';
 // import EntryPage from './components/EntryPage';
 // import EventCreationPage from './components/EventCreationPage';
 // import EventRegistrationPage from './components/EventRegistrationPage';
@@ -18,18 +26,33 @@ const EventRegistrationPage: FC = () => {
 };
 
 function App() {
+  const [cookies, setCookie] = useCookies(['user']);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (cookies.user) {
+      console.log(cookies.user);
+
+      dispatch(setUser(cookies.user));
+      navigate('/entry');
+    }
+  }, [cookies, dispatch]);
+
   return (
     <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
-      <Header />
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/entry" Component={EntryPage} />
-        <Route path="/create-event" Component={EventCreationPage} />
-        <Route
-          path="/register-event/:eventId"
-          Component={EventRegistrationPage}
-        />
-      </Routes>
+      <CookiesProvider>
+        <Header />
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/entry" Component={EntryPage} />
+          <Route path="/create-event" Component={EventCreationPage} />
+          <Route
+            path="/register-event/:eventId"
+            Component={EventRegistrationPage}
+          />
+        </Routes>
+      </CookiesProvider>
     </GoogleOAuthProvider>
   );
 }

@@ -1,9 +1,17 @@
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUser, setUser } from '../../store/reducers/userSlice';
+import { useCookies } from 'react-cookie';
 
 const Header = () => {
   const user = useSelector(getUser);
+  const [, , removeCookie] = useCookies(['user']);
+  const dispatch = useDispatch();
 
+  const logout = () => {
+    dispatch(setUser({}));
+    //TODO redirect
+    removeCookie('user', { path: '/' });
+  };
   const headerStyle = {
     display: 'flex',
     justifyContent: 'space-between',
@@ -41,6 +49,7 @@ const Header = () => {
           alt={userName}
           style={avatarStyle}
         />
+        <button onClick={logout}>Logout</button>
       </div>
     </header>
   );

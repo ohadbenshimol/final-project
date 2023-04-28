@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../Store';
 
-interface UserState {
+export interface UserState {
   email?: string;
   fullName?: string;
   firstName?: string;
