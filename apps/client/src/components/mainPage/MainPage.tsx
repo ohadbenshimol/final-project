@@ -69,7 +69,7 @@ const MainPage: React.FC = () => {
         fullName: responsePayload.name,
         pictureUrl: responsePayload.picture,
       };
-
+      navigate('/events');
       toast.success(`welcome ${user.fullName} :)`);
       setCookie('user', JSON.stringify(user), { path: '/' });
       dispatch(setUser(user));
