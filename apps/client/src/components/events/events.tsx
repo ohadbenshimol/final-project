@@ -52,7 +52,7 @@ export function Events() {
     } catch (e: any) {
       console.error(e)
     }
-    setOpen(false); // close the modal after form submission
+    setOpen(false);
   };
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
@@ -81,6 +81,7 @@ export function Events() {
         </Container>
       </Segment>
       <Button
+        className="ui green button"
         icon="add"
         size="huge"
         circular
@@ -119,7 +120,7 @@ export function Events() {
       </Modal>
     </div>
   );
-};
+}
 
 
 export default Events;

@@ -8,8 +8,6 @@ import {QueryClient, QueryClientProvider,} from '@tanstack/react-query'
 import Events from "../components/events/events";
 import 'semantic-ui-css/semantic.min.css'
 
-import EventForm from "../components/event-form/EventForm";
-
 const queryClient = new QueryClient()
 initDB()
 
@@ -18,10 +16,9 @@ export function App() {
     <>
       <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
         <QueryClientProvider client={queryClient}>
-          {/*<Login/>*/}
+          <Login/>
           <ToastContainer position="bottom-left"/>
           <Events/>
-          {/*<EventForm/>*/}
         </QueryClientProvider>
       </GoogleOAuthProvider>
     </>
