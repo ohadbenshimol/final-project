@@ -1,15 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { getUser, setUser } from '../../store/reducers/userSlice';
 import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const user = useSelector(getUser);
   const [, , removeCookie] = useCookies(['user']);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const logout = () => {
     dispatch(setUser({}));
-    //TODO redirect
+    navigate('/');
     removeCookie('user', { path: '/' });
   };
   const headerStyle = {

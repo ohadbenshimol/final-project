@@ -11,6 +11,7 @@ import { FC, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { setUser } from '../store/reducers/userSlice';
 import { useDispatch } from 'react-redux';
+import Events from '../components/events/events';
 // import EntryPage from './components/EntryPage';
 // import EventCreationPage from './components/EventCreationPage';
 // import EventRegistrationPage from './components/EventRegistrationPage';
@@ -35,7 +36,7 @@ function App() {
       console.log(cookies.user);
 
       dispatch(setUser(cookies.user));
-      navigate('/entry');
+      navigate('/events');
     }
   }, [cookies, dispatch]);
 
@@ -46,6 +47,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/entry" Component={EntryPage} />
+          <Route path="/events" Component={Events} />
           <Route path="/create-event" Component={EventCreationPage} />
           <Route
             path="/register-event/:eventId"
