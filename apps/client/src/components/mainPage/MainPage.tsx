@@ -89,7 +89,6 @@ const MainPage: React.FC = () => {
           console.log('Login Failed');
         }}
       />
-      ;
     </div>
   );
 };
