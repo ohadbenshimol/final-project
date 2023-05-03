@@ -49,7 +49,7 @@ export const Events: FC = () => {
 
   useEffect(() => {
     if (!user.email) {
-      navigate('/');
+      navigate('/', { state: { from: '/events' } });
     }
     onValue(eventRef, (snapshot) => {
       setEvents(snapshot.val());

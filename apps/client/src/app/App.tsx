@@ -9,20 +9,33 @@ import Header from '../components/header/Header';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { FC, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { setUser } from '../store/reducers/userSlice';
-import { useDispatch } from 'react-redux';
+import { getUser, setUser } from '../store/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import Events from '../components/events/events';
+import { toast } from 'react-toastify';
+import EventRegistrationPage from '../components/eventRegistrationPage/EventRegistrationPage';
 // import EntryPage from './components/EntryPage';
 // import EventCreationPage from './components/EventCreationPage';
 // import EventRegistrationPage from './components/EventRegistrationPage';
 
+const Auth: FC<{ comp: any }> = ({ comp }) => {
+  const navigate = useNavigate();
+  const user = useSelector(getUser);
+  useEffect(() => {
+    if (!user.email) {
+      console.log(user);
+
+      toast.success(`'HEY', ${user.email}`);
+      navigate('/');
+    }
+  }, [user]);
+
+  return <>{!user.email ? comp : null}</>;
+};
 const EntryPage: FC = () => {
   return <div className="div">EntryPage</div>;
 };
 const EventCreationPage: FC = () => {
-  return <div className="div">EventCreationPage</div>;
-};
-const EventRegistrationPage: FC = () => {
   return <div className="div">EventCreationPage</div>;
 };
 
@@ -36,7 +49,7 @@ function App() {
       console.log(cookies.user);
 
       dispatch(setUser(cookies.user));
-      navigate('/events');
+      // navigate('/events');
     }
   }, [cookies, dispatch]);
 
@@ -46,7 +59,7 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/entry" Component={EntryPage} />
+          <Route path="/entry" element={<Auth comp={EntryPage} />} />
           <Route path="/events" Component={Events} />
           <Route path="/create-event" Component={EventCreationPage} />
           <Route

@@ -2,8 +2,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUser, setUser } from '../../store/reducers/userSlice';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { FC } from 'react';
 
-const Header = () => {
+const Header: FC = () => {
   const user = useSelector(getUser);
   const [, , removeCookie] = useCookies(['user']);
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ const Header = () => {
     navigate('/');
     removeCookie('user', { path: '/' });
   };
+
   const headerStyle = {
     display: 'flex',
     justifyContent: 'space-between',
@@ -37,15 +39,22 @@ const Header = () => {
 
   const userName = user?.fullName
     ? `${user.firstName} ${user.lastName}`
-    : 'Guest';
+    : 'אורח';
 
   const defaultImg =
     'https://w7.pngwing.com/pngs/81/570/png-transparent-profile-logo-computer-icons-user-user-blue-heroes-logo-thumbnail.png';
   return (
     <header style={headerStyle}>
       <h1>LOGO</h1>
+      <h1
+        onClick={() => {
+          navigate('entry');
+        }}
+      >
+        ENTRY
+      </h1>
       <div style={userInfoStyle}>
-        <span>{userName}</span>
+        {userName ?? <span>{userName}</span>}
         <img
           src={user?.pictureUrl || defaultImg}
           alt={userName}
