@@ -1,24 +1,15 @@
 import './events.less';
 import {db, eventRef} from "../../helpers/init-firebase";
 import {useEffect, useRef, useState} from "react";
-import {increment, onValue, push, ref, set} from "firebase/database";
+import {onValue, push, ref} from "firebase/database";
 import {Button, Container, Form, Grid, Modal, Segment} from "semantic-ui-react";
 import * as Yup from 'yup';
-import './events.less';
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
-import { useNavigate } from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import {getUser} from '../../store/reducers/userSlice';
+import {useNavigate} from 'react-router-dom';
+import {Event} from "../../shared/models/event";
 
-
-type Event = {
-  creationDate: string;
-  owner: string;
-  name: string;
-  url?: string;
-  numOfUsers?: number;
-  description: string;
-};
-const eventSchema = Yup.object().shape({
+export const eventSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   description: Yup.string().required('Description is required'),
   storage: Yup.number()
@@ -27,7 +18,8 @@ const eventSchema = Yup.object().shape({
   email: Yup.string().email().required('Email is require'),
 });
 
-export interface LoginProps {}
+export interface LoginProps {
+}
 
 export function Events() {
   const [events, setEvents] = useState([])
@@ -39,19 +31,17 @@ export function Events() {
   const [link, setLink] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const handleCopyClick = () => {
+  const handleCopyClick = async () => {
     if (inputRef.current) {
       inputRef.current.select();
-      document.execCommand("copy");
+      await navigator.clipboard.writeText(inputRef.current.value)
     }
   };
 
   useEffect(() => {
-    if (!user.email) {
-      navigate('/', { state: { from: '/events' } });
-    }
     onValue(eventRef, (snapshot) => {
-      setEvents(snapshot.val())
+
+      setEvents(snapshot?.val())
     });
   }, [])
 
@@ -70,7 +60,7 @@ export function Events() {
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear().toString()}`;
 
-      const newEventRef = push(ref(db, 'events/' + formData.name), {...formData, creationDate: formattedDate});
+      const newEventRef = push(ref(db, 'events/'), {...formData, creationDate: formattedDate});
       const newEventId = newEventRef.key
       const url = `https://only-me-2023.web.app/register-event/${newEventId}`
       setLink(url)
@@ -93,7 +83,7 @@ export function Events() {
         <Container>
           <h2 style={{textAlign: 'center'}}>Upcoming Events</h2>
           <Grid columns={3}>
-            {Object.values(events).map((event: Event, index) => (
+            {events && Object.values(events)?.map((event: Event, index) => (
               <Grid.Row key={index}>
                 <Grid.Column width={4}>
                   <img className="ui tiny image" src="../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg"/>
