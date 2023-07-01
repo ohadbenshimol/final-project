@@ -1,16 +1,23 @@
-import { StrictMode } from 'react';
-import * as ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-
 import App from './app/App';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from '../src/store/Store';
+import { BrowserRouter } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
+import { ToastContainer } from 'react-toastify';
+import 'semantic-ui-css/semantic.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const container = document.getElementById('root');
+const root = createRoot(container!);
+
 root.render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>
+  <React.StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+        <ToastContainer position="bottom-left" />
+      </BrowserRouter>
+    </Provider>
+  </React.StrictMode>
 );

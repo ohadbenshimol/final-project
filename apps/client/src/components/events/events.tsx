@@ -4,29 +4,36 @@ import {useEffect, useRef, useState} from "react";
 import {increment, onValue, push, ref, set} from "firebase/database";
 import {Button, Container, Form, Grid, Modal, Segment} from "semantic-ui-react";
 import * as Yup from 'yup';
+import './events.less';
+import { useSelector } from 'react-redux';
+import { getUser } from '../../store/reducers/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 type Event = {
   creationDate: string;
-  owner: string
-  name: string
+  owner: string;
+  name: string;
   url?: string;
   numOfUsers?: number;
-  description: string
-}
+  description: string;
+};
 const eventSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   description: Yup.string().required('Description is required'),
-  storage: Yup.number().required('Storage is required').positive('Storage must be a positive number'),
-  email: Yup.string().email().required("Email is require")
+  storage: Yup.number()
+    .required('Storage is required')
+    .positive('Storage must be a positive number'),
+  email: Yup.string().email().required('Email is require'),
 });
 
-export interface LoginProps {
-}
+export interface LoginProps {}
 
 export function Events() {
   const [events, setEvents] = useState([])
   const [open, setOpen] = useState(false);
+  const user = useSelector(getUser);
+  const navigate = useNavigate();
   const [secondModalOpen, setSecondModalOpen] = useState(false);
   const [formData, setFormValues] = useState({name: '', description: '', storage: '', email: '', url: ''});
   const [link, setLink] = useState('');
@@ -40,6 +47,9 @@ export function Events() {
   };
 
   useEffect(() => {
+    if (!user.email) {
+      navigate('/', { state: { from: '/events' } });
+    }
     onValue(eventRef, (snapshot) => {
       setEvents(snapshot.val())
     });
@@ -121,14 +131,8 @@ export function Events() {
                      required/>
             </Form.Field>
             <Form.Field>
-              <label htmlFor={'emailId'}>Email</label>
-              <input
-                id={'emailId'}
-                name="email"
-                onChange={handleChange}
-                type="email"
-                placeholder="Enter your email"
-              />
+              <label htmlFor={"emailId"}>Email</label>
+              <input id={"emailId"} name="email" onChange={handleChange} type="email" placeholder="Enter your email"/>
             </Form.Field>
             <Form.Field>
               <label htmlFor={'storageId'}>storge</label>
@@ -141,14 +145,9 @@ export function Events() {
               />
             </Form.Field>
             <Form.Field>
-              <label htmlFor={'descriptionId'}>description</label>
-              <input
-                id={'descriptionId'}
-                name="description"
-                onChange={handleChange}
-                type="text"
-                placeholder="description..."
-              />
+              <label htmlFor={"descriptionId"}>description</label>
+              <input id={"descriptionId"} name="description" onChange={handleChange} type="text"
+                     placeholder="description..."/>
             </Form.Field>
             <div style={{textAlign: "center"}}>
               <Modal.Actions>
@@ -182,8 +181,7 @@ export function Events() {
       </Modal>
     </div>
   );
-}
-
+};
 
 export default Events;
 

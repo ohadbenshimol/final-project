@@ -1,27 +1,74 @@
-import {initDB} from "../helpers/init-firebase";
-import Login from '../components/login/Login';
-import {ToastContainer} from 'react-toastify';
-import {GoogleOAuthProvider} from '@react-oauth/google';
-import 'react-toastify/dist/ReactToastify.css';
-import './App.less';
-import {QueryClient, QueryClientProvider,} from '@tanstack/react-query'
-import Events from "../components/events/events";
-import 'semantic-ui-css/semantic.min.css'
+import {
+  Route,
+  Routes,
+  BrowserRouter as Router,
+  useNavigate,
+} from 'react-router-dom';
+import MainPage from '../components/mainPage/MainPage';
+import Header from '../components/header/Header';
+import { CookiesProvider, useCookies } from 'react-cookie';
+import { FC, useEffect } from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { getUser, setUser } from '../store/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import Events from '../components/events/events';
+import { toast } from 'react-toastify';
+import EventRegistrationPage from '../components/eventRegistrationPage/EventRegistrationPage';
+// import EntryPage from './components/EntryPage';
+// import EventCreationPage from './components/EventCreationPage';
+// import EventRegistrationPage from './components/EventRegistrationPage';
 
-const queryClient = new QueryClient()
-initDB()
+const Auth: FC<{ comp: any }> = ({ comp }) => {
+  const navigate = useNavigate();
+  const user = useSelector(getUser);
+  useEffect(() => {
+    if (!user.email) {
+      console.log(user);
 
-export function App() {
+      toast.success(`'HEY', ${user.email}`);
+      navigate('/');
+    }
+  }, [user]);
+
+  return <>{!user.email ? comp : null}</>;
+};
+const EntryPage: FC = () => {
+  return <div className="div">EntryPage</div>;
+};
+const EventCreationPage: FC = () => {
+  return <div className="div">EventCreationPage</div>;
+};
+
+function App() {
+  const [cookies, setCookie] = useCookies(['user']);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (cookies.user) {
+      console.log(cookies.user);
+
+      dispatch(setUser(cookies.user));
+      // navigate('/events');
+    }
+  }, [cookies, dispatch]);
+
   return (
-    <>
-      <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
-        <QueryClientProvider client={queryClient}>
-          <Login/>
-          <ToastContainer position="bottom-left"/>
-          <Events/>
-        </QueryClientProvider>
-      </GoogleOAuthProvider>
-    </>
+    <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
+      <CookiesProvider>
+        <Header />
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/entry" element={<Auth comp={EntryPage} />} />
+          <Route path="/events" Component={Events} />
+          <Route path="/create-event" Component={EventCreationPage} />
+          <Route
+            path="/register-event/:eventId"
+            Component={EventRegistrationPage}
+          />
+        </Routes>
+      </CookiesProvider>
+    </GoogleOAuthProvider>
   );
 }
 
