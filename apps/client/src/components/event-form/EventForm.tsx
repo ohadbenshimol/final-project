@@ -45,7 +45,7 @@ const EventForm: FC<EventFormProps> = ({}) => {
     validationSchema: schema,
     validateOnMount: false,
     onSubmit: (values) => {
-      console.log('asasd');
+      console.log('onSubmit EventForm', values);
     },
   });
 

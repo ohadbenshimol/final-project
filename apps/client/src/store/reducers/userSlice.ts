@@ -1,6 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../Store';
+import { createSlice } from '@reduxjs/toolkit';
+import { useSelector } from 'react-redux';
+import Cookies from 'js-cookie';
 
 export interface UserState {
   email?: string;
@@ -10,8 +12,9 @@ export interface UserState {
   pictureUrl?: string;
 }
 
-// Define the initial state using that type
-const initialState: UserState = {};
+const cookieData = Cookies.get('user');
+
+const initialState: UserState = cookieData ? JSON.parse(cookieData) : {};
 
 export const userSlice = createSlice({
   name: 'userData',
@@ -32,5 +35,9 @@ export const userSlice = createSlice({
 export const { setUser } = userSlice.actions;
 
 export const getUser = (state: RootState) => state.user;
+export const userIsLoggedIn = () => {
+  const user = useSelector(getUser);
+  return user?.email;
+};
 
 export default userSlice.reducer;

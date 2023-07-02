@@ -15,9 +15,8 @@ const EventRegistrationPage = () => {
   const [showCamera, setShowCamera] = useState(false);
 
   useEffect(() => {
-    console.log(cookies);
     if (!cookies?.user?.email) {
-      // navigate('/', { state: { from: '/register-event/111' } });
+      navigate('/', { state: { from: '/register-event/111' } });
     }
   }, [cookies]);
 

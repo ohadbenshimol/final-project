@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { db, eventRef } from '../../app/firebase';
+import { db, eventRef } from '../../helpers/firebase';
 import { FC, useEffect, useRef, useState } from 'react';
 import { onValue, push, ref } from 'firebase/database';
 import {
@@ -11,7 +11,7 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
+import { getUser, userIsLoggedIn } from '../../store/reducers/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { Event } from '../../shared/models/event';
 import { useCookies } from 'react-cookie';
@@ -46,14 +46,11 @@ export const Events: FC<LoginProps> = () => {
   };
 
   useEffect(() => {
-    if (!(user.email && cookies.user.email)) {
+    if (!userIsLoggedIn()) {
       navigate('/', { state: { from: '/events' } });
     } else {
       toast.success(`user store , ${user.email}`);
       toast.success(`user cookie , ${cookies.user.email}`);
-
-      console.log('user store', user);
-      console.log('user cookie', cookies);
     }
   }, [user, cookies]);
 

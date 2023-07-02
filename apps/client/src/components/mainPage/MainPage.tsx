@@ -9,9 +9,9 @@ import { useCookies } from 'react-cookie';
 import './MainPage.less';
 
 const MainPage: React.FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
   const [cookies, setCookie] = useCookies(['user']);
 
   useEffect(() => {

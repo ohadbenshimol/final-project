@@ -1,5 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { getUser, setUser } from '../../store/reducers/userSlice';
+import {
+  getUser,
+  setUser,
+  userIsLoggedIn,
+} from '../../store/reducers/userSlice';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { FC } from 'react';
@@ -43,16 +47,15 @@ const Header: FC = () => {
 
   const defaultImg =
     'https://w7.pngwing.com/pngs/81/570/png-transparent-profile-logo-computer-icons-user-user-blue-heroes-logo-thumbnail.png';
+
+  const goToHomePage = () => {
+    navigate('/');
+  };
+
   return (
     <header style={headerStyle}>
       <h1>LOGO</h1>
-      <h1
-        onClick={() => {
-          navigate('entry');
-        }}
-      >
-        ENTRY
-      </h1>
+      <h1 onClick={goToHomePage}>HOME</h1>
       <div style={userInfoStyle}>
         {userName ?? <span>{userName}</span>}
         <img
@@ -60,7 +63,11 @@ const Header: FC = () => {
           alt={userName}
           style={avatarStyle}
         />
-        <button onClick={logout}>Logout</button>
+        {userIsLoggedIn() ? (
+          <button onClick={logout}>Logout</button>
+        ) : (
+          <button onClick={goToHomePage}>Login</button>
+        )}
       </div>
     </header>
   );
