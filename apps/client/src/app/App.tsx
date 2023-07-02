@@ -1,19 +1,14 @@
-import {
-  Route,
-  Routes,
-  BrowserRouter as Router,
-  useNavigate,
-} from 'react-router-dom';
 import MainPage from '../components/mainPage/MainPage';
 import Header from '../components/header/Header';
+import EventRegistrationPage from '../components/eventRegistrationPage/EventRegistrationPage';
+import Events from '../components/events/events';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { FC, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { getUser, setUser } from '../store/reducers/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import Events from '../components/events/events';
 import { toast } from 'react-toastify';
-import EventRegistrationPage from '../components/eventRegistrationPage/EventRegistrationPage';
 // import EntryPage from './components/EntryPage';
 // import EventCreationPage from './components/EventCreationPage';
 // import EventRegistrationPage from './components/EventRegistrationPage';
@@ -39,20 +34,7 @@ const EventCreationPage: FC = () => {
   return <div className="div">EventCreationPage</div>;
 };
 
-function App() {
-  const [cookies, setCookie] = useCookies(['user']);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (cookies.user) {
-      console.log(cookies.user);
-
-      dispatch(setUser(cookies.user));
-      // navigate('/events');
-    }
-  }, [cookies, dispatch]);
-
+const App: FC = () => {
   return (
     <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
       <CookiesProvider>
@@ -70,6 +52,6 @@ function App() {
       </CookiesProvider>
     </GoogleOAuthProvider>
   );
-}
+};
 
 export default App;

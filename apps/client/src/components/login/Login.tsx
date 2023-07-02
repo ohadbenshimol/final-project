@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUser, setUser } from '../../store/reducers/userSlice';
 import { useEffect } from 'react';
-import './Login.less';
 import { useNavigate } from 'react-router-dom';
+import './Login.less';
 
 export interface LoginProps {}
 
@@ -56,21 +56,3 @@ export const Login = ({}) => {
 };
 
 export default Login;
-
-{
-  /* <div>
-<button
-  aria-label="Increment value"
-  onClick={() => dispatch(increment())}
->
-  Increment
-</button>
-<span>{count}</span>
-<button
-  aria-label="Decrement value"
-  onClick={() => dispatch(decrement())}
->
-  Decrement
-</button>
-</div> */
-}
