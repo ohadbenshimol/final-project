@@ -1,7 +1,15 @@
 import * as Yup from 'yup';
-import { db, eventRef } from '../../helpers/firebase';
+import { db } from '../../helpers/firebase';
 import { FC, useEffect, useRef, useState } from 'react';
-import { onValue, push, ref } from 'firebase/database';
+import {
+  equalTo,
+  off,
+  onValue,
+  orderByChild,
+  push,
+  query,
+  ref,
+} from 'firebase/database';
 import {
   Button,
   Container,
@@ -11,20 +19,60 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
-import { getUser, userIsLoggedIn } from '../../store/reducers/userSlice';
+import { getUser } from '../../store/reducers/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { Event } from '../../shared/models/event';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
+import { useQuery } from 'react-query';
 import './events.less';
 
 interface LoginProps {}
 
+const getEvents = async (owner: string): Promise<Event[]> => {
+  return new Promise((resolve, reject) => {
+    const eventQuery = query(
+      ref(db, 'events/'),
+      orderByChild('owner'),
+      equalTo(owner)
+    );
+    const listener = onValue(
+      eventQuery,
+      (snapshot) => {
+        const data = snapshot.val();
+        const events: Event[] = [];
+        for (let id in data) {
+          events.push({ ...data[id], id });
+        }
+        resolve(events);
+      },
+      reject
+    );
+
+    return () => {
+      off(eventQuery, 'value', listener);
+    };
+  });
+};
+
 export const Events: FC<LoginProps> = () => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [open, setOpen] = useState(false);
   const user = useSelector(getUser);
   const [cookies] = useCookies(['user']);
+  const { data, isLoading, isError } = useQuery<Event[], Error>(
+    'events',
+    () => getEvents('finalproject072@gmail.com'),
+    {
+      onSuccess: (data) => {
+        setEvents(data);
+        console.log('data', data);
+      },
+      onError: (data) => {
+        console.log('onError', data);
+      },
+    }
+  );
 
   const navigate = useNavigate();
   const [secondModalOpen, setSecondModalOpen] = useState(false);
@@ -38,6 +86,7 @@ export const Events: FC<LoginProps> = () => {
   const [link, setLink] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
+
   const handleCopyClick = async () => {
     if (inputRef.current) {
       inputRef.current.select();
@@ -46,19 +95,13 @@ export const Events: FC<LoginProps> = () => {
   };
 
   useEffect(() => {
-    if (!userIsLoggedIn()) {
+    if (!(user.email && cookies.user.email)) {
       navigate('/', { state: { from: '/events' } });
     } else {
       toast.success(`user store , ${user.email}`);
       toast.success(`user cookie , ${cookies.user.email}`);
     }
   }, [user, cookies]);
-
-  useEffect(() => {
-    onValue(eventRef, (snapshot) => {
-      setEvents(snapshot?.val());
-    });
-  }, []);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -110,7 +153,10 @@ export const Events: FC<LoginProps> = () => {
         <Container>
           <h2 style={{ textAlign: 'center' }}>Upcoming Events</h2>
           <Grid columns={3}>
-            {events &&
+            {isLoading ? (
+              <div className="sdfs">we are looking for your events</div>
+            ) : (
+              events &&
               Object.values(events)?.map((event: Event, index) => (
                 <Grid.Row key={index}>
                   <Grid.Column width={4}>
@@ -130,7 +176,8 @@ export const Events: FC<LoginProps> = () => {
                     <Button>Details</Button>
                   </Grid.Column>
                 </Grid.Row>
-              ))}
+              ))
+            )}
           </Grid>
         </Container>
       </Segment>

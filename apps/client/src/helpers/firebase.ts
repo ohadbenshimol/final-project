@@ -1,8 +1,10 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref } from 'firebase/database';
-import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+
+//Now import this
+import 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBPCx72jB7LSRKlwjE-crBCbBjXHfGwvMU',
@@ -21,5 +23,4 @@ const app: FirebaseApp = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 export const eventRef = ref(db, 'events/');
 export const auth = getAuth(app);
-export const firestore = getFirestore(app);
 export const storage = getStorage(app);
