@@ -1,26 +1,25 @@
+import Camera from 'react-html5-camera-photo';
 import { useSelector } from 'react-redux';
 import { getUser } from '../../store/reducers/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Camera from 'react-html5-camera-photo';
-import 'react-html5-camera-photo/build/css/index.css';
-import './EventRegistrationPage.less';
 import { useCookies } from 'react-cookie';
+import './EventRegistrationPage.less';
 
 const EventRegistrationPage = () => {
-  const user = useSelector(getUser);
-
-  const [cookies, setCookie] = useCookies(['user']);
+  const { fullName } = useSelector(getUser);
+  const [cookies] = useCookies(['user']);
 
   const navigate = useNavigate();
   const [photo, setPhoto] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
 
   useEffect(() => {
+    console.log(cookies);
     if (!cookies?.user?.email) {
-      navigate('/', { state: { from: '/register-event/111' } });
+      // navigate('/', { state: { from: '/register-event/111' } });
     }
-  }, []);
+  }, [cookies]);
 
   const handleTakePhoto = (dataUri: any) => {
     setPhoto(dataUri);
@@ -29,10 +28,11 @@ const EventRegistrationPage = () => {
   const handleCameraToggle = () => {
     setShowCamera(!showCamera);
   };
+
   return (
     <div className="event-registration-container">
       <h2>Event Registration</h2>
-      <p>Welcome, {user.fullName}! Please take a selfie for the event.</p>
+      <p>Welcome, {fullName}! Please take a selfie for the event.</p>
       <form>
         <div className="camera-container">
           {showCamera && (

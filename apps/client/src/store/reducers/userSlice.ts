@@ -1,4 +1,4 @@
-import { createAction, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../Store';
 
@@ -9,6 +9,7 @@ export interface UserState {
   lastName?: string;
   pictureUrl?: string;
 }
+
 // Define the initial state using that type
 const initialState: UserState = {};
 
@@ -16,7 +17,6 @@ export const userSlice = createSlice({
   name: 'userData',
   initialState,
   reducers: {
-    // Use the PayloadAction type to declare the contents of `action.payload`
     setUser: (state, action: PayloadAction<UserState>) => {
       const { firstName, email, fullName, lastName, pictureUrl } =
         action.payload;
