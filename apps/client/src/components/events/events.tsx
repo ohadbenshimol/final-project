@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
-import { db, eventRef } from '../../app/firebase';
-import { FC, useEffect, useRef, useState } from 'react';
-import { onValue, push, ref } from 'firebase/database';
+import {db, eventRef} from '../../app/firebase';
+import {FC, useEffect, useRef, useState} from 'react';
+import {onValue, push, ref} from 'firebase/database';
 import {
   Button,
   Container,
@@ -10,17 +10,19 @@ import {
   Modal,
   Segment,
 } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
-import { useNavigate } from 'react-router-dom';
-import { Event } from '../../shared/models/event';
-import { useCookies } from 'react-cookie';
-import { toast } from 'react-toastify';
+import {useSelector} from 'react-redux';
+import {getUser} from '../../store/reducers/userSlice';
+import {useNavigate} from 'react-router-dom';
+import {Event} from '../../shared/models/event';
+import {useCookies} from 'react-cookie';
+import {toast} from 'react-toastify';
 import './events.less';
 
-interface LoginProps {}
+interface LoginProps {
+}
 
 export const Events: FC<LoginProps> = () => {
+
   const [events, setEvents] = useState([]);
   const [open, setOpen] = useState(false);
   const user = useSelector(getUser);
@@ -32,7 +34,6 @@ export const Events: FC<LoginProps> = () => {
     name: '',
     description: '',
     storage: '',
-    email: '',
     url: '',
   });
   const [link, setLink] = useState('');
@@ -47,7 +48,7 @@ export const Events: FC<LoginProps> = () => {
 
   useEffect(() => {
     if (!(user.email && cookies.user.email)) {
-      navigate('/', { state: { from: '/events' } });
+      navigate('/', {state: {from: '/events'}});
     } else {
       toast.success(`user store , ${user.email}`);
       toast.success(`user cookie , ${cookies.user.email}`);
@@ -64,7 +65,7 @@ export const Events: FC<LoginProps> = () => {
   }, []);
 
   const handleChange = (e: any) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
 
     setFormValues((prevState) => ({
       ...prevState,
@@ -74,7 +75,10 @@ export const Events: FC<LoginProps> = () => {
 
   const handleSubmit = async (e: any) => {
     try {
-      await eventSchema.validate(formData, { abortEarly: false });
+      if (!user.email) {
+        navigate('/', {state: {from: '/events'}})
+      }
+      await eventSchema.validate(formData, {abortEarly: false});
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
         date.getMonth() + 1
@@ -85,6 +89,8 @@ export const Events: FC<LoginProps> = () => {
       const newEventRef = push(ref(db, 'events/'), {
         ...formData,
         creationDate: formattedDate,
+        owner: user.email,
+        subscribers:[user.email]
       });
       const newEventId = newEventRef.key;
       const url = `https://only-me-2023.web.app/register-event/${newEventId}`;
@@ -94,7 +100,6 @@ export const Events: FC<LoginProps> = () => {
         name: '',
         description: '',
         storage: '',
-        email: '',
         url: '',
       });
       setOpen(false);
@@ -102,16 +107,15 @@ export const Events: FC<LoginProps> = () => {
       console.error(e);
     }
   };
-
   const handleAddEvent = () => {
     setSecondModalOpen(true);
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <div style={{display: 'flex', justifyContent: 'center'}}>
       <Segment>
         <Container>
-          <h2 style={{ textAlign: 'center' }}>Upcoming Events</h2>
+          <h2 style={{textAlign: 'center'}}>Upcoming Events</h2>
           <Grid columns={3}>
             {events &&
               Object.values(events)?.map((event: Event, index) => (
@@ -142,7 +146,7 @@ export const Events: FC<LoginProps> = () => {
         icon="add"
         size="huge"
         circular
-        style={{ position: 'fixed', bottom: '0', right: '0' }}
+        style={{position: 'fixed', bottom: '0', right: '0'}}
         onClick={() => setOpen(true)}
       />
       <Modal open={open} onClose={() => setOpen(true)}>
@@ -160,16 +164,16 @@ export const Events: FC<LoginProps> = () => {
                 required
               />
             </Form.Field>
-            <Form.Field>
-              <label htmlFor={'emailId'}>Email</label>
-              <input
-                id={'emailId'}
-                name="email"
-                onChange={handleChange}
-                type="email"
-                placeholder="Enter your email"
-              />
-            </Form.Field>
+            {/*<Form.Field>*/}
+            {/*  <label htmlFor={'emailId'}>Email</label>*/}
+            {/*  <input*/}
+            {/*    id={'emailId'}*/}
+            {/*    name="email"*/}
+            {/*    onChange={handleChange}*/}
+            {/*    type="email"*/}
+            {/*    placeholder="Enter your email"*/}
+            {/*  />*/}
+            {/*</Form.Field>*/}
             <Form.Field>
               <label htmlFor={'storageId'}>storge</label>
               <input
@@ -190,7 +194,7 @@ export const Events: FC<LoginProps> = () => {
                 placeholder="description..."
               />
             </Form.Field>
-            <div style={{ textAlign: 'center' }}>
+            <div style={{textAlign: 'center'}}>
               <Modal.Actions>
                 <Button onClick={handleAddEvent} type="submit" primary>
                   Add event
@@ -230,7 +234,7 @@ export const eventSchema = Yup.object().shape({
   storage: Yup.number()
     .required('Storage is required')
     .positive('Storage must be a positive number'),
-  email: Yup.string().email().required('Email is require'),
+  email: Yup.string().email(),
 });
 
 export default Events;

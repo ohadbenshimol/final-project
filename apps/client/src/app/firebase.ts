@@ -16,7 +16,7 @@ const firebaseConfig = {
     'https://final-project-502ce-default-rtdb.europe-west1.firebasedatabase.app/',
 };
 
-const app: FirebaseApp = initializeApp(firebaseConfig);
+export const app: FirebaseApp = initializeApp(firebaseConfig);
 
 export const db = getDatabase(app);
 export const eventRef = ref(db, 'events/');
