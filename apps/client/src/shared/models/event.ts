@@ -4,7 +4,7 @@ export type Event = {
   owner: string;
   name: string;
   storage: string;
-  subscribers: string[];
+  subscribers: { [key: string]: boolean };
   url?: string;
   description: string;
 };

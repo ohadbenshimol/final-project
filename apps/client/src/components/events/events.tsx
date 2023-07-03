@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { db } from '../../helpers/firebase';
+import { db, eventsRef } from '../../helpers/firebase';
 import { FC, useEffect, useRef, useState } from 'react';
 import {
   equalTo,
@@ -56,7 +56,7 @@ const getEvents = async (owner: string): Promise<Event[]> => {
 };
 
 export const Events: FC<LoginProps> = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [ownerEvents, setOwnerEvents] = useState<Event[]>([]);
   const [open, setOpen] = useState(false);
   const user = useSelector(getUser);
   const [cookies] = useCookies(['user']);
@@ -65,7 +65,7 @@ export const Events: FC<LoginProps> = () => {
     () => getEvents('finalproject072@gmail.com'),
     {
       onSuccess: (data) => {
-        setEvents(data);
+        setOwnerEvents(data);
         console.log('data', data);
       },
       onError: (data) => {
@@ -73,6 +73,22 @@ export const Events: FC<LoginProps> = () => {
       },
     }
   );
+
+  useEffect(() => {
+    const eventQuery = query(
+      eventsRef,
+      orderByChild(`subscribers/-NZRXam9S3NibCYQ1bXU`),
+      equalTo(true)
+    );
+
+    onValue(eventQuery, (snapshot) => {
+      const data = snapshot.val() as Record<string, Event>;
+      const a: Event[] = Object.values(data).filter(
+        (_) => _.owner === '-NZRXam9S3NibCYQ1bXU'
+      );
+      console.log('events that i am participant', data);
+    });
+  }, []);
 
   const navigate = useNavigate();
   const [secondModalOpen, setSecondModalOpen] = useState(false);
@@ -156,8 +172,8 @@ export const Events: FC<LoginProps> = () => {
             {isLoading ? (
               <div className="sdfs">we are looking for your events</div>
             ) : (
-              events &&
-              Object.values(events)?.map((event: Event, index) => (
+              ownerEvents &&
+              Object.values(ownerEvents)?.map((event: Event, index) => (
                 <Grid.Row key={index}>
                   <Grid.Column width={4}>
                     <img
