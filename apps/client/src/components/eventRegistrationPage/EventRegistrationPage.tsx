@@ -5,10 +5,12 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import {useCookies} from 'react-cookie';
 import './EventRegistrationPage.less';
-import {get, push, ref, update} from "firebase/database"
-import {db, eventRef} from "../../app/firebase";
-import {Toast} from "react-toastify/dist/components";
+import {get, ref, update} from "firebase/database"
+
+
 import {toast} from "react-toastify";
+import {db} from "../../helpers/firebase";
+import {NewEvent} from "../../shared/models/event";
 
 const EventRegistrationPage = () => {
   const {fullName} = useSelector(getUser);
@@ -17,12 +19,12 @@ const EventRegistrationPage = () => {
   const navigate = useNavigate();
   const [photo, setPhoto] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
-
+  const eventId = (useParams()).eventId
   const params = useParams()
 
   useEffect(() => {
     if (!cookies?.user?.email) {
-      // navigate('/', { state: { from: '/register-event/111' } });
+      navigate('/', {state: {from: `/register-event/${eventId}`}});
     }
   }, [cookies]);
 
@@ -34,31 +36,34 @@ const EventRegistrationPage = () => {
     setShowCamera(!showCamera);
   };
   const handleSubmit = async () => {
-    const eventId = (useParams()).eventId
+
     const eventSnapshot = await get(ref(db, `/events/${eventId}`))
     if (eventSnapshot.exists()) {
-      const event = eventSnapshot.val();
 
-      console.log(!event.subscribers?.includes(user.email))
-      if (!event.subscribers?.includes(user.email)) {
+      const event: NewEvent = eventSnapshot.val();
+      if (!event.subscribers[user.id!]) {
         await update(ref(db, `events/${eventId}`), {
           ...event,
-          // subscribers: [...event.subscribers, user?.email]
+          subscribers: {
+            ...event.subscribers,
+            [user.id!]: true
+          }
         });
       } else {
         toast.warning("You already register to this event")
+        navigate('/', {state: {from: '/events'}})
       }
     } else {
       toast.error("The event doesn't exist")
       navigate('/', {state: {from: '/events'}})
     }
   }
-  handleSubmit().then(console.log)
+
   return (
     <div className="event-registration-container">
       <h2>Event Registration</h2>
       <p>Welcome, {fullName}! Please take a selfie for the event.</p>
-      <form>
+      <div>
         <div className="camera-container">
           {showCamera && (
             <Camera
@@ -78,10 +83,10 @@ const EventRegistrationPage = () => {
             {showCamera ? 'Close Camera' : 'Take a Photo'}
           </button>
         )}
-        <button className="submit-button">
+        <button className="submit-button" onClick={handleSubmit}>
           Submit
         </button>
-      </form>
+      </div>
     </div>
   );
 };

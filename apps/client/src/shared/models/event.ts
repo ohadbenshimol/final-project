@@ -1,8 +1,10 @@
-export type Event = {
+export type NewEvent = {
   creationDate: string;
+  id: string;
   owner: string;
   name: string;
+  storage: string;
+  subscribers: Record<string, boolean>
   url?: string;
-  numOfUsers?: number;
   description: string;
 };
