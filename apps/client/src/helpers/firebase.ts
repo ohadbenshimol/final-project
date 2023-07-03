@@ -19,7 +19,7 @@ const firebaseConfig = {
 export const app: FirebaseApp = initializeApp(firebaseConfig);
 
 export const db = getDatabase(app);
-export const eventRef = ref(db, 'events/');
+export const eventsRef = ref(db, 'events/');
+export const usersRef = ref(db, 'users/');
 export const auth = getAuth(app);
-export const firestore = getFirestore(app);
 export const storage = getStorage(app);
