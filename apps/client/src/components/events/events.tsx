@@ -21,7 +21,7 @@ import {
 import { useSelector } from 'react-redux';
 import { getUser } from '../../store/reducers/userSlice';
 import { useNavigate } from 'react-router-dom';
-import { Event } from '../../shared/models/event';
+import { NewEvent } from '../../shared/models/event';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
 import { useQuery } from 'react-query';
@@ -96,7 +96,6 @@ export const Events: FC<LoginProps> = () => {
     name: '',
     description: '',
     storage: '',
-    email: '',
     url: '',
   });
   const [link, setLink] = useState('');
@@ -119,6 +118,12 @@ export const Events: FC<LoginProps> = () => {
     }
   }, [user, cookies]);
 
+  useEffect(() => {
+    onValue(eventsRef, (snapshot) => {
+      setEvents(snapshot?.val());
+    });
+  }, []);
+
   const handleChange = (e: any) => {
     const { name, value } = e.target;
 
@@ -130,6 +135,9 @@ export const Events: FC<LoginProps> = () => {
 
   const handleSubmit = async (e: any) => {
     try {
+      if (!user.email) {
+        navigate('/', { state: { from: '/events' } });
+      }
       await eventSchema.validate(formData, { abortEarly: false });
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
@@ -141,6 +149,10 @@ export const Events: FC<LoginProps> = () => {
       const newEventRef = push(ref(db, 'events/'), {
         ...formData,
         creationDate: formattedDate,
+        owner: user.id,
+        subscribers: {
+          [user.id!]: true,
+        },
       });
       const newEventId = newEventRef.key;
       const url = `https://only-me-2023.web.app/register-event/${newEventId}`;
@@ -150,7 +162,6 @@ export const Events: FC<LoginProps> = () => {
         name: '',
         description: '',
         storage: '',
-        email: '',
         url: '',
       });
       setOpen(false);
@@ -158,7 +169,6 @@ export const Events: FC<LoginProps> = () => {
       console.error(e);
     }
   };
-
   const handleAddEvent = () => {
     setSecondModalOpen(true);
   };
@@ -220,16 +230,16 @@ export const Events: FC<LoginProps> = () => {
                 required
               />
             </Form.Field>
-            <Form.Field>
-              <label htmlFor={'emailId'}>Email</label>
-              <input
-                id={'emailId'}
-                name="email"
-                onChange={handleChange}
-                type="email"
-                placeholder="Enter your email"
-              />
-            </Form.Field>
+            {/*<Form.Field>*/}
+            {/*  <label htmlFor={'emailId'}>Email</label>*/}
+            {/*  <input*/}
+            {/*    id={'emailId'}*/}
+            {/*    name="email"*/}
+            {/*    onChange={handleChange}*/}
+            {/*    type="email"*/}
+            {/*    placeholder="Enter your email"*/}
+            {/*  />*/}
+            {/*</Form.Field>*/}
             <Form.Field>
               <label htmlFor={'storageId'}>storge</label>
               <input
@@ -290,7 +300,7 @@ export const eventSchema = Yup.object().shape({
   storage: Yup.number()
     .required('Storage is required')
     .positive('Storage must be a positive number'),
-  email: Yup.string().email().required('Email is require'),
+  email: Yup.string().email(),
 });
 
 export default Events;

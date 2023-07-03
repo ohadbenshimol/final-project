@@ -1,0 +1,22 @@
+{
+  "events": {
+    "ohadWedding": {
+      "creationDate": "24.04.23",
+      "name": "ohadWedding",
+      "owner": "ultras hapoel",
+      "url": "localhost"
+    },
+    "urielWedding": {
+      "creationDate": "24.04.23",
+      "name": "ohadWedding",
+      "owner": "ultras hapoel",
+      "url": "localhost"
+    },
+    "yakovWedding": {
+      "creationDate": "24.04.23",
+      "name": "ohadWedding",
+      "owner": "ultras hapoel",
+      "url": "localhost"
+    }
+  }
+}
