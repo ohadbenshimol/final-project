@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
-import { db, eventsRef } from '../../helpers/firebase';
-import { FC, useEffect, useRef, useState } from 'react';
+import {db, eventsRef} from '../../helpers/firebase';
+import {FC, useEffect, useRef, useState} from 'react';
 import {
-  equalTo,
+  equalTo, get,
   off,
   onValue,
   orderByChild,
@@ -18,18 +18,21 @@ import {
   Modal,
   Segment,
 } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
-import { useNavigate } from 'react-router-dom';
-import { NewEvent } from '../../shared/models/event';
-import { useCookies } from 'react-cookie';
-import { toast } from 'react-toastify';
-import { useQuery } from 'react-query';
+import {useSelector} from 'react-redux';
+import {getUser, getUserID} from '../../store/reducers/userSlice';
+import {useNavigate, Link} from 'react-router-dom';
+import {NewEvent} from '../../shared/models/event';
+import {useCookies} from 'react-cookie';
+import {toast} from 'react-toastify';
+import {useQuery} from 'react-query';
 import './events.less';
 
-interface LoginProps {}
+import {assertWorkspaceValidity} from "nx/src/utils/assert-workspace-validity";
 
-const getEvents = async (owner: string): Promise<Event[]> => {
+interface LoginProps {
+}
+
+const getEvents = async (owner: string): Promise<NewEvent[]> => {
   return new Promise((resolve, reject) => {
     const eventQuery = query(
       ref(db, 'events/'),
@@ -40,9 +43,9 @@ const getEvents = async (owner: string): Promise<Event[]> => {
       eventQuery,
       (snapshot) => {
         const data = snapshot.val();
-        const events: Event[] = [];
+        const events: NewEvent[] = [];
         for (let id in data) {
-          events.push({ ...data[id], id });
+          events.push({...data[id], id});
         }
         resolve(events);
       },
@@ -54,15 +57,22 @@ const getEvents = async (owner: string): Promise<Event[]> => {
     };
   });
 };
+const getSubscribers = async (userID: string): Promise<any> =>
+  await get(query(
+    eventsRef,
+    orderByChild(`subscribers/${userID}`), equalTo(true)))
+
 
 export const Events: FC<LoginProps> = () => {
-  const [ownerEvents, setOwnerEvents] = useState<Event[]>([]);
+  const userID = useSelector(getUserID)
+  const [ownerEvents, setOwnerEvents] = useState<NewEvent[]>([]);
+  const [participantsEvents, setParticipantsEvents] = useState<NewEvent[]>([]);
   const [open, setOpen] = useState(false);
   const user = useSelector(getUser);
   const [cookies] = useCookies(['user']);
-  const { data, isLoading, isError } = useQuery<Event[], Error>(
+  const {data, isLoading, isError} = useQuery<NewEvent[], Error>(
     'events',
-    () => getEvents('finalproject072@gmail.com'),
+    () => getEvents(userID!),
     {
       onSuccess: (data) => {
         setOwnerEvents(data);
@@ -74,21 +84,36 @@ export const Events: FC<LoginProps> = () => {
     }
   );
 
+
   useEffect(() => {
     const eventQuery = query(
       eventsRef,
-      orderByChild(`subscribers/-NZRXam9S3NibCYQ1bXU`),
-      equalTo(true)
+      orderByChild(`subscribers/${userID}`), equalTo(true)
     );
 
     onValue(eventQuery, (snapshot) => {
-      const data = snapshot.val() as Record<string, Event>;
-      const a: Event[] = Object.values(data).filter(
-        (_) => _.owner === '-NZRXam9S3NibCYQ1bXU'
+      const data = snapshot.val() as Record<string, NewEvent>;
+      const EventsByUserID: NewEvent[] = data && Object.values(data).filter(
+        (event) => event.owner !== userID
       );
+      setParticipantsEvents(EventsByUserID);
       console.log('events that i am participant', data);
     });
-  }, []);
+
+    // const ownerEventsQuery = query(
+    //   eventsRef,
+    //   orderByChild(`subscribers/${userID}`), equalTo(true)
+    // );
+    //
+    // onValue(eventQuery, (snapshot) => {
+    //   const data = snapshot.val() as Record<string, NewEvent>;
+    //   const EventsByUserID: NewEvent[] = Object.values(data).filter(
+    //     (event) => event.owner === userID
+    //   );
+    //   setParticipantsEvents(EventsByUserID);
+    //   console.log('events that i am participant', data);
+    // });
+  }, [userID]);
 
   const navigate = useNavigate();
   const [secondModalOpen, setSecondModalOpen] = useState(false);
@@ -111,21 +136,15 @@ export const Events: FC<LoginProps> = () => {
 
   useEffect(() => {
     if (!(user.email && cookies.user.email)) {
-      navigate('/', { state: { from: '/events' } });
+      navigate('/', {state: {from: '/events'}});
     } else {
       toast.success(`user store , ${user.email}`);
       toast.success(`user cookie , ${cookies.user.email}`);
     }
   }, [user, cookies]);
 
-  useEffect(() => {
-    onValue(eventsRef, (snapshot) => {
-      setEvents(snapshot?.val());
-    });
-  }, []);
-
   const handleChange = (e: any) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
 
     setFormValues((prevState) => ({
       ...prevState,
@@ -136,9 +155,9 @@ export const Events: FC<LoginProps> = () => {
   const handleSubmit = async (e: any) => {
     try {
       if (!user.email) {
-        navigate('/', { state: { from: '/events' } });
+        navigate('/', {state: {from: '/events'}});
       }
-      await eventSchema.validate(formData, { abortEarly: false });
+      await eventSchema.validate(formData, {abortEarly: false});
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
         date.getMonth() + 1
@@ -174,16 +193,39 @@ export const Events: FC<LoginProps> = () => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <div style={{display: 'flex', justifyContent: 'center'}}>
       <Segment>
         <Container>
-          <h2 style={{ textAlign: 'center' }}>Upcoming Events</h2>
+          <h2 style={{textAlign: 'center'}}>Upcoming Events</h2>
           <Grid columns={3}>
             {isLoading ? (
               <div className="sdfs">we are looking for your events</div>
             ) : (
               ownerEvents &&
-              Object.values(ownerEvents)?.map((event: Event, index) => (
+              Object.values(ownerEvents)?.map((event: NewEvent, index) => (
+                <Grid.Row key={index}>
+                  <Grid.Column width={4}>
+                    <img
+                      className="ui tiny image"
+                      src="../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg"
+                    />
+                  </Grid.Column>
+                  <Grid.Column width={8}>
+                    <p>{event.name}</p>
+                    <p>{event.description}</p>
+                    <p>{event.url}</p>
+                    <p>{event.creationDate}</p>
+                  </Grid.Column>
+                  <Grid.Column width={4}>
+                    <Link  to={`/uploadFile/${event.id}`}>Upload images</Link>
+                    <Button>Details</Button>
+                  </Grid.Column>
+                </Grid.Row>
+              ))
+            )}
+            <div>My events</div>
+            {participantsEvents &&
+              Object.values(participantsEvents)?.map((event: NewEvent, index) => (
                 <Grid.Row key={index}>
                   <Grid.Column width={4}>
                     <img
@@ -202,8 +244,7 @@ export const Events: FC<LoginProps> = () => {
                     <Button>Details</Button>
                   </Grid.Column>
                 </Grid.Row>
-              ))
-            )}
+              ))}
           </Grid>
         </Container>
       </Segment>
@@ -212,7 +253,7 @@ export const Events: FC<LoginProps> = () => {
         icon="add"
         size="huge"
         circular
-        style={{ position: 'fixed', bottom: '0', right: '0' }}
+        style={{position: 'fixed', bottom: '0', right: '0'}}
         onClick={() => setOpen(true)}
       />
       <Modal open={open} onClose={() => setOpen(true)}>
@@ -260,7 +301,7 @@ export const Events: FC<LoginProps> = () => {
                 placeholder="description..."
               />
             </Form.Field>
-            <div style={{ textAlign: 'center' }}>
+            <div style={{textAlign: 'center'}}>
               <Modal.Actions>
                 <Button onClick={handleAddEvent} type="submit" primary>
                   Add event
