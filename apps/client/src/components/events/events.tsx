@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import { eventsRef } from '../../helpers/firebase';
 import { FC, useEffect, useRef, useState } from 'react';
+import QRCode from 'react-qr-code';
 import {
   equalTo,
   get,
@@ -23,8 +24,8 @@ import { getUser, getUserID } from '../../store/reducers/userSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { NewEvent } from '../../shared/models/event';
 import { useCookies } from 'react-cookie';
-import { toast } from 'react-toastify';
 import { useQuery } from 'react-query';
+
 import './events.less';
 
 import { CLIENT_URL } from '../../helpers/config';
@@ -309,6 +310,21 @@ export const Events: FC<LoginProps> = () => {
                   ref={inputRef}
                 />
               </Form.Field>
+              <div
+                style={{
+                  height: 'auto',
+                  margin: '0 auto',
+                  maxWidth: 64,
+                  width: '100%',
+                }}
+              >
+                <QRCode
+                  size={256}
+                  style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                  value={link}
+                  viewBox={`0 0 256 256`}
+                />
+              </div>
               <Button onClick={handleCopyClick}>Copy Link</Button>
             </Form>
           </Modal.Content>

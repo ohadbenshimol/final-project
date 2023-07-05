@@ -188,7 +188,7 @@ const enhancer = composeEnhancers(retryEnhancer, mockEnhancer);
 
 const FileUploader = () => {
   return (
-    <Uploady destination={{ url: SERVER_URL }}>
+    <Uploady enhancer={enhancer} destination={{ url: SERVER_URL }}>
       <UploadUi />
     </Uploady>
   );
