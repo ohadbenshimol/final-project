@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  photo-face-server
+
+Globals:
+  Function:
+    Timeout: 120
+    Runtime: nodejs14.x
+    MemorySize: 1024
+    CodeUri: ./build
+
+Resources:
+  GetImageByFaceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-images.handler
+      CodeUri: ./build
+      Description: Get image by user face photo
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - lambda:GetFunction
+                - lambda:InvokeFunction
+              Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:GetImageByFaceFunction
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /get/images
+            Method: POST
+
+  AddImagesToEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/add-images.handler
+      CodeUri: ./build
+      Description: add user images to event
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - lambda:GetFunction
+                - lambda:InvokeFunction
+              Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:AddImagesToEventFunction
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /add/images
+            Method: POST
+
+Outputs:
+  HttpBaseUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-HttpBaseUrl"

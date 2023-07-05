@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: Title
+  description: Title
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /get/images:
+    post:
+      tags:
+        - get images
+      summary: get images
+      operationId: getImages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetImagesRequest'
+      responses:
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetImagesResponse'
+        500:
+          description: 'internal error'
+      x-amazon-apigateway-integration:
+        httpMethod: post
+        type: aws_proxy
+        uri:
+          Fn::Sub:
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
+
+  /add/images:
+    post:
+      tags:
+        - add images
+      summary: add images
+      operationId: addImages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddImagesRequest'
+      responses:
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddImagesResponse'
+        500:
+          description: 'internal error'
+      x-amazon-apigateway-integration:
+        httpMethod: post
+        type: aws_proxy
+        uri:
+          Fn::Sub:
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
+
+components:
+  schemas:
+    GetImagesResponse:
+      type: object
+      properties:
+        status:
+          type: string
+    AddImagesResponse:
+      type: object
+      properties:
+        status:
+          type: string
+    GetImagesRequest:
+      type: object
+      properties:
+        eventId:
+          type: string
+        userImage:
+          type: object
+    AddImagesRequest:
+      properties:
+        eventId:
+          type: string
+        Images:
+          type: array
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
