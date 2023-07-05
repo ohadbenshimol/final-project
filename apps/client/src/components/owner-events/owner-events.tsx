@@ -1,15 +1,14 @@
-import {useSelector} from "react-redux";
-import {getUserID} from "../../store/reducers/userSlice";
-import {useEffect, useState} from "react";
-import {NewEvent} from "../../shared/models/event";
-import {equalTo, onValue, orderByChild, query} from "firebase/database";
-import {eventsRef} from "../../helpers/firebase";
-import {Button, Container, Grid} from "semantic-ui-react";
+import { useSelector } from 'react-redux';
+import { getUserID } from '../../store/reducers/userSlice';
+import { FC, useEffect, useState } from 'react';
+import { NewEvent } from '../../shared/models/event';
+import { equalTo, onValue, orderByChild, query } from 'firebase/database';
+import { eventsRef } from '../../helpers/firebase';
+import { Button, Container, Grid } from 'semantic-ui-react';
 
-export interface OwnerEventsProps {
-}
+export interface ParticipantsProps {}
 
-export function OwnerEvents(props: OwnerEventsProps) {
+export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
   const userID = useSelector(getUserID);
 
   const [participantsEvents, setParticipantsEvents] = useState<NewEvent[]>([]);
@@ -31,13 +30,15 @@ export function OwnerEvents(props: OwnerEventsProps) {
   }, [userID]);
 
   return (
-    <div style={{display: 'flex', justifyContent: 'center'}}>
-
-        <Container>
-          <h2 className="owner-event-title" style={{textAlign: 'center'}}>Events that you join</h2>
-          <Grid columns={3}>
-            {participantsEvents &&
-              Object.values(participantsEvents)?.map(
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Container>
+        {participantsEvents && (
+          <>
+            <h2 className="owner-event-title" style={{ textAlign: 'center' }}>
+              Events that you join
+            </h2>
+            <Grid columns={3}>
+              {Object.values(participantsEvents)?.map(
                 (event: NewEvent, index) => (
                   <Grid.Row key={index}>
                     <Grid.Column width={4}>
@@ -59,10 +60,12 @@ export function OwnerEvents(props: OwnerEventsProps) {
                   </Grid.Row>
                 )
               )}
-          </Grid>
-        </Container>
+            </Grid>
+          </>
+        )}
+      </Container>
     </div>
   );
-}
+};
 
-export default OwnerEvents;
+export default ParticipantsEvents;
