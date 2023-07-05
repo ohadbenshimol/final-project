@@ -57,7 +57,7 @@ const MainPage: React.FC = () => {
         navigate(from);
       }
 
-      toast.success(`welcome ${user?.fullName} :)`);
+      toast.success(`welcome ${user.firstName} ${user.lastName}`);
       setCookie('user', JSON.stringify(user), { path: '/' });
       dispatch(setUser(user));
     }

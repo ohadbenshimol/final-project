@@ -1,9 +1,10 @@
-import React, { useState, useCallback, useRef, memo } from 'react';
+import { useState, useCallback, useRef, memo } from 'react';
 import Uploady, {
   useItemProgressListener,
   useItemFinalizeListener,
   useItemAbortListener,
   useAbortItem,
+  useBatchStartListener,
 } from '@rpldy/uploady';
 import { composeEnhancers } from '@rpldy/uploader';
 import UploadPreview from '@rpldy/upload-preview';
@@ -11,7 +12,6 @@ import { getMockSenderEnhancer } from '@rpldy/mock-sender';
 import { asUploadButton } from '@rpldy/upload-button';
 import retryEnhancer, { useRetry } from '@rpldy/retry-hooks';
 import { Button, Card, Col, Row, Progress, PageHeader, Layout } from 'antd';
-
 import {
   CloudUploadOutlined,
   StopOutlined,
@@ -20,7 +20,8 @@ import {
 } from '@ant-design/icons';
 
 import 'antd/dist/antd.css';
-import './file-uploader.less';
+// import './FileUploader.less'; //TODO: add
+import { SERVER_URL } from '../../helpers/config';
 
 const STATES = {
   PROGRESS: 'PROGRESS',
@@ -37,7 +38,7 @@ const PreviewCard = memo(({ id, url, name }: any) => {
   const [itemState, setItemState] = useState(STATES.PROGRESS);
 
   const abortItem = useAbortItem();
-  const retry = useRetry();
+  // const retry = useRetry();
 
   useItemProgressListener((item) => {
     setPercent(item.completed);
@@ -61,9 +62,9 @@ const PreviewCard = memo(({ id, url, name }: any) => {
     abortItem(id);
   }, [abortItem, id]);
 
-  const onRetry = useCallback(() => {
-    retry(id);
-  }, [retry, id]);
+  // const onRetry = useCallback(() => {
+  //   retry(id);
+  // }, [retry, id]);
 
   return (
     <Col>
@@ -82,7 +83,7 @@ const PreviewCard = memo(({ id, url, name }: any) => {
           <Button
             key="retry"
             icon={<RedoOutlined rev />}
-            onClick={onRetry}
+            // onClick={onRetry}
             disabled={!isItemError(itemState)}
             type="link"
           />,
@@ -141,6 +142,10 @@ const UploadUi = () => {
     (previewMethodsRef.current as any)?.clear();
   }, [previewMethodsRef]);
 
+  useBatchStartListener((batch) => {
+    console.log(batch.items);
+  });
+
   return (
     <Layout>
       <PageHeader
@@ -179,11 +184,11 @@ const UploadUi = () => {
 
 const mockEnhancer = getMockSenderEnhancer({ delay: 2000 });
 const enhancer = composeEnhancers(retryEnhancer, mockEnhancer);
-// const enhancer = composeEnhancers(mockEnhancer);
+// const enhancer = composeEnhancers(mockEnhancer); //TODO=:USE UNTIL SERVER
 
 const FileUploader = () => {
   return (
-    <Uploady enhancer={enhancer} destination={{ url: 'http://localhost:3000' }}>
+    <Uploady destination={{ url: SERVER_URL }}>
       <UploadUi />
     </Uploady>
   );
