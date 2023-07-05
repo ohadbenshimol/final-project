@@ -1,7 +1,16 @@
 import * as Yup from 'yup';
-import { db, eventRef } from '../../helpers/firebase';
+import { eventsRef } from '../../helpers/firebase';
 import { FC, useEffect, useRef, useState } from 'react';
-import { onValue, push, ref } from 'firebase/database';
+import QRCode from 'react-qr-code';
+import {
+  equalTo,
+  get,
+  off,
+  onValue,
+  orderByChild,
+  push,
+  query,
+} from 'firebase/database';
 import {
   Button,
   Container,
@@ -11,20 +20,82 @@ import {
   Segment,
 } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
-import { getUser, userIsLoggedIn } from '../../store/reducers/userSlice';
-import { useNavigate } from 'react-router-dom';
-import { Event } from '../../shared/models/event';
+import { getUser, getUserID } from '../../store/reducers/userSlice';
+import { useNavigate, Link } from 'react-router-dom';
+import { NewEvent } from '../../shared/models/event';
 import { useCookies } from 'react-cookie';
-import { toast } from 'react-toastify';
+import { useQuery } from 'react-query';
+
 import './events.less';
+
+import { CLIENT_URL } from '../../helpers/config';
 
 interface LoginProps {}
 
+const getEvents = async (owner: string): Promise<NewEvent[]> => {
+  return new Promise((resolve, reject) => {
+    const eventQuery = query(eventsRef, orderByChild('owner'), equalTo(owner));
+    const listener = onValue(
+      eventQuery,
+      (snapshot) => {
+        const data = snapshot.val();
+        const events: NewEvent[] = [];
+        for (let id in data) {
+          events.push({ ...data[id], id });
+        }
+        resolve(events);
+      },
+      reject
+    );
+
+    return () => {
+      off(eventQuery, 'value', listener);
+    };
+  });
+};
+
+//TODO: REMOVE OR USE
+const getSubscribers = async (userID: string): Promise<any> =>
+  await get(
+    query(eventsRef, orderByChild(`subscribers/${userID}`), equalTo(true))
+  );
+
 export const Events: FC<LoginProps> = () => {
-  const [events, setEvents] = useState([]);
+  const userID = useSelector(getUserID);
+  const [ownerEvents, setOwnerEvents] = useState<NewEvent[]>([]);
+  const [participantsEvents, setParticipantsEvents] = useState<NewEvent[]>([]);
   const [open, setOpen] = useState(false);
   const user = useSelector(getUser);
   const [cookies] = useCookies(['user']);
+  const { data, isLoading } = useQuery<NewEvent[], Error>(
+    'events',
+    () => getEvents(userID!),
+    {
+      onSuccess: (data) => {
+        setOwnerEvents(data);
+        console.log('data', data);
+      },
+      onError: (data) => {
+        console.log('onError', data);
+      },
+    }
+  );
+
+  useEffect(() => {
+    const eventQuery = query(
+      eventsRef,
+      orderByChild(`subscribers/${userID}`),
+      equalTo(true)
+    );
+
+    onValue(eventQuery, (snapshot) => {
+      const data = snapshot.val() as Record<string, NewEvent>;
+      const EventsByUserID: NewEvent[] =
+        data && Object.values(data).filter((event) => event.owner !== userID);
+      setParticipantsEvents(EventsByUserID);
+      console.log('events that i am participant', data);
+    });
+  }, [userID]);
 
   const navigate = useNavigate();
   const [secondModalOpen, setSecondModalOpen] = useState(false);
@@ -32,12 +103,12 @@ export const Events: FC<LoginProps> = () => {
     name: '',
     description: '',
     storage: '',
-    email: '',
     url: '',
   });
   const [link, setLink] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
+
   const handleCopyClick = async () => {
     if (inputRef.current) {
       inputRef.current.select();
@@ -46,19 +117,13 @@ export const Events: FC<LoginProps> = () => {
   };
 
   useEffect(() => {
-    if (!userIsLoggedIn()) {
+    if (!(user.email && cookies.user.email)) {
       navigate('/', { state: { from: '/events' } });
     } else {
-      toast.success(`user store , ${user.email}`);
-      toast.success(`user cookie , ${cookies.user.email}`);
+      // toast.success(`user store , ${user.email}`);
+      // toast.success(`user cookie , ${cookies.user.email}`);
     }
   }, [user, cookies]);
-
-  useEffect(() => {
-    onValue(eventRef, (snapshot) => {
-      setEvents(snapshot?.val());
-    });
-  }, []);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -71,6 +136,9 @@ export const Events: FC<LoginProps> = () => {
 
   const handleSubmit = async (e: any) => {
     try {
+      if (!user.email) {
+        navigate('/', { state: { from: '/events' } });
+      }
       await eventSchema.validate(formData, { abortEarly: false });
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
@@ -79,19 +147,22 @@ export const Events: FC<LoginProps> = () => {
         .toString()
         .padStart(2, '0')}/${date.getFullYear().toString()}`;
 
-      const newEventRef = push(ref(db, 'events/'), {
+      const newEventRef = push(eventsRef, {
         ...formData,
         creationDate: formattedDate,
+        owner: user.id,
+        subscribers: {
+          [user.id!]: true,
+        },
       });
       const newEventId = newEventRef.key;
-      const url = `https://only-me-2023.web.app/register-event/${newEventId}`;
+      const url = `${CLIENT_URL}/register-event/${newEventId}`;
       setLink(url);
 
       setFormValues({
         name: '',
         description: '',
         storage: '',
-        email: '',
         url: '',
       });
       setOpen(false);
@@ -99,7 +170,6 @@ export const Events: FC<LoginProps> = () => {
       console.error(e);
     }
   };
-
   const handleAddEvent = () => {
     setSecondModalOpen(true);
   };
@@ -110,8 +180,11 @@ export const Events: FC<LoginProps> = () => {
         <Container>
           <h2 style={{ textAlign: 'center' }}>Upcoming Events</h2>
           <Grid columns={3}>
-            {events &&
-              Object.values(events)?.map((event: Event, index) => (
+            {isLoading ? (
+              <div className="sdfs">we are looking for your events</div>
+            ) : (
+              ownerEvents &&
+              Object.values(ownerEvents)?.map((event: NewEvent, index) => (
                 <Grid.Row key={index}>
                   <Grid.Column width={4}>
                     <img
@@ -126,11 +199,36 @@ export const Events: FC<LoginProps> = () => {
                     <p>{event.creationDate}</p>
                   </Grid.Column>
                   <Grid.Column width={4}>
-                    <Button primary>Edit event</Button>
+                    <Link to={`/uploadFile/${event.id}`}>Upload images</Link>
                     <Button>Details</Button>
                   </Grid.Column>
                 </Grid.Row>
-              ))}
+              ))
+            )}
+            <div>My events</div>
+            {participantsEvents &&
+              Object.values(participantsEvents)?.map(
+                (event: NewEvent, index) => (
+                  <Grid.Row key={index}>
+                    <Grid.Column width={4}>
+                      <img
+                        className="ui tiny image"
+                        src="../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg"
+                      />
+                    </Grid.Column>
+                    <Grid.Column width={8}>
+                      <p>{event.name}</p>
+                      <p>{event.description}</p>
+                      <p>{event.url}</p>
+                      <p>{event.creationDate}</p>
+                    </Grid.Column>
+                    <Grid.Column width={4}>
+                      <Button primary>Edit event</Button>
+                      <Button>Details</Button>
+                    </Grid.Column>
+                  </Grid.Row>
+                )
+              )}
           </Grid>
         </Container>
       </Segment>
@@ -157,16 +255,16 @@ export const Events: FC<LoginProps> = () => {
                 required
               />
             </Form.Field>
-            <Form.Field>
-              <label htmlFor={'emailId'}>Email</label>
-              <input
-                id={'emailId'}
-                name="email"
-                onChange={handleChange}
-                type="email"
-                placeholder="Enter your email"
-              />
-            </Form.Field>
+            {/*<Form.Field>*/}
+            {/*  <label htmlFor={'emailId'}>Email</label>*/}
+            {/*  <input*/}
+            {/*    id={'emailId'}*/}
+            {/*    name="email"*/}
+            {/*    onChange={handleChange}*/}
+            {/*    type="email"*/}
+            {/*    placeholder="Enter your email"*/}
+            {/*  />*/}
+            {/*</Form.Field>*/}
             <Form.Field>
               <label htmlFor={'storageId'}>storge</label>
               <input
@@ -212,6 +310,21 @@ export const Events: FC<LoginProps> = () => {
                   ref={inputRef}
                 />
               </Form.Field>
+              <div
+                style={{
+                  height: 'auto',
+                  margin: '0 auto',
+                  maxWidth: 64,
+                  width: '100%',
+                }}
+              >
+                <QRCode
+                  size={256}
+                  style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                  value={link}
+                  viewBox={`0 0 256 256`}
+                />
+              </div>
               <Button onClick={handleCopyClick}>Copy Link</Button>
             </Form>
           </Modal.Content>
@@ -227,7 +340,7 @@ export const eventSchema = Yup.object().shape({
   storage: Yup.number()
     .required('Storage is required')
     .positive('Storage must be a positive number'),
-  email: Yup.string().email().required('Email is require'),
+  email: Yup.string().email(),
 });
 
 export default Events;

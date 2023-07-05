@@ -1,8 +1,10 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref } from 'firebase/database';
-import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+
+//Now import this
+import 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBPCx72jB7LSRKlwjE-crBCbBjXHfGwvMU',
@@ -16,10 +18,10 @@ const firebaseConfig = {
     'https://final-project-502ce-default-rtdb.europe-west1.firebasedatabase.app/',
 };
 
-const app: FirebaseApp = initializeApp(firebaseConfig);
+export const app: FirebaseApp = initializeApp(firebaseConfig);
 
 export const db = getDatabase(app);
-export const eventRef = ref(db, 'events/');
+export const eventsRef = ref(db, 'events/');
+export const usersRef = ref(db, 'users/');
 export const auth = getAuth(app);
-export const firestore = getFirestore(app);
 export const storage = getStorage(app);
