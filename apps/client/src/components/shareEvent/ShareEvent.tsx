@@ -1,18 +1,8 @@
 import QRCode from 'react-qr-code';
 import { FC, useRef } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
-import {
-  EmailIcon,
-  TelegramIcon,
-  TwitterIcon,
-  WhatsappIcon,
-} from 'react-share';
-import {
-  EmailShareButton,
-  TelegramShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-} from 'react-share';
+import { WhatsappShareButton } from 'react-share';
+import { toast } from 'react-toastify';
 import './ShareEvent.less';
 
 interface ShareEventProps {
@@ -26,6 +16,19 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
     if (inputRef.current) {
       inputRef.current.select();
       await navigator.clipboard.writeText(inputRef.current.value);
+      toast.success(`copy link successfully`);
+    }
+  };
+
+  const CopyClick = async () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Only me',
+        text: 'Register my event',
+        url: link,
+      });
+    } else {
+      console.log('Share not supported on this browser, do it manually!');
     }
   };
 
@@ -37,13 +40,26 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
           <Form>
             <Form.Field>
               <label>Link</label>
-              <input
-                disabled
-                type="text"
-                value={link}
-                readOnly
-                ref={inputRef}
-              />
+              <div className="d" style={{ display: 'flex' }}>
+                <input
+                  disabled
+                  type="text"
+                  value={link}
+                  readOnly
+                  ref={inputRef}
+                />
+                <Button onClick={handleCopyClick}>
+                  <i className="copy outline icon"></i>
+                </Button>
+                <Button onClick={CopyClick}>
+                  <i className="share alternate icon"></i>
+                </Button>
+                <Button>
+                  <WhatsappShareButton url={link}>
+                    <i className="whatsapp icon"></i>
+                  </WhatsappShareButton>
+                </Button>
+              </div>
             </Form.Field>
             <div
               style={{
@@ -60,19 +76,6 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
                 viewBox={`0 0 256 256`}
               />
             </div>
-            <Button onClick={handleCopyClick}>Copy Link</Button>
-            <EmailShareButton url={link}>
-              <EmailIcon />
-            </EmailShareButton>
-            <WhatsappShareButton url={link}>
-              <WhatsappIcon />
-            </WhatsappShareButton>
-            <TwitterShareButton url={link}>
-              <TwitterIcon />
-            </TwitterShareButton>
-            <TelegramShareButton url={link}>
-              <TelegramIcon />
-            </TelegramShareButton>
           </Form>
         </Modal.Content>
       </Modal.Content>

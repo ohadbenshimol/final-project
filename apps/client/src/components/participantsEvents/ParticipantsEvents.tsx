@@ -5,6 +5,7 @@ import { NewEvent } from '../../shared/models/event';
 import { equalTo, onValue, orderByChild, query } from 'firebase/database';
 import { eventsRef } from '../../helpers/firebase';
 import { Button, Container, Grid } from 'semantic-ui-react';
+import './ParticipantsEvents.less';
 
 export interface ParticipantsProps {}
 
