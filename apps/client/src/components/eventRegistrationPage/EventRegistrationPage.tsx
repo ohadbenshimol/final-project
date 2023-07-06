@@ -1,56 +1,92 @@
-import Camera from 'react-html5-camera-photo';
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { get, ref, update } from 'firebase/database';
-import { toast } from 'react-toastify';
-import { db } from '../../helpers/firebase';
-import { NewEvent } from '../../shared/models/event';
+import {useSelector} from 'react-redux';
+import {getUser} from '../../store/reducers/userSlice';
+import {useNavigate, useParams} from 'react-router-dom';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {useCookies} from 'react-cookie';
+import {get, ref, update} from 'firebase/database';
+import {db} from '../../helpers/firebase';
 import './EventRegistrationPage.less';
+import Webcam from "react-webcam";
+import {useQuery} from "react-query";
+import {Button, Modal} from "semantic-ui-react";
+import {NewEvent} from "../../shared/models/event";
+import {toast} from "react-toastify";
 
 const EventRegistrationPage = () => {
-  const { fullName } = useSelector(getUser);
+  const {fullName} = useSelector(getUser);
   const [cookies] = useCookies(['user']);
   const user = useSelector(getUser);
   const navigate = useNavigate();
-  const [photo, setPhoto] = useState(null);
+  const {eventId} = useParams();
+  const webcamRef = useRef(null);
+  const [imgSrc, setImgSrc] = useState(null);
+  const [event, setEvent] = useState<NewEvent>({
+    creationDate: "",
+    description: "",
+    name: "",
+    owner: "",
+    storage: "",
+    url: "",
+    id: "", subscribers: {}
+  })
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-  const { eventId } = useParams();
+
+  const getEvent = async () => {
+    const snapshot = await get(ref(db, `/events/${eventId}`));
+    setEvent(snapshot.val())
+    return snapshot.val();
+  }
 
   useEffect(() => {
     if (!cookies?.user?.email) {
-      navigate('/', { state: { from: `/register-event/${eventId}` } });
+      navigate('/', {state: {from: `/register-event/${eventId}`}});
     }
   }, [cookies]);
 
-  const handleTakePhoto = (dataUri: any) => {
-    setPhoto(dataUri);
-  };
-
-  const handleCameraToggle = () => {
-    setShowCamera(!showCamera);
-  };
-  const handleSubmit = async () => {
-    const eventSnapshot = await get(ref(db, `/events/${eventId}`));
-    if (eventSnapshot.exists()) {
-      const event: NewEvent = eventSnapshot.val();
-      if (!event.subscribers[user.id!]) {
-        await update(ref(db, `events/${eventId}`), {
-          ...event,
-          subscribers: {
-            ...event.subscribers,
-            [user.id!]: true,
-          },
-        });
-      } else {
-        toast.warning('You already register to this event');
-        navigate('/', { state: { from: '/events' } });
+  const {data} = useQuery('event', async () => await getEvent(), {
+    onSuccess: (data) => {
+      if (!data) {
+        setMessage("This event does not exist")
+        setOpen(true)
+      } else if (data.subscribers[user.id!]) {
+        setMessage("You are already register for this event")
+        setOpen(true)
       }
-    } else {
-      toast.error("The event doesn't exist");
-      navigate('/', { state: { from: '/events' } });
+    }
+  })
+
+  const handleShowCamera = () => {
+    setShowCamera(!showCamera)
+  }
+
+  const capture = useCallback(() => {
+    const imageSrc = (webcamRef.current as any).getScreenshot();
+    setImgSrc(imageSrc);
+  }, [webcamRef, setImgSrc]);
+
+  const retake = () => {
+    setImgSrc(null);
+  };
+  const navigateToEvents = () => {
+    navigate('/', {state: {from: '/events'}})
+  }
+
+  const handleSubmit = async () => {
+    const event: NewEvent = await getEvent()
+    console.log(event)
+    console.log(event && !event.subscribers[user.id!])
+    if (event && !event.subscribers[user.id!]) {
+      await update(ref(db, `events/${eventId}`), {
+        ...event,
+        subscribers: {
+          ...event.subscribers,
+          [user.id!]: true,
+        },
+      });
+      navigateToEvents()
+      toast.success("Registration for the event was successfully completed")
     }
   };
 
@@ -58,32 +94,51 @@ const EventRegistrationPage = () => {
     <div className="event-registration-container">
       <h2>Event Registration</h2>
       <p>Welcome, {fullName}! Please take a selfie for the event.</p>
-      <div>
-        <div className="camera-container">
-          {showCamera && (
-            <Camera
-              onTakePhoto={(dataUri) => {
-                handleTakePhoto(dataUri);
-              }}
-            />
-          )}
-          {photo && <img src={photo} alt="Selfie" />}
+      {(event && <div className="ui items">
+        <div className="item">
+          <div className="ui tiny image"><img src="https://react.semantic-ui.com/images/wireframe/image.png"/></div>
+          <div className="content"><p className="header">{event.name}</p>
+            <div className="meta">{event.description!}</div>
+            <div className="description">{event.creationDate}</div>
+          </div>
         </div>
-        {!photo && (
-          <button
-            className="camera-toggle-button"
-            type="button"
-            onClick={handleCameraToggle}
-          >
-            {showCamera ? 'Close Camera' : 'Take a Photo'}
-          </button>
-        )}
-        <button className="submit-button" onClick={handleSubmit}>
-          Submit
-        </button>
+      </div>)}
+      <div>
+        <div className="container">
+          {showCamera && (<div className="camera-container">
+            {imgSrc ? (
+              <img src={imgSrc} alt="webcam"/>
+            ) : (
+              <Webcam height={500} width={500} ref={webcamRef}/>
+            )}
+          </div>)}
+          <div className="buttons-container">
+            {imgSrc ? (<button className="ui button negative " onClick={retake}>Retake photo</button>) : (
+              <button className="ui button center primary"
+                      onClick={showCamera ? capture : handleShowCamera}>{showCamera ? "Capture photo" : "Take photo"}</button>)}
+            {showCamera && (
+              <button className={imgSrc ? "submit-button ui button primary " : "submit-button ui button disabled"}
+                      onClick={handleSubmit}>
+                Submit
+              </button>)}
+          </div>
+        </div>
+        <Modal open={open} onClose={() => setOpen(false)}>
+          <Modal.Content>
+            <div style={{textAlign: 'center'}}>
+              <div className="ui message">
+                <div className="header">Error occurred</div>
+                <p color="red">{message}</p></div>
+              <Modal.Actions>
+                <Button className="ui red button" onClick={navigateToEvents}>
+                  back to events
+                </Button>
+              </Modal.Actions>
+            </div>
+          </Modal.Content>
+        </Modal>
       </div>
     </div>
-  );
-};
-
-export default EventRegistrationPage;
+  )
+}
+export default EventRegistrationPage
