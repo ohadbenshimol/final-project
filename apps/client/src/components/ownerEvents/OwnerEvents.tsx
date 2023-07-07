@@ -9,6 +9,7 @@ import { NewEvent } from '../../shared/models/event';
 import { useQuery } from 'react-query';
 import userIMAGE from '../../assets/user.png';
 import './OwnerEvents.less';
+import { CLIENT_URL } from '../../helpers/config';
 
 interface OwnerEventsProps {}
 
@@ -40,6 +41,17 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     });
   }, [userID]);
 
+  const shareClick = (link: string) => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Only me',
+        text: 'Register my event',
+        url: link,
+      });
+    } else {
+      console.log('Share not supported on this browser, do it manually!');
+    }
+  };
   return (
     <Container>
       {ownerEvents && (
@@ -70,8 +82,19 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                     />
                   </Grid.Column>
                   <Grid.Column width={4}>
-                    <Link to={`/uploadFile/${id}`}>Upload images</Link>
-                    <Button>Details</Button>
+                    <Link to={`/uploadFile/${id}`}>
+                      <i className="images outline icon" />
+                    </Link>
+                    <Button>
+                      <i className="sliders horizontal icon" />{' '}
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        shareClick(`${CLIENT_URL}/register-event/${id}`)
+                      }
+                    >
+                      <i className="share alternate icon" />{' '}
+                    </Button>
                   </Grid.Column>
                 </Grid.Row>
               )

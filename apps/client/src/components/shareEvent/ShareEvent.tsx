@@ -20,7 +20,7 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
     }
   };
 
-  const CopyClick = async () => {
+  const shareClick = async () => {
     if (navigator.share) {
       navigator.share({
         title: 'Only me',
@@ -51,7 +51,7 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
                 <Button onClick={handleCopyClick}>
                   <i className="copy outline icon"></i>
                 </Button>
-                <Button onClick={CopyClick}>
+                <Button onClick={shareClick}>
                   <i className="share alternate icon"></i>
                 </Button>
                 <Button>
