@@ -7,6 +7,7 @@ import {
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { FC } from 'react';
+import LOGO from '../../assets/logo.png';
 
 const Header: FC = () => {
   const user = useSelector(getUser);
@@ -25,7 +26,6 @@ const Header: FC = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '10px',
-    backgroundColor: '#3f51b5',
     color: 'white',
   };
 
@@ -54,8 +54,7 @@ const Header: FC = () => {
 
   return (
     <header style={headerStyle}>
-      <h1>LOGO</h1>
-      <h1 onClick={goToHomePage}>HOME</h1>
+      <img src={LOGO} style={{ width: '12em', height: '3em' }} />
       <div style={userInfoStyle}>
         {userName ?? <span>{userName}</span>}
         <img

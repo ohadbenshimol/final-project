@@ -26,7 +26,6 @@ export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
       const EventsByUserID: NewEvent[] =
         data && Object.values(data).filter((event) => event.owner !== userID);
       setParticipantsEvents(EventsByUserID);
-      console.log('events that i am participant', data);
     });
   }, [userID]);
 
