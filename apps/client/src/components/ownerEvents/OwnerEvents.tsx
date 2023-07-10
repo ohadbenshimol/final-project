@@ -8,12 +8,13 @@ import {Link} from 'react-router-dom';
 import {NewEvent} from '../../shared/models/event';
 import {useQuery} from 'react-query';
 import userIMAGE from '../../assets/user.png';
+import styled from 'styled-components';
+
 import './OwnerEvents.less';
 import {CLIENT_URL} from '../../helpers/config';
 import {debounce} from "ts-debounce";
 
-interface OwnerEventsProps {
-}
+interface OwnerEventsProps {}
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
@@ -104,7 +105,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                       <i className="images outline icon"/>
                     </Link>
                     <Button>
-                      <i className="sliders horizontal icon"/>{' '}
+                      <i className="sliders horizontal icon" />
                     </Button>
                     <Button
                       onClick={() =>
@@ -124,29 +125,64 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   );
 };
 
+const Avatar = styled.img`
+  width: 2em;
+  border-radius: 50%;
+  margin-right: -1em;
+`;
+
+const MoreIndicator = styled.div`
+  width: 2.85em;
+  height: 2.85em;
+  border-radius: 50%;
+  background-color: #888;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+`;
+
 interface UsersPhotosProps {
   subscribers: Record<string, boolean>;
   users?: Record<string, UserState>;
 }
+
 const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
   const ids = Object.keys(subscribers);
+  const [maxAvatarsToShow, setMaxAvatarsToShow] = useState(2);
   const handleImageError = (e: any) => {
     e.target.src = userIMAGE;
   };
+  const moreAvatarsCount = Object.values(subscribers).length - maxAvatarsToShow;
+
+  const toggleUsers = () => {
+    setMaxAvatarsToShow(Object.values(subscribers).length + 1); //TODO:toggle back users
+  };
+
   return (
     <>
-      {users &&
-        Object.entries(users)
-          ?.filter(([k, v]) => ids.includes(k))
-          .map(([k, v]) => (
-            <img
-              title={`${v.firstName} ${v.lastName}`}
-              style={{ width: '2em', borderRadius: '50%' }}
-              src={v.pictureUrl}
-              onError={handleImageError}
-              onClick={() => navigator.clipboard.writeText(k)}
-            />
-          ))}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {users &&
+          Object.entries(users)
+            .slice(0, maxAvatarsToShow + 1)
+            ?.filter(([k, v]) => ids.includes(k))
+            .map(([k, v], index) => (
+              <Avatar
+                key={index}
+                title={`${v.firstName} ${v.lastName}`}
+                src={v.pictureUrl}
+                onError={handleImageError}
+                onClick={() => navigator.clipboard.writeText(k)}
+              />
+            ))}
+
+        {moreAvatarsCount > 0 && (
+          <MoreIndicator onClick={toggleUsers}>
+            +{moreAvatarsCount}
+          </MoreIndicator>
+        )}
+      </div>
     </>
   );
 };

@@ -42,12 +42,10 @@ export const Events: FC<EventsProps> = () => {
   const onClickAddEvent = () => setCreateEventIsOpen(true);
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Segment>
-        <Container>
-          <OwnerEvents />
-          <ParticipantsEvents />
-        </Container>
-      </Segment>
+      <Container>
+        <OwnerEvents />
+        <ParticipantsEvents />
+      </Container>
       <Button
         className="ui green button"
         icon="add"
