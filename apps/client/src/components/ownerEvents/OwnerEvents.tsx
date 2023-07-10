@@ -1,23 +1,25 @@
-import { eventsRef, usersRef } from '../../helpers/firebase';
-import { FC, useEffect, useState } from 'react';
-import { equalTo, get, onValue, orderByChild, query } from 'firebase/database';
-import { Button, Container, Grid } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
-import { UserState, getUserID } from '../../store/reducers/userSlice';
-import { Link } from 'react-router-dom';
-import { NewEvent } from '../../shared/models/event';
-import { useQuery } from 'react-query';
-import { CLIENT_URL } from '../../helpers/config';
+import {eventsRef, usersRef} from '../../helpers/firebase';
+import {FC, useEffect, useState} from 'react';
+import {equalTo, get, onValue, orderByChild, query} from 'firebase/database';
+import {Button, Container, Grid} from 'semantic-ui-react';
+import {useSelector} from 'react-redux';
+import {getUserID, UserState} from '../../store/reducers/userSlice';
+import {Link} from 'react-router-dom';
+import {NewEvent} from '../../shared/models/event';
+import {useQuery} from 'react-query';
 import userIMAGE from '../../assets/user.png';
 import styled from 'styled-components';
 
 import './OwnerEvents.less';
+import {CLIENT_URL} from '../../helpers/config';
+import {debounce} from "ts-debounce";
 
 interface OwnerEventsProps {}
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
   const [ownerEvents, setOwnerEvents] = useState<Record<string, NewEvent>>();
+  const [fIlteredEvents, setFIlteredEvents] = useState<Record<string, NewEvent>>();
   const [users, setUsers] = useState<Record<string, UserState>>();
   useQuery('das', () => get(query(usersRef)), {
     onError: console.error,
@@ -39,9 +41,21 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           Object.entries(data).filter(([k, event]) => event.owner === userID)
         );
       setOwnerEvents(EventsByUserID);
+      setFIlteredEvents(EventsByUserID);
+      console.log('events that i am participant', data);
     });
   }, [userID]);
 
+  const handleInputChange = (event: any) => {
+    const filteredEvent = Object.fromEntries(
+      Object.entries(ownerEvents!).filter(([k, newEvent]) =>
+        newEvent.name.toLowerCase().includes(event.target.value))
+    );
+
+    setFIlteredEvents(filteredEvent)
+  }
+
+  const debaunce = debounce(handleInputChange, 300)
   const shareClick = (link: string) => {
     if (navigator.share) {
       navigator.share({
@@ -55,11 +69,15 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   };
   return (
     <Container>
+      <div className="ui icon input">
+        <input type="text" placeholder="Search..." onKeyUp={debaunce}/><i aria-hidden="true"
+                                                                          className="search icon"></i>
+      </div>
       {ownerEvents && (
         <>
-          <h2 style={{ textAlign: 'center' }}>Created Events</h2>
+          <h2 style={{textAlign: 'center'}}>Created Events</h2>
           <Grid columns={3}>
-            {Object.entries(ownerEvents)?.map(
+            {Object.entries(fIlteredEvents!)?.map(
               ([id, event]: [string, NewEvent], index) => (
                 <Grid.Row key={index}>
                   <Grid.Column width={4}>
@@ -76,7 +94,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                     <label>
                       מס משתתפים: {Object.keys(event.subscribers).length}
                     </label>
-
+                    <p>{id}</p>
                     <UsersPhotos
                       subscribers={event.subscribers}
                       users={users}
@@ -84,7 +102,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   </Grid.Column>
                   <Grid.Column width={4}>
                     <Link to={`/uploadFile/${id}`}>
-                      <i className="images outline icon" />
+                      <i className="images outline icon"/>
                     </Link>
                     <Button>
                       <i className="sliders horizontal icon" />
@@ -94,7 +112,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                         shareClick(`${CLIENT_URL}/register-event/${id}`)
                       }
                     >
-                      <i className="share alternate icon" />{' '}
+                      <i className="share alternate icon"/>{' '}
                     </Button>
                   </Grid.Column>
                 </Grid.Row>
@@ -168,11 +186,3 @@ const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
     </>
   );
 };
-
-// <img
-//   title={`${v.firstName} ${v.lastName}`}
-//   style={{ width: '2em', borderRadius: '50%' }}
-//   src={v.pictureUrl}
-//   onError={handleImageError}
-//   onClick={() => navigator.clipboard.writeText(k)}
-// />
