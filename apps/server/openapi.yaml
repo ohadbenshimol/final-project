@@ -32,15 +32,14 @@ paths:
                 $ref: '#/components/schemas/AddImagesResponse'
         500:
           description: 'internal error'
-      security:
-        - api_key: [ ]
       x-amazon-apigateway-integration:
         httpMethod: post
         type: aws_proxy
         uri:
           Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddImagesToEventFunction.Arn}/invocations
-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddImagesToEventFunction.Arn}:live/invocations
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
 
   /add/user:
     post:
@@ -68,14 +67,14 @@ paths:
                 $ref: '#/components/schemas/AddUserResponse'
         500:
           description: 'internal error'
-      security:
-        - api_key: [ ]
       x-amazon-apigateway-integration:
         httpMethod: post
         type: aws_proxy
         uri:
           Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddUserToEventFunction.Arn}/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddUserToEventFunction.Arn}:live/invocations
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
 
   /close/event:
     post:
@@ -103,22 +102,16 @@ paths:
                 $ref: '#/components/schemas/CloseEventResponse'
         500:
           description: 'internal error'
-      security:
-        - api_key: [ ]
       x-amazon-apigateway-integration:
         httpMethod: post
         type: aws_proxy
         uri:
           Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CloseEventFunction.Arn}/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CloseEventFunction.Arn}:live/invocations
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
 
 components:
-  securitySchemes:
-    api_key:
-      type: apiKey
-      name: x-api-key
-      in: header
-
   schemas:
     CloseEventResponse:
       type: object

@@ -9,13 +9,14 @@ Globals:
     Runtime: nodejs14.x
     MemorySize: 1024
     CodeUri: ./build
-#    AutoPublishAlias: live
+    AutoPublishAlias: live
 
 Resources:
   EventsBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
-      BucketName: photo-face-events-bucket
+      BucketName: "photo-face-events-bucket"
 
   AddUserToEventFunction:
     Type: AWS::Serverless::Function
@@ -33,12 +34,13 @@ Resources:
             - Effect: Allow
               Resource: '*'
               Action:
+                - lambda:InvokeFunction
                 - events:PutEvents
       Events:
         Api:
           Type: Api
           Properties:
-#            RestApiId: !Ref MyServerlessApi
+            RestApiId: !Ref MyServerlessApi
             Path: /add/user
             Method: POST
 
@@ -58,12 +60,13 @@ Resources:
             - Effect: Allow
               Resource: '*'
               Action:
+                - lambda:InvokeFunction
                 - events:PutEvents
       Events:
         Api:
           Type: Api
           Properties:
-#            RestApiId: !Ref MyServerlessApi
+            RestApiId: !Ref MyServerlessApi
             Path: /add/images
             Method: POST
 
@@ -83,12 +86,13 @@ Resources:
             - Effect: Allow
               Resource: '*'
               Action:
+                - lambda:InvokeFunction
                 - events:PutEvents
       Events:
         Api:
           Type: Api
           Properties:
-#            RestApiId: !Ref MyServerlessApi
+            RestApiId: !Ref MyServerlessApi
             Path: /close/event
             Method: POST
 
@@ -97,25 +101,27 @@ Resources:
     Properties:
       Name: photo-face-api
       StageName: prod
+      EndpointConfiguration: REGIONAL
       DefinitionBody:
         'Fn::Transform':
           Name: AWS::Include
           Parameters:
             Location: openapi.yaml
       Auth:
-        DefaultAuthorizer: MyApiAuthorizer
-        Authorizers:
-          MyApiAuthorizer:
-            Type: AWS_IAM
-        ApiKeyRequired: true
+        ResourcePolicy:
+          CustomStatements: [{
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": !Ref AWS::AccountId
+            },
+            "Action": "execute-api:Invoke",
+            "Resource": "execute-api:/*"
+          }]
 
-  MyApiAuthorizer:
-    Type: AWS::ApiGateway::Authorizer
-    Properties:
-      Name: MyApiAuthorizer
-      RestApiId: !Ref MyServerlessApi
-      Type: TOKEN
-      IdentitySource: method.request.header.Authorization
-      AuthorizerResultTtlInSeconds: 300
-
-
+Outputs:
+  HttpBaseUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-url"

@@ -8,8 +8,9 @@
   "scripts": {
     "build": "tsc && cp -R node_modules package.json openapi.yaml template.yaml ./build",
     "aws-sso": "aws sso login --profile photo-face-user",
-    "clean": "rm -rf build",
+    "clean": "rm -rf build/*",
     "sam-deploy": "sam deploy --profile=$npm_config_profile --stack-name $npm_package_name --parameter-overrides StackName=$npm_package_name Profile=$npm_config_profile --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM --s3-bucket $npm_config_profile-build --s3-prefix builds/$npm_package_name/sam/packages",
+    "update-stack": "npm run clean && npm run build && sam deploy --stack-name photo-face-server --region eu-central-1 --s3-bucket photo-face-user-build --profile photo-face-user --capabilities CAPABILITY_IAM",
     "deploy": "npm run build && npm run sam-deploy --profile=photo-face-user",
     "unit": "node_modules/.bin/jest",
     "lint": "node_modules/.bin/eslint '*.ts' --quiet --fix",
