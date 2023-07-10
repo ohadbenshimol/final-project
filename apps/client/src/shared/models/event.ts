@@ -7,4 +7,5 @@ export type NewEvent = {
   subscribers: Record<string, boolean>
   url?: string;
   description: string;
+  imageUrl?: string
 };

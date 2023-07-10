@@ -46,6 +46,7 @@
     "regenerator-runtime": "0.13.7",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.4",
+    "ts-debounce": "^4.0.0",
     "tslib": "^2.3.0",
     "yup": "^1.1.1"
   },
