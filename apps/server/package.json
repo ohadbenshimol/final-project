@@ -6,7 +6,7 @@
   "author": "SAM CLI",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && cp -R node_modules package.json openapi.yaml ./build",
+    "build": "tsc && cp -R node_modules package.json openapi.yaml template.yaml ./build",
     "aws-sso": "aws sso login --profile photo-face-user",
     "clean": "rm -rf build",
     "sam-deploy": "sam deploy --profile=$npm_config_profile --stack-name $npm_package_name --parameter-overrides StackName=$npm_package_name Profile=$npm_config_profile --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM --s3-bucket $npm_config_profile-build --s3-prefix builds/$npm_package_name/sam/packages",
@@ -27,6 +27,8 @@
     "@middy/http-error-handler": "^3.6.2",
     "@middy/http-event-normalizer": "^3.6.2",
     "@middy/http-json-body-parser": "^3.6.2",
+    "@types/archiver": "^5.3.2",
+    "archiver": "^5.3.1",
     "aws-sdk": "^2.1299.0"
   },
   "devDependencies": {

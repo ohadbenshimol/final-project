@@ -9,58 +9,113 @@ Globals:
     Runtime: nodejs14.x
     MemorySize: 1024
     CodeUri: ./build
+#    AutoPublishAlias: live
 
 Resources:
-  GetImageByFaceFunction:
+  EventsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: photo-face-events-bucket
+
+  AddUserToEventFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/get-images.handler
-      CodeUri: ./build
-      Description: Get image by user face photo
+      Handler: src/handlers/add-user-to-event.handler
+      Description: add user subscription to event
       Policies:
         - AWSLambdaVPCAccessExecutionRole
         - AmazonAPIGatewayInvokeFullAccess
-        - Version: '2012-10-17'
-          Statement:
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
             - Effect: Allow
+              Resource: '*'
               Action:
-                - lambda:GetFunction
-                - lambda:InvokeFunction
-              Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:GetImageByFaceFunction
+                - events:PutEvents
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /get/images
+#            RestApiId: !Ref MyServerlessApi
+            Path: /add/user
             Method: POST
 
   AddImagesToEventFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/add-images.handler
-      CodeUri: ./build
       Description: add user images to event
       Policies:
         - AWSLambdaVPCAccessExecutionRole
         - AmazonAPIGatewayInvokeFullAccess
-        - Version: '2012-10-17'
-          Statement:
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
             - Effect: Allow
+              Resource: '*'
               Action:
-                - lambda:GetFunction
-                - lambda:InvokeFunction
-              Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:AddImagesToEventFunction
+                - events:PutEvents
       Events:
         Api:
           Type: Api
           Properties:
+#            RestApiId: !Ref MyServerlessApi
             Path: /add/images
             Method: POST
 
-Outputs:
-  HttpBaseUrl:
-    Description: "API Gateway endpoint URL"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/"
-    Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-HttpBaseUrl"
+  CloseEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/close-event.handler
+      Description: close event by user
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
+            - Effect: Allow
+              Resource: '*'
+              Action:
+                - events:PutEvents
+      Events:
+        Api:
+          Type: Api
+          Properties:
+#            RestApiId: !Ref MyServerlessApi
+            Path: /close/event
+            Method: POST
+
+  MyServerlessApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: photo-face-api
+      StageName: prod
+      DefinitionBody:
+        'Fn::Transform':
+          Name: AWS::Include
+          Parameters:
+            Location: openapi.yaml
+      Auth:
+        DefaultAuthorizer: MyApiAuthorizer
+        Authorizers:
+          MyApiAuthorizer:
+            Type: AWS_IAM
+        ApiKeyRequired: true
+
+  MyApiAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: MyApiAuthorizer
+      RestApiId: !Ref MyServerlessApi
+      Type: TOKEN
+      IdentitySource: method.request.header.Authorization
+      AuthorizerResultTtlInSeconds: 300
+
+

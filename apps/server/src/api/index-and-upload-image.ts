@@ -1,34 +1,34 @@
 import * as AWS from 'aws-sdk';
-import fs from 'fs';
-import { AddImagesBody } from '../app/tryps';
+import { AddImagesBody } from '../app/types';
 
 export const IndexAndUploadImage = async (body: AddImagesBody) => {
-    // Connect to the Rekognition service
-    const rekognition = new AWS.Rekognition();
+  // Connect to the Rekognition service
+  const rekognition = new AWS.Rekognition();
 
-    // Set the name of the collection you want to save the image to
-    const collectionName = body.eventId;
+  // Set the name of the collection you want to save the images to
+  const collectionName = body.eventId;
 
-    // Set the path to the image you want to send for facial recognition
-    const imagePath = 'path/to/image.jpg';
-
-    // Read the image file
-    const image = fs.readFileSync(imagePath);
+  // Iterate over the array of base64-encoded images
+  for (const encodedImage of body.images) {
+    // Decode the base64 image data
+    const imageBuffer = Buffer.from(encodedImage, 'base64');
 
     // Create an object containing the image bytes and the collection name
     const params = {
-        CollectionId: collectionName,
-        Image: {
-            Bytes: image,
-        },
+      CollectionId: collectionName,
+      Image: {
+        Bytes: imageBuffer,
+      },
     };
 
     // Send the image to Rekognition for facial recognition
-    rekognition.indexFaces(params, (err, data) => {
-        if (err) {
-            console.log(`An error occurred while trying to index the image: ${err}`);
-        } else {
-            console.log(`Image was successfully indexed and saved to collection: ${collectionName}`);
-        }
-    });
+    try {
+      const data = await rekognition.indexFaces(params).promise();
+      console.log(`Image was successfully indexed and saved to collection: ${collectionName}`);
+      // Handle the result as needed
+    } catch (err) {
+      console.log(`An error occurred while trying to index the image: ${err}`);
+      // Handle the error as needed
+    }
+  }
 };

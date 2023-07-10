@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { IndexAndUploadImage } from '../api/index-and-upload-image';
-import { AddImagesBody } from '../app/tryps';
+import { AddImagesBody } from '../app/types';
 
 export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
     try {
