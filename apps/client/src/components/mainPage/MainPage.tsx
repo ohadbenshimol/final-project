@@ -21,7 +21,7 @@ const MainPage: React.FC = () => {
       console.log(cookies.user);
 
       dispatch(setUser(cookies.user));
-      navigate('/events');
+      navigate('/own-events'); //TODO
     }
   }, [cookies, dispatch]);
 
