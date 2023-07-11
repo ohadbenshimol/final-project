@@ -20,14 +20,14 @@ const DEFAULT_FORM_DATA = {
   description: '',
   storage: '',
   imgUrl: '',
-  isActive: false
+  isActive: false,
 };
 
 export const CreateEvent: FC<CreateEventProps> = ({
-                                                    setLink,
-                                                    onSubmit,
-                                                    onCancel,
-                                                  }) => {
+  setLink,
+  onSubmit,
+  onCancel,
+}) => {
   const user = useSelector(getUser);
   const navigate = useNavigate();
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
@@ -60,7 +60,7 @@ export const CreateEvent: FC<CreateEventProps> = ({
         subscribers: {
           [user.id!]: true,
         },
-        isActive: true
+        isActive: true,
       });
 
       setLink(`${CLIENT_URL}/register-event/${newEventRef.key}`);
