@@ -70,8 +70,9 @@ const EventRegistrationPage = () => {
   const retake = () => {
     setImgSrc(null);
   };
+
   const navigateToEvents = () => {
-    navigate('/', { state: { from: '/events' } });
+    navigate('/', { state: { from: '/own-events' } });
   };
 
   const handleSubmit = async () => {

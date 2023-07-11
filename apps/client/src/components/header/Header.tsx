@@ -8,6 +8,7 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { FC } from 'react';
 import LOGO from '../../assets/logo.png';
+import './Header.less';
 
 const Header: FC = () => {
   const user = useSelector(getUser);
@@ -26,7 +27,6 @@ const Header: FC = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '10px',
-    color: 'white',
   };
 
   const userInfoStyle = {
@@ -55,6 +55,30 @@ const Header: FC = () => {
   return (
     <header style={headerStyle}>
       <img src={LOGO} style={{ width: '12em', height: '3em' }} />
+      <div
+        className="move-to"
+        onClick={() => {
+          navigate('/');
+        }}
+      >
+        HOME
+      </div>
+      <div
+        className="move-to"
+        onClick={() => {
+          navigate('/own-events');
+        }}
+      >
+        My Events
+      </div>
+      <div
+        className="move-to"
+        onClick={() => {
+          navigate('/shared-events');
+        }}
+      >
+        Shared Events
+      </div>
       <div style={userInfoStyle}>
         {userName ?? <span>{userName}</span>}
         <img

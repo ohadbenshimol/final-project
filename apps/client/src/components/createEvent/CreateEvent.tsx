@@ -1,12 +1,12 @@
-import {eventsRef} from '../../helpers/firebase';
+import { eventsRef } from '../../helpers/firebase';
 import * as Yup from 'yup';
-import {FC, FormEvent, useState} from 'react';
-import {push} from 'firebase/database';
-import {Button, Form, Modal} from 'semantic-ui-react';
-import {useSelector} from 'react-redux';
-import {getUser} from '../../store/reducers/userSlice';
-import {useNavigate} from 'react-router-dom';
-import {CLIENT_URL} from '../../helpers/config';
+import { FC, FormEvent, useState } from 'react';
+import { push } from 'firebase/database';
+import { Button, Form, Modal } from 'semantic-ui-react';
+import { useSelector } from 'react-redux';
+import { getUser } from '../../store/reducers/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { CLIENT_URL } from '../../helpers/config';
 import './CreateEvent.less';
 
 interface CreateEventProps {
@@ -34,21 +34,18 @@ export const CreateEvent: FC<CreateEventProps> = ({
   const [image, setImage] = useState<string>('');
 
   const handleChange = (e: any) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setFormValues((prevState) => {
-      return ({
+      return {
         ...prevState,
         [name]: value,
-      });
+      };
     });
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     try {
-      if (!user.email) {
-        navigate('/', {state: {from: '/events'}});
-      }
-      await eventSchema.validate(formData, {abortEarly: false});
+      await eventSchema.validate(formData, { abortEarly: false });
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
         date.getMonth() + 1
@@ -83,19 +80,19 @@ export const CreateEvent: FC<CreateEventProps> = ({
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result?.toString();
-      setImage(base64String || "");
+      setImage(base64String || '');
       setFormValues((prevState) => {
-        return ({
+        return {
           ...prevState,
           imgUrl: base64String!,
-        });
+        };
       });
     };
 
     if (file) {
       reader.readAsDataURL(file);
     }
-  }
+  };
 
   return (
     <>
@@ -143,7 +140,7 @@ export const CreateEvent: FC<CreateEventProps> = ({
               onChange={handleImageChange}
             />
           </Form.Field>
-          <div style={{textAlign: 'center'}}>
+          <div style={{ textAlign: 'center' }}>
             <Modal.Actions>
               <Button onClick={handleOnCancel} secondary>
                 cancel

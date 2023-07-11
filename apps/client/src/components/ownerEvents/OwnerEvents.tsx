@@ -9,30 +9,66 @@ import {NewEvent} from '../../shared/models/event';
 import {useQuery} from 'react-query';
 import userIMAGE from '../../assets/user.png';
 import styled from 'styled-components';
-
+import { eventsRef, usersRef } from '../../helpers/firebase';
+import { FC, useEffect, useState } from 'react';
+import { equalTo, get, onValue, orderByChild, query } from 'firebase/database';
+import { Button, Container, Grid, Modal } from 'semantic-ui-react';
+import { useSelector } from 'react-redux';
+import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
+import { Link, useNavigate } from 'react-router-dom';
+import { NewEvent } from '../../shared/models/event';
+import { useQuery } from 'react-query';
+import { CLIENT_URL } from '../../helpers/config';
+import { debounce } from 'ts-debounce';
+import { ShareEvent } from '../shareEvent/ShareEvent';
+import { CreateEvent } from '../createEvent/CreateEvent';
+import { useCookies } from 'react-cookie';
 import './OwnerEvents.less';
-import {CLIENT_URL} from '../../helpers/config';
-import {debounce} from "ts-debounce";
 
 interface OwnerEventsProps {
 }
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
+  const user = useSelector(getUser);
   const [ownerEvents, setOwnerEvents] = useState<Record<string, NewEvent>>();
-  const [fIlteredEvents, setFIlteredEvents] = useState<Record<string, NewEvent>>();
+  const [fIlteredEvents, setFIlteredEvents] =
+    useState<Record<string, NewEvent>>();
   const [users, setUsers] = useState<Record<string, UserState>>();
-  useQuery('das', () => get(query(usersRef)), {
+  const navigate = useNavigate();
+  const [cookies] = useCookies(['user']);
+  const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
+  const [shareEventOpen, setShareEventOpen] = useState(false);
+  const [link, setLink] = useState('');
+
+  useEffect(() => {
+    if (!(user.email && cookies.user.email)) {
+      navigate('/', { state: { from: '/own-events' } });
+    } else {
+      // toast.success(`user store , ${user.email}`);
+      // toast.success(`user cookie , ${cookies.user.email}`);
+    }
+  }, [user, cookies]);
+
+  useQuery('users', () => get(query(usersRef)), {
     onError: console.error,
     onSuccess: (data) => setUsers(data.val()),
   });
 
+  const onSubmit = () => {
+    setCreateEventIsOpen(false);
+    setShareEventOpen(true);
+  };
+
+  const onCancel = () => {
+    setCreateEventIsOpen(false);
+  };
+
+  const onClickAddEvent = () => setCreateEventIsOpen(true);
+
   useEffect(() => {
-    const eventQuery = query(
-      eventsRef,
-      orderByChild(`owner`),
-      equalTo(userID!)
-    );
+    if (!userID) return;
+    const eventQuery = query(eventsRef, orderByChild(`owner`), equalTo(userID));
 
     onValue(eventQuery, (snapshot) => {
       const data = snapshot.val() as Record<string, NewEvent>;
@@ -43,20 +79,20 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         );
       setOwnerEvents(EventsByUserID);
       setFIlteredEvents(EventsByUserID);
-      console.log('events that i am participant', data);
     });
   }, [userID]);
 
   const handleInputChange = (event: any) => {
     const filteredEvent = Object.fromEntries(
       Object.entries(ownerEvents!).filter(([k, newEvent]) =>
-        newEvent.name.toLowerCase().includes(event.target.value))
+        newEvent.name.toLowerCase().includes(event.target.value)
+      )
     );
 
-    setFIlteredEvents(filteredEvent)
-  }
+    setFIlteredEvents(filteredEvent);
+  };
 
-  const debaunce = debounce(handleInputChange, 300)
+  const debounceInputChange = debounce(handleInputChange, 300);
 
   const getEvent = async (eventId: string) => {
     const snapshot = await get(ref(db, `/events/${eventId}`));
