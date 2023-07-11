@@ -1,7 +1,7 @@
-import {eventsRef, usersRef} from '../../helpers/firebase';
+import {db, eventsRef, usersRef} from '../../helpers/firebase';
 import {FC, useEffect, useState} from 'react';
-import {equalTo, get, onValue, orderByChild, query} from 'firebase/database';
-import {Button, Container, Grid} from 'semantic-ui-react';
+import {equalTo, get, onValue, orderByChild, query, ref, update} from 'firebase/database';
+import {Button, Container, Grid, Icon, Label, Segment} from 'semantic-ui-react';
 import {useSelector} from 'react-redux';
 import {getUserID, UserState} from '../../store/reducers/userSlice';
 import {Link} from 'react-router-dom';
@@ -14,7 +14,8 @@ import './OwnerEvents.less';
 import {CLIENT_URL} from '../../helpers/config';
 import {debounce} from "ts-debounce";
 
-interface OwnerEventsProps {}
+interface OwnerEventsProps {
+}
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
@@ -56,6 +57,24 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   }
 
   const debaunce = debounce(handleInputChange, 300)
+
+  const getEvent = async (eventId: string) => {
+    const snapshot = await get(ref(db, `/events/${eventId}`));
+    return snapshot.val();
+  };
+
+  const endEvent = async (eventId: string) => {
+    console.log(eventId)
+    //TODO: send request to server
+    const event: NewEvent = await getEvent(eventId);
+    if (event) {
+      await update(ref(db, `events/${eventId}`), {
+        ...event,
+        isActive: false
+      })
+
+    }
+  }
   const shareClick = (link: string) => {
     if (navigator.share) {
       navigator.share({
@@ -68,7 +87,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     }
   };
   return (
-    <Container>
+    <><Container>
       <div className="ui icon input">
         <input type="text" placeholder="Search..." onKeyUp={debaunce}/><i aria-hidden="true"
                                                                           className="search icon"></i>
@@ -78,50 +97,85 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           <h2 style={{textAlign: 'center'}}>Created Events</h2>
           <Grid columns={3}>
             {Object.entries(fIlteredEvents!)?.map(
-              ([id, event]: [string, NewEvent], index) => (
-                <Grid.Row key={index}>
-                  <Grid.Column width={4}>
-                    <img
-                      className="ui tiny image"
-                      src="../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg"
-                    />
-                  </Grid.Column>
-                  <Grid.Column width={8}>
-                    <p>{event.name}</p>
-                    <p>{event.description}</p>
-                    <p>{event.url}</p>
-                    <p>{event.creationDate}</p>
-                    <label>
-                      מס משתתפים: {Object.keys(event.subscribers).length}
-                    </label>
-                    <p>{id}</p>
-                    <UsersPhotos
-                      subscribers={event.subscribers}
-                      users={users}
-                    />
-                  </Grid.Column>
-                  <Grid.Column width={4}>
-                    <Link to={`/uploadFile/${id}`}>
-                      <i className="images outline icon"/>
-                    </Link>
-                    <Button>
-                      <i className="sliders horizontal icon" />
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        shareClick(`${CLIENT_URL}/register-event/${id}`)
-                      }
-                    >
-                      <i className="share alternate icon"/>{' '}
-                    </Button>
-                  </Grid.Column>
-                </Grid.Row>
-              )
+              ([id, event]: [string, NewEvent], index) =>
+                (
+                  <Grid.Row key={index}>
+                    <Grid.Column width={4}>
+                      <img className={"ui tiny image"}
+                      src={event.imgUrl || "../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg"}/>
+                    </Grid.Column>
+
+                    <Grid.Column width={8}>
+                      <p>{event.name}</p>
+                      <p>{event.description}</p>
+                      <p>{event.creationDate}</p>
+                      <label>
+                        מס משתתפים: {Object.keys(event.subscribers).length}
+                      </label>
+                      <p>{id}</p>
+                      <UsersPhotos
+                        subscribers={event.subscribers}
+                        users={users}/>
+                    </Grid.Column>
+                    <Grid.Column width={4}>
+                      {event.isActive ? (<Link to={`/uploadFile/${id}`}>
+                        <i className="images outline icon"/>
+                      </Link>) : (<p></p>)}
+                      <Button animated onClick={() => endEvent(id)}>
+                        <Button.Content visible>end event</Button.Content>
+                        <Button.Content hidden>
+                          <Icon name='remove'/>
+                        </Button.Content>
+                      </Button>
+                      <Button
+                        onClick={() => shareClick(`${CLIENT_URL}/register-event/${id}`)}
+                      >
+                        <i className="share alternate icon"/>{' '}
+                      </Button>
+                    </Grid.Column>
+
+                  </Grid.Row>
+                )
             )}
           </Grid>
         </>
       )}
     </Container>
+      {/*<Grid columns={2}>*/}
+      {/*  <Grid.Column>*/}
+      {/*    <Segment raised>*/}
+      {/*      <Label as='a' color='red' ribbon>*/}
+      {/*        Overview*/}
+      {/*      </Label>*/}
+      {/*      <span>Account Details</span>*/}
+
+      {/*      <img src='../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg'/>*/}
+
+      {/*      <Label as='a' color='blue' ribbon>*/}
+      {/*        Community*/}
+      {/*      </Label>*/}
+      {/*      <span>User Reviews</span>*/}
+
+      {/*      <img src='../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg'/>*/}
+      {/*    </Segment>*/}
+      {/*  </Grid.Column>*/}
+
+      {/*  <Grid.Column>*/}
+      {/*    <Segment>*/}
+      {/*      <Label as='a' color='orange' ribbon='right'>*/}
+      {/*        Specs*/}
+      {/*      </Label>*/}
+      {/*      <img src='../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg'/>*/}
+
+
+      {/*      <Label as='a' color='teal' ribbon='right'>*/}
+      {/*        Reviews*/}
+      {/*      </Label>*/}
+      {/*      <img src='../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg'/>*/}
+      {/*    </Segment>*/}
+      {/*  </Grid.Column>*/}
+      {/*</Grid>*/}
+    </>
   );
 };
 
@@ -148,7 +202,7 @@ interface UsersPhotosProps {
   users?: Record<string, UserState>;
 }
 
-const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
+const UsersPhotos: FC<UsersPhotosProps> = ({subscribers, users}) => {
   const ids = Object.keys(subscribers);
   const [maxAvatarsToShow, setMaxAvatarsToShow] = useState(2);
   const handleImageError = (e: any) => {
@@ -162,7 +216,7 @@ const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{display: 'flex', alignItems: 'center'}}>
         {users &&
           Object.entries(users)
             .slice(0, maxAvatarsToShow + 1)

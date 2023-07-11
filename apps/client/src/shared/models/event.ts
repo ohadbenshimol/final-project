@@ -5,7 +5,7 @@ export type NewEvent = {
   name: string;
   storage: string;
   subscribers: Record<string, boolean>
-  url?: string;
+  isActive?: boolean;
   description: string;
-  imageUrl?: string
+  imgUrl?: string
 };

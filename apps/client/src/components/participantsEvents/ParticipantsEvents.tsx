@@ -50,7 +50,6 @@ export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
                     <Grid.Column width={8}>
                       <p>{event.name}</p>
                       <p>{event.description}</p>
-                      <p>{event.url}</p>
                       <p>{event.creationDate}</p>
                     </Grid.Column>
                     <Grid.Column width={4}>

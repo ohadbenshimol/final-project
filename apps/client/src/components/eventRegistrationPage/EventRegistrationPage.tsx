@@ -27,7 +27,6 @@ const EventRegistrationPage = () => {
     name: '',
     owner: '',
     storage: '',
-    url: '',
     id: '',
     subscribers: {},
   });
@@ -35,7 +34,7 @@ const EventRegistrationPage = () => {
   const [open, setOpen] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
 
-  const getEvent = async () => {
+   const getEvent = async () => {
     const snapshot = await get(ref(db, `/events/${eventId}`));
     setEvent(snapshot.val());
     return snapshot.val();
@@ -50,8 +49,8 @@ const EventRegistrationPage = () => {
   const { data } = useQuery('event', async () => await getEvent(), {
     onSuccess: (data) => {
       if (!data) {
-        // setMessage('/This event does not exist');
-        // setOpen(true);
+        setMessage('/This event does not exist');
+        setOpen(true);
       } else if (data.subscribers[user.id!]) {
         setMessage('You are already register for this event');
         setOpen(true);
