@@ -37,7 +37,7 @@ paths:
         type: aws_proxy
         uri:
           Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddImagesToEventFunction.Arn}:live/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddImagesToEventFunction.Arn}/invocations
       x-amazon-apigateway-auth:
         type: AWS_IAM
 
@@ -72,7 +72,7 @@ paths:
         type: aws_proxy
         uri:
           Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddUserToEventFunction.Arn}:live/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddUserToEventFunction.Arn}/invocations
       x-amazon-apigateway-auth:
         type: AWS_IAM
 
@@ -107,7 +107,7 @@ paths:
         type: aws_proxy
         uri:
           Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CloseEventFunction.Arn}:live/invocations
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CloseEventFunction.Arn}/invocations
       x-amazon-apigateway-auth:
         type: AWS_IAM
 

@@ -9,7 +9,6 @@ Globals:
     Runtime: nodejs14.x
     MemorySize: 1024
     CodeUri: ./build
-    AutoPublishAlias: live
 
 Resources:
   EventsBucket:
