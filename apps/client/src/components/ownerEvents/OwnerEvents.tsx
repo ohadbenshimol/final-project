@@ -1,7 +1,7 @@
 import userIMAGE from '../../assets/user.png';
 import styled from 'styled-components';
 import { db, eventsRef, usersRef } from '../../helpers/firebase';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import {
   equalTo,
   get,
@@ -11,7 +11,15 @@ import {
   ref,
   update,
 } from 'firebase/database';
-import { Button, Container, Grid, Icon, Modal } from 'semantic-ui-react';
+import {
+  Button,
+  Card,
+  Image,
+  Icon,
+  Modal,
+  Feed,
+  ImageGroup,
+} from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
 import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
 import { Link, useNavigate } from 'react-router-dom';
@@ -22,7 +30,14 @@ import { debounce } from 'ts-debounce';
 import { useCookies } from 'react-cookie';
 import { CreateEvent } from '../createEvent/CreateEvent';
 import { ShareEvent } from '../shareEvent/ShareEvent';
+import defaultImg from '../../assets/default.svg';
 import './OwnerEvents.less';
+import { Avatar, Divider, Tooltip } from 'antd';
+import {
+  AntDesignOutlined,
+  ShareAltOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 
 interface OwnerEventsProps {}
 
@@ -122,75 +137,59 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   };
   return (
     <>
-      <Container>
-        <div className="ui icon input">
-          <input
-            type="text"
-            placeholder="Search..."
-            onKeyUp={debounceInputChange}
-          />
-          <i aria-hidden="true" className="search icon"></i>
-        </div>
-        {ownerEvents && (
-          <>
-            <h2 style={{ textAlign: 'center' }}>Created Events</h2>
-            <Grid columns={3}>
-              {Object.entries(fIlteredEvents!)?.map(
-                ([id, event]: [string, NewEvent], index) => (
-                  <Grid.Row key={index}>
-                    <Grid.Column width={4}>
-                      <img
-                        onClick={async () => {
-                          await navigator.clipboard.writeText(id);
-                        }}
-                        className={'ui tiny image'}
-                        src={
-                          event.imgUrl ||
-                          '../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg'
-                        }
-                      />
-                    </Grid.Column>
-                    <Grid.Column width={8}>
-                      <p>{event.name}</p>
-                      <p>{event.description}</p>
-                      <p>{event.creationDate}</p>
-                      <label>
-                        מס משתתפים: {Object.keys(event.subscribers).length}
-                      </label>
-                      <UsersPhotos
-                        subscribers={event.subscribers}
-                        users={users}
-                      />
-                    </Grid.Column>
-                    <Grid.Column width={4}>
-                      {event.isActive ? (
-                        <Link to={`/uploadFile/${id}`}>
-                          <i className="images outline icon" />
-                        </Link>
-                      ) : (
-                        <p></p>
-                      )}
-                      <Button animated onClick={() => endEvent(id)}>
-                        <Button.Content visible>end event</Button.Content>
-                        <Button.Content hidden>
+      <div className="ui icon input">
+        <input
+          type="text"
+          placeholder="Search..."
+          onKeyUp={debounceInputChange}
+        />
+        <i aria-hidden="true" className="search icon"></i>
+      </div>
+      {ownerEvents && (
+        <>
+          <Card.Group>
+            {Object.entries(fIlteredEvents!)?.map(
+              ([id, event]: [string, NewEvent], index) => (
+                <>
+                  <Card>
+                    <Image
+                      className="Sad"
+                      style={{ height: '21em' }}
+                      src={event.imgUrl || defaultImg}
+                      fluid
+                      ui={false}
+                    />
+                    <Card.Content>
+                      <Card.Header>{event.name}</Card.Header>
+                      <Card.Meta>
+                        <span className="date">{event.creationDate}</span>
+                      </Card.Meta>
+                      <Card.Description>{event.description}</Card.Description>
+                      {/* <Card.Description>
+                        {Object.keys(event.subscribers).length} members
+                      </Card.Description> */}
+                    </Card.Content>
+                    <Card.Content extra>
+                      <div className="c">
+                        <UsersPhotos
+                          subscribers={event.subscribers}
+                          users={users}
+                        />
+                        <div className="buttons">
+                          <ShareAltOutlined rev />
                           <Icon name="remove" />
-                        </Button.Content>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          shareClick(`${CLIENT_URL}/register-event/${id}`)
-                        }
-                      >
-                        <i className="share alternate icon" />{' '}
-                      </Button>
-                    </Grid.Column>
-                  </Grid.Row>
-                )
-              )}
-            </Grid>
-          </>
-        )}
-      </Container>
+                          <Icon name="remove circle" />
+                          <Icon name="edit" />
+                        </div>
+                      </div>
+                    </Card.Content>
+                  </Card>
+                </>
+              )
+            )}
+          </Card.Group>
+        </>
+      )}
       <Button
         className="ui green button"
         icon="add"
@@ -216,24 +215,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   );
 };
 
-const Avatar = styled.img`
-  width: 2em;
-  border-radius: 50%;
-  margin-right: -1em;
-`;
-
-const MoreIndicator = styled.div`
-  width: 2.85em;
-  height: 2.85em;
-  border-radius: 50%;
-  background-color: #888;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.8rem;
-`;
-
 interface UsersPhotosProps {
   subscribers: Record<string, boolean>;
   users?: Record<string, UserState>;
@@ -241,39 +222,122 @@ interface UsersPhotosProps {
 
 const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
   const ids = Object.keys(subscribers);
-  const [maxAvatarsToShow, setMaxAvatarsToShow] = useState(2);
-  const handleImageError = (e: any) => {
-    e.target.src = userIMAGE;
+  const a = useRef<any>();
+  const handleImageError = () => {
+    if (a) (a as any).target.src = userIMAGE;
+    return false;
   };
-  const moreAvatarsCount = Object.values(subscribers).length - maxAvatarsToShow;
-
-  const toggleUsers = () => {
-    setMaxAvatarsToShow(Object.values(subscribers).length + 1); //TODO:toggle back users
-  };
+  const maxCount = 4;
 
   return (
-    <>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        {users &&
-          Object.entries(users)
-            .slice(0, maxAvatarsToShow + 1)
-            ?.filter(([k, v]) => ids.includes(k))
-            .map(([k, v], index) => (
+    <Avatar.Group
+      maxCount={maxCount}
+      maxPopoverPlacement={'bottom'}
+      maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
+    >
+      {users &&
+        Object.entries(users)
+          // ?.filter(([k, v]) => ids.includes(k))//TODO
+          .map(([k, v], index) => (
+            <>
               <Avatar
+                ref={a}
+                gap={8}
+                onError={() => {
+                  // e.target.src = '../../assets/user.png';
+                  // e.target.src = <UserOutlined rev />;//TODO
+                  return true;
+                }}
+                icon={
+                  <img
+                    onError={(e: any) => {
+                      e.target.src = '../../assets/user.png';
+                      // e.target.src = <UserOutlined rev />; //TODO
+                      return true;
+                    }}
+                    src={v.pictureUrl}
+                    onClick={() => console.log('sdsd')}
+                  />
+                }
                 key={index}
-                title={`${v.firstName} ${v.lastName}`}
-                src={v.pictureUrl}
-                onError={handleImageError}
-                onClick={() => navigator.clipboard.writeText(k)}
-              />
-            ))}
+                alt={`${v.firstName} ${v.lastName}`}
+              >
+                <UserOutlined rev />
+              </Avatar>
+            </>
+            // <Avatar
+            //   key={index}
+            //   title={`${v.firstName} ${v.lastName}`}
+            //   src={v.pictureUrl}
+            //   onError={handleImageError}
+            //   onClick={() => navigator.clipboard.writeText(k)}
+            // />
+          ))}
 
-        {moreAvatarsCount > 0 && (
-          <MoreIndicator onClick={toggleUsers}>
-            +{moreAvatarsCount}
-          </MoreIndicator>
-        )}
-      </div>
-    </>
+      {/* <Tooltip title="Ant User" placement="top" arrowContent="sd">
+          <Avatar
+            style={{ backgroundColor: '#87d068' }}
+            icon={<UserOutlined rev />}
+          />
+        </Tooltip> */}
+    </Avatar.Group>
   );
 };
+{
+  /* <Card>
+<Image
+  style={{ width: '8em', height: '8em' }}
+  centered
+  wrapped
+  bordered
+  floated="left"
+  fluid
+  inline
+  size="medium"
+  src={
+    event.imgUrl ||
+    '../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg'
+  }
+  onClick={async () => {
+    await navigator.clipboard.writeText(id);
+  }}
+/> */
+}
+{
+  /* <Card.Header>{event.name}</Card.Header>
+<Card.Description>{event.description}</Card.Description>
+<Card.Meta>
+  <Icon color="green" name="trash" />
+  <p>{event.creationDate}</p>
+  <label>
+    מס משתתפים: {Object.keys(event.subscribers).length}
+  </label>
+  <UsersPhotos
+    subscribers={event.subscribers}
+    users={users}
+  />
+</Card.Meta>
+<Card.Meta>
+  {event.isActive ? (
+    <Link to={`/uploadFile/${id}`}>
+      <i className="images outline icon" />
+    </Link>
+  ) : (
+    <p></p>
+  )}
+  <Button animated onClick={() => endEvent(id)}>
+    <Button.Content visible>end event</Button.Content>
+    <Button.Content hidden>
+      <Icon name="remove" />
+    </Button.Content>
+  </Button>
+  <Button
+    onClick={() =>
+      shareClick(`${CLIENT_URL}/register-event/${id}`)
+    }
+  >
+    <i className="share alternate icon" />
+  </Button>
+</Card.Meta>
+</Card> */
+}

@@ -11,7 +11,7 @@ import UploadPreview from '@rpldy/upload-preview';
 import { getMockSenderEnhancer } from '@rpldy/mock-sender';
 import { asUploadButton } from '@rpldy/upload-button';
 import retryEnhancer, { useRetry } from '@rpldy/retry-hooks';
-import { Button, Card, Col, Row, Progress, PageHeader, Layout } from 'antd';
+import { Button, Card, Col, Row, Progress, Layout } from 'antd';
 import {
   CloudUploadOutlined,
   StopOutlined,
@@ -19,7 +19,6 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 
-import 'antd/dist/antd.css';
 // import './FileUploader.less'; //TODO: add
 import { SERVER_URL } from '../../helpers/config';
 
@@ -148,29 +147,6 @@ const UploadUi = () => {
 
   return (
     <Layout>
-      <PageHeader
-        title="File Upload"
-        subTitle="Powered by: React Uploady + Ant Design"
-        extra={[
-          <UploadButton
-            key="upload-button"
-            extraProps={{
-              type: 'primary',
-              size: 'large',
-              icon: <CloudUploadOutlined rev />,
-            }}
-          />,
-          <Button
-            key="clear-button"
-            icon={<DeleteOutlined rev />}
-            size="large"
-            disabled={!previews.length}
-            onClick={onClearPreviews}
-          >
-            Clear
-          </Button>,
-        ]}
-      />
       <Layout.Content>
         <UploadPreviewCards
           setPreviews={setPreviews}

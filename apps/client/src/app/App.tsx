@@ -20,7 +20,7 @@ const App: FC = () => {
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
         <CookiesProvider>
-          <div className="app" style={{ overflow: 'scroll' }}>
+          <div className="app">
             <Header />
             <hr />
             <div className="data-con">
