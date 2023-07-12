@@ -34,7 +34,7 @@ const EventRegistrationPage = () => {
   const [open, setOpen] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
 
-   const getEvent = async () => {
+  const getEvent = async () => {
     const snapshot = await get(ref(db, `/events/${eventId}`));
     setEvent(snapshot.val());
     return snapshot.val();
@@ -93,8 +93,8 @@ const EventRegistrationPage = () => {
   const a = async () => {
     try {
       const apiUrl =
-        'https://myoprqyirk.execute-api.eu-central-1.amazonaws.com/Prod/add/user';
-      const apiKey = 'kMqMP3vGTbgXKbrTulIC6w7h6M1yTryV26HjAE60';
+        'https://dkl8ou2ol1.execute-api.eu-central-1.amazonaws.com/prod/add/user';
+      const apiKey = '9K5KEYMKAk7Oj7JcIlvMmaczhutRVZgW8vW1eZOA';
       const requestBody = {
         eventId,
         username: `${user.firstName} + ${user.lastName}`,

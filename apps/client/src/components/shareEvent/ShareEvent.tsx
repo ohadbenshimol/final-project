@@ -1,8 +1,10 @@
-import QRCode from 'react-qr-code';
+// import QRCode from 'react-qr-code';
 import { FC, useRef } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { WhatsappShareButton } from 'react-share';
 import { toast } from 'react-toastify';
+import { QRCode } from 'antd';
+
 import './ShareEvent.less';
 
 interface ShareEventProps {
@@ -69,12 +71,13 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
                 width: '100%',
               }}
             >
-              <QRCode
+              <QRCode value={link} icon="../../assets/logo.png" />
+              {/* <QRCode
                 size={256}
                 style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
                 value={link}
                 viewBox={`0 0 256 256`}
-              />
+              /> */}
             </div>
           </Form>
         </Modal.Content>
