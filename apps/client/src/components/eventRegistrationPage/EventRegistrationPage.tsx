@@ -147,6 +147,30 @@ const EventRegistrationPage = () => {
         //... handle errors
       });
 
+    let headersList = {
+      Accept: '*/*',
+      'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+      "'x-api-key'": '9K5KEYMKAk7Oj7JcIlvMmaczhutRVZgW8vW1eZOA',
+      'Content-Type': 'application/json',
+    };
+
+    let bodyContent = JSON.stringify({
+      eventId: 'eventId',
+      username: 'username',
+      email: 'email',
+      image: 'fdsfdsfsdfdsfdsfsdfsdfdfdfds',
+    });
+
+    let reqOptions = {
+      url: 'https://dkl8ou2ol1.execute-api.eu-central-1.amazonaws.com/prod/add/user',
+      method: 'POST',
+      headers: headersList,
+      data: bodyContent,
+    };
+
+    let response2 = await axios.request(reqOptions);
+    console.log(response2.data);
+
     // try {
     //   const apiUrl =
     //     'https://dkl8ou2ol1.execute-api.eu-central-1.amazonaws.com/prod/close/event';

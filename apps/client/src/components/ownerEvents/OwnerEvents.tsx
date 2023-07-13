@@ -1,5 +1,4 @@
 import userIMAGE from '../../assets/user.png';
-import styled from 'styled-components';
 import { db, eventsRef, usersRef } from '../../helpers/firebase';
 import { FC, useEffect, useRef, useState } from 'react';
 import {
@@ -11,35 +10,53 @@ import {
   ref,
   update,
 } from 'firebase/database';
-import {
-  Button,
-  Card,
-  Image,
-  Icon,
-  Modal,
-  Feed,
-  ImageGroup,
-} from 'semantic-ui-react';
+import { Button, Card, Image, Icon, Modal } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
 import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { NewEvent } from '../../shared/models/event';
 import { useQuery } from 'react-query';
-import { CLIENT_URL } from '../../helpers/config';
 import { debounce } from 'ts-debounce';
 import { useCookies } from 'react-cookie';
 import { CreateEvent } from '../createEvent/CreateEvent';
 import { ShareEvent } from '../shareEvent/ShareEvent';
 import defaultImg from '../../assets/default.svg';
+import { Avatar } from 'antd';
+import { ShareAltOutlined, UserOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import './OwnerEvents.less';
-import { Avatar, Divider, Tooltip } from 'antd';
-import {
-  AntDesignOutlined,
-  ShareAltOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+
+// const interceptor = aws4Interceptor({
+//   credentials: {
+//     accessKeyId: 'AKIAY2YE4MY2SXERX35Q',
+//     secretAccessKey: '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',
+//   },
+// });
+
+// axios.interceptors.request.use(interceptor);
 
 interface OwnerEventsProps {}
+const URL = 'https://dkl8ou2ol1.execute-api.eu-central-1.amazonaws.com/prod';
+const CLOSE_URL = `${URL}/close/event`;
+const ADD_USER_URL = `${URL}/add/user`;
+
+const closeEvent = async () => {
+  try {
+    const res = await axios.post(CLOSE_URL);
+    console.log('res', res);
+  } catch (error) {
+    console.log('error', error);
+  }
+};
+
+const addUser = async () => {
+  try {
+    const res = await axios.post(ADD_USER_URL);
+    console.log('res', res);
+  } catch (error) {
+    console.log('error', error);
+  }
+};
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
@@ -124,6 +141,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       });
     }
   };
+
   const shareClick = (link: string) => {
     if (navigator.share) {
       navigator.share({
@@ -135,8 +153,15 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       console.log('Share not supported on this browser, do it manually!');
     }
   };
+
   return (
     <>
+      <div className="mock" onClick={addUser}>
+        ADD USER TO EVENT
+      </div>
+      <div className="mock" onClick={closeEvent}>
+        CLOSE EVENT
+      </div>
       <div className="ui icon input">
         <input
           type="text"
