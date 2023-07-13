@@ -25,25 +25,67 @@ import { Avatar } from 'antd';
 import { ShareAltOutlined, UserOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './OwnerEvents.less';
-
-// const interceptor = aws4Interceptor({
-//   credentials: {
-//     accessKeyId: 'AKIAY2YE4MY2SXERX35Q',
-//     secretAccessKey: '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',
-//   },
-// });
-
-// axios.interceptors.request.use(interceptor);
-
 interface OwnerEventsProps {}
-const URL = 'https://dkl8ou2ol1.execute-api.eu-central-1.amazonaws.com/prod';
+
+const URL = 'https://d1f475jv9e.execute-api.eu-central-1.amazonaws.com/prod';
 const CLOSE_URL = `${URL}/close/event`;
 const ADD_USER_URL = `${URL}/add/user`;
+const accessKeyId = 'AKIAY2YE4MY2SXERX35Q';
+const secretAccessKey = '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';
+const region = 'eu-central-1';
+
+const AmplifyAccesskey = 'AKIAY2YE4MY27YH2GREG';
+const SecretAccesskey = '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';
+import { Signer } from '@aws-amplify/core';
+
+let request = {
+  method: 'POST',
+  url: CLOSE_URL,
+  data: {},
+};
+
+let access_info = {
+  access_key: accessKeyId,
+  secret_key: secretAccessKey,
+};
+let service_info = {
+  region: 'region',
+};
+
+// Call a Lambda function
 
 const closeEvent = async () => {
   try {
-    const res = await axios.post(CLOSE_URL);
-    console.log('res', res);
+    // Your AWS credentials
+    const credentials = {
+      accessKeyId,
+      secretAccessKey,
+    };
+
+    // The request you want to send
+    const request = {
+      method: 'POST',
+      url: CLOSE_URL,
+      withCredentials: true,
+      data: {}, // Your request payload
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    // Sign the request
+    Signer.sign(request, credentials, {
+      service: 'execute-api',
+      region,
+    });
+    // Send the request
+    axios(request)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   } catch (error) {
     console.log('error', error);
   }
@@ -101,7 +143,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     const eventQuery = query(eventsRef, orderByChild(`owner`), equalTo(userID));
 
     onValue(eventQuery, (snapshot) => {
-      console.log(snapshot);
       const data = snapshot.val() as Record<string, NewEvent>;
       const EventsByUserID =
         data &&
