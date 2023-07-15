@@ -23,82 +23,8 @@ import { ShareEvent } from '../shareEvent/ShareEvent';
 import defaultImg from '../../assets/default.svg';
 import { Avatar } from 'antd';
 import { ShareAltOutlined, UserOutlined } from '@ant-design/icons';
-import axios from 'axios';
 import './OwnerEvents.less';
 interface OwnerEventsProps {}
-
-const URL = 'https://d1f475jv9e.execute-api.eu-central-1.amazonaws.com/prod';
-const CLOSE_URL = `${URL}/close/event`;
-const ADD_USER_URL = `${URL}/add/user`;
-const accessKeyId = 'AKIAY2YE4MY2SXERX35Q';
-const secretAccessKey = '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';
-const region = 'eu-central-1';
-
-const AmplifyAccesskey = 'AKIAY2YE4MY27YH2GREG';
-const SecretAccesskey = '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';
-import { Signer } from '@aws-amplify/core';
-
-let request = {
-  method: 'POST',
-  url: CLOSE_URL,
-  data: {},
-};
-
-let access_info = {
-  access_key: accessKeyId,
-  secret_key: secretAccessKey,
-};
-let service_info = {
-  region: 'region',
-};
-
-// Call a Lambda function
-
-const closeEvent = async () => {
-  try {
-    // Your AWS credentials
-    const credentials = {
-      accessKeyId,
-      secretAccessKey,
-    };
-
-    // The request you want to send
-    const request = {
-      method: 'POST',
-      url: CLOSE_URL,
-      withCredentials: true,
-      data: {}, // Your request payload
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    // Sign the request
-    Signer.sign(request, credentials, {
-      service: 'execute-api',
-      region,
-    });
-    // Send the request
-    axios(request)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  } catch (error) {
-    console.log('error', error);
-  }
-};
-
-const addUser = async () => {
-  try {
-    const res = await axios.post(ADD_USER_URL);
-    console.log('res', res);
-  } catch (error) {
-    console.log('error', error);
-  }
-};
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
@@ -197,12 +123,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
   return (
     <>
-      <div className="mock" onClick={addUser}>
-        ADD USER TO EVENT
-      </div>
-      <div className="mock" onClick={closeEvent}>
-        CLOSE EVENT
-      </div>
       <div className="ui icon input">
         <input
           type="text"
@@ -231,9 +151,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                         <span className="date">{event.creationDate}</span>
                       </Card.Meta>
                       <Card.Description>{event.description}</Card.Description>
-                      {/* <Card.Description>
-                        {Object.keys(event.subscribers).length} members
-                      </Card.Description> */}
                     </Card.Content>
                     <Card.Content extra>
                       <div className="c">
@@ -331,79 +248,7 @@ const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
                 <UserOutlined rev />
               </Avatar>
             </>
-            // <Avatar
-            //   key={index}
-            //   title={`${v.firstName} ${v.lastName}`}
-            //   src={v.pictureUrl}
-            //   onError={handleImageError}
-            //   onClick={() => navigator.clipboard.writeText(k)}
-            // />
           ))}
-
-      {/* <Tooltip title="Ant User" placement="top" arrowContent="sd">
-          <Avatar
-            style={{ backgroundColor: '#87d068' }}
-            icon={<UserOutlined rev />}
-          />
-        </Tooltip> */}
     </Avatar.Group>
   );
 };
-{
-  /* <Card>
-<Image
-  style={{ width: '8em', height: '8em' }}
-  centered
-  wrapped
-  bordered
-  floated="left"
-  fluid
-  inline
-  size="medium"
-  src={
-    event.imgUrl ||
-    '../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg'
-  }
-  onClick={async () => {
-    await navigator.clipboard.writeText(id);
-  }}
-/> */
-}
-{
-  /* <Card.Header>{event.name}</Card.Header>
-<Card.Description>{event.description}</Card.Description>
-<Card.Meta>
-  <Icon color="green" name="trash" />
-  <p>{event.creationDate}</p>
-  <label>
-    מס משתתפים: {Object.keys(event.subscribers).length}
-  </label>
-  <UsersPhotos
-    subscribers={event.subscribers}
-    users={users}
-  />
-</Card.Meta>
-<Card.Meta>
-  {event.isActive ? (
-    <Link to={`/uploadFile/${id}`}>
-      <i className="images outline icon" />
-    </Link>
-  ) : (
-    <p></p>
-  )}
-  <Button animated onClick={() => endEvent(id)}>
-    <Button.Content visible>end event</Button.Content>
-    <Button.Content hidden>
-      <Icon name="remove" />
-    </Button.Content>
-  </Button>
-  <Button
-    onClick={() =>
-      shareClick(`${CLIENT_URL}/register-event/${id}`)
-    }
-  >
-    <i className="share alternate icon" />
-  </Button>
-</Card.Meta>
-</Card> */
-}
