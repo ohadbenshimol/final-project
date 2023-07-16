@@ -30,15 +30,12 @@ export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
   }, [userID]);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Container>
-        {participantsEvents && (
-          <>
-            <h2 className="owner-event-title" style={{ textAlign: 'center' }}>
-              Events that you join
-            </h2>
-            <Grid columns={3}>
-              {Object.values(participantsEvents)?.map(
+    <>
+      {participantsEvents && (
+        <>
+          <Grid columns={3}>
+            {Object.values(participantsEvents).length ? (
+              Object.values(participantsEvents).map(
                 (event: NewEvent, index) => (
                   <Grid.Row key={index}>
                     <Grid.Column width={4}>
@@ -58,12 +55,17 @@ export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
                     </Grid.Column>
                   </Grid.Row>
                 )
-              )}
-            </Grid>
-          </>
-        )}
-      </Container>
-    </div>
+              )
+            ) : (
+              <div className="empty">
+                <h1>there is no events that shares with you yet.</h1>
+                <h1>but don't worry we are here for you</h1>
+              </div>
+            )}
+          </Grid>
+        </>
+      )}
+    </>
   );
 };
 

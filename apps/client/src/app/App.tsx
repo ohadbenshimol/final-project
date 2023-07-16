@@ -22,7 +22,7 @@ const App: FC = () => {
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
         <CookiesProvider>
-          <Layout className="layout">
+          <Layout className="layout" style={{ padding: '1em' }}>
             <HeaderComp />
             <Content style={{ padding: '0 50px', minHeight: '50vh' }}>
               <Routes>
@@ -38,44 +38,6 @@ const App: FC = () => {
             </Content>
             <FooterComp />
           </Layout>
-          {/* <Layout>
-            <Header>
-              <HeaderComp />
-            </Header>
-            <Content>
-              <Routes>
-                <Route path="/" Component={MainPage} />
-                <Route path="/shared-events" Component={ParticipantsEvents} />
-                <Route path="/own-events" Component={OwnerEvents} />
-                <Route
-                  path="/register-event/:eventId"
-                  Component={EventRegistrationPage}
-                />
-                <Route path="/uploadFile/:eventId" Component={FileUploader} />
-              </Routes>
-            </Content>
-            <Footer>
-              <FooterComp />
-            </Footer>
-          </Layout> */}
-          {/* <div className="app">
-            <Header />
-            <hr />
-            <div className="data-con">
-              <Routes>
-                <Route path="/" Component={MainPage} />
-                <Route path="/shared-events" Component={ParticipantsEvents} />
-                <Route path="/own-events" Component={OwnerEvents} />
-                <Route
-                  path="/register-event/:eventId"
-                  Component={EventRegistrationPage}
-                />
-                <Route path="/uploadFile/:eventId" Component={FileUploader} />
-              </Routes>
-            </div>
-            <hr />
-            <Footer />
-          </div> */}
         </CookiesProvider>
       </GoogleOAuthProvider>
     </QueryClientProvider>

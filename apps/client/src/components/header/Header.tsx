@@ -109,6 +109,8 @@ const Header: FC = () => {
         display: 'flex',
         alignItems: 'center',
         backgroundColor: 'inherit',
+        paddingInline: '1em',
+        padding: 0,
       }}
     >
       <Row
@@ -121,7 +123,10 @@ const Header: FC = () => {
         </Col>
         <Col span={12}>
           <Menu
-            style={{ width: '100%', backgroundColor: 'inherit' }}
+            style={{
+              width: '100%',
+              backgroundColor: 'inherit',
+            }}
             onClick={onClick}
             selectedKeys={[current]}
             mode="horizontal"

@@ -10,7 +10,7 @@ import {
   ref,
   update,
 } from 'firebase/database';
-import { Button, Card, Image, Icon, Modal } from 'semantic-ui-react';
+import { Button, Card, Image, Icon, Modal, Label } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
 import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
 import { useNavigate } from 'react-router-dom';
@@ -21,8 +21,15 @@ import { useCookies } from 'react-cookie';
 import { CreateEvent } from '../createEvent/CreateEvent';
 import { ShareEvent } from '../shareEvent/ShareEvent';
 import defaultImg from '../../assets/default.svg';
-import { Avatar } from 'antd';
-import { ShareAltOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Col, Row, Tooltip } from 'antd';
+import {
+  AppstoreAddOutlined,
+  CarryOutOutlined,
+  CloudUploadOutlined,
+  FormOutlined,
+  ShareAltOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import './OwnerEvents.less';
 interface OwnerEventsProps {}
 
@@ -30,7 +37,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
   const user = useSelector(getUser);
   const [ownerEvents, setOwnerEvents] = useState<Record<string, NewEvent>>();
-  const [fIlteredEvents, setFIlteredEvents] =
+  const [fIlteredEvents, setFilteredEvents] =
     useState<Record<string, NewEvent>>();
   const [users, setUsers] = useState<Record<string, UserState>>();
   const navigate = useNavigate();
@@ -76,18 +83,22 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           Object.entries(data).filter(([k, event]) => event.owner === userID)
         );
       setOwnerEvents(EventsByUserID);
-      setFIlteredEvents(EventsByUserID);
+      setFilteredEvents(EventsByUserID);
     });
   }, [userID]);
 
   const handleInputChange = (event: any) => {
     const filteredEvent = Object.fromEntries(
-      Object.entries(ownerEvents!).filter(([k, newEvent]) =>
-        newEvent.name.toLowerCase().includes(event.target.value)
-      )
+      Object.entries(ownerEvents!).filter(([id, newEvent]) => {
+        const lowerCaseInput = event.target.value?.toLowerCase();
+        return (
+          newEvent.name.toLowerCase().includes(lowerCaseInput) ||
+          id?.toLowerCase().includes(lowerCaseInput)
+        );
+      })
     );
 
-    setFIlteredEvents(filteredEvent);
+    setFilteredEvents(filteredEvent);
   };
 
   const debounceInputChange = debounce(handleInputChange, 300);
@@ -100,6 +111,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const endEvent = async (eventId: string) => {
     console.log(eventId);
     //TODO: send request to server
+
     const event: NewEvent = await getEvent(eventId);
     if (event) {
       await update(ref(db, `events/${eventId}`), {
@@ -109,7 +121,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     }
   };
 
-  const shareClick = (link: string) => {
+  const shareClick = () => {
     if (navigator.share) {
       navigator.share({
         title: 'Only me',
@@ -123,17 +135,30 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
   return (
     <>
-      <div className="ui icon input">
-        <input
-          type="text"
-          placeholder="Search..."
-          onKeyUp={debounceInputChange}
-        />
-        <i aria-hidden="true" className="search icon"></i>
-      </div>
       {ownerEvents && (
         <>
-          <Card.Group>
+          <Card.Group centered>
+            <Row className="temp">
+              <Col>
+                <Tooltip title="create new event">
+                  <AppstoreAddOutlined
+                    rev
+                    style={{ fontSize: '2em' }}
+                    onClick={onClickAddEvent}
+                  />
+                </Tooltip>
+              </Col>
+              <Col>
+                <div className="ui icon input">
+                  <input
+                    type="text"
+                    placeholder="enter event id or name"
+                    onKeyUp={debounceInputChange}
+                  />
+                  <i aria-hidden="true" className="search icon"></i>
+                </div>
+              </Col>
+            </Row>
             {Object.entries(fIlteredEvents!)?.map(
               ([id, event]: [string, NewEvent], index) => (
                 <>
@@ -151,6 +176,10 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                         <span className="date">{event.creationDate}</span>
                       </Card.Meta>
                       <Card.Description>{event.description}</Card.Description>
+                      <Card.Description>{id}</Card.Description>
+                      <Card.Description>
+                        "ds"{event.isActive ? 'Active' : 'not'}
+                      </Card.Description>
                     </Card.Content>
                     <Card.Content extra>
                       <div className="c">
@@ -159,10 +188,24 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                           users={users}
                         />
                         <div className="buttons">
-                          <ShareAltOutlined rev />
-                          <Icon name="remove" />
-                          <Icon name="remove circle" />
-                          <Icon name="edit" />
+                          <Tooltip title="share">
+                            <ShareAltOutlined rev onClick={shareClick} />
+                          </Tooltip>
+                          <Tooltip title="edit">
+                            <FormOutlined rev />
+                          </Tooltip>
+                          {event.isActive ? (
+                            <Tooltip title="end event">
+                              <CloudUploadOutlined
+                                rev
+                                onClick={() => endEvent(id)}
+                              />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title="event is finish">
+                              <CarryOutOutlined rev />
+                            </Tooltip>
+                          )}
                         </div>
                       </div>
                     </Card.Content>
@@ -173,14 +216,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           </Card.Group>
         </>
       )}
-      <Button
-        className="ui green button"
-        icon="add"
-        size="huge"
-        circular
-        style={{ position: 'fixed', bottom: '0', right: '0' }}
-        onClick={onClickAddEvent}
-      />
+
       <Modal
         open={createEventIsOpen}
         onClose={() => setCreateEventIsOpen(true)}
@@ -226,13 +262,9 @@ const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
               <Avatar
                 ref={a}
                 gap={8}
-                onError={() => {
-                  // e.target.src = '../../assets/user.png';
-                  // e.target.src = <UserOutlined rev />;//TODO
-                  return true;
-                }}
                 icon={
                   <img
+                    style={{ display: 'block' }}
                     onError={(e: any) => {
                       e.target.src = '../../assets/user.png';
                       // e.target.src = <UserOutlined rev />; //TODO
