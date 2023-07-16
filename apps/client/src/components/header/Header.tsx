@@ -6,9 +6,18 @@ import {
 } from '../../store/reducers/userSlice';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import LOGO from '../../assets/logo.png';
+import { Col, Layout, Menu, MenuProps, Row } from 'antd';
+import {
+  HomeOutlined,
+  InfoCircleOutlined,
+  ShareAltOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+
 import './Header.less';
+import Avatar from 'antd/es/avatar/avatar';
 
 const Header: FC = () => {
   const user = useSelector(getUser);
@@ -51,48 +60,100 @@ const Header: FC = () => {
   const goToHomePage = () => {
     navigate('/');
   };
+  const [current, setCurrent] = useState('mail');
+
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('click ', e);
+    setCurrent(e.key);
+  };
+
+  const items: MenuProps['items'] = [
+    {
+      label: 'home',
+      key: 'home',
+      icon: <HomeOutlined rev />,
+      onClick: () => {
+        navigate('/');
+      },
+    },
+    {
+      label: 'My events',
+      key: 'my-events',
+      icon: <ShareAltOutlined rev />,
+      onClick: () => {
+        navigate('/own-events');
+      },
+    },
+    {
+      label: 'shared events',
+      key: 'shared-events',
+      icon: <ShareAltOutlined rev />,
+      onClick: () => {
+        navigate('/shared-events');
+      },
+    },
+    {
+      label: 'about us',
+      key: 'about-us',
+      icon: <InfoCircleOutlined rev />,
+      onClick: () => {},
+    },
+  ];
+  const { Header } = Layout;
 
   return (
-    <header style={headerStyle}>
-      <img src={LOGO} style={{ width: '12em', height: '3em' }} />
-      <div
-        className="move-to"
-        onClick={() => {
-          navigate('/');
+    <Header
+      style={{
+        zIndex: 1,
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: 'inherit',
+      }}
+    >
+      <Row
+        style={{
+          width: '100%',
         }}
       >
-        HOME
-      </div>
-      <div
-        className="move-to"
-        onClick={() => {
-          navigate('/own-events');
-        }}
-      >
-        My Events
-      </div>
-      <div
-        className="move-to"
-        onClick={() => {
-          navigate('/shared-events');
-        }}
-      >
-        Shared Events
-      </div>
-      <div style={userInfoStyle}>
-        {userName ?? <span>{userName}</span>}
-        <img
-          src={user?.pictureUrl || defaultImg}
-          alt={userName}
-          style={avatarStyle}
-        />
-        {userIsLoggedIn() ? (
-          <button onClick={logout}>Logout</button>
-        ) : (
-          <button onClick={goToHomePage}>Login</button>
-        )}
-      </div>
-    </header>
+        <Col span={6}>
+          <img src={LOGO} style={{ width: '12em', height: '3em' }} />
+        </Col>
+        <Col span={12}>
+          <Menu
+            style={{ width: '100%', backgroundColor: 'inherit' }}
+            onClick={onClick}
+            selectedKeys={[current]}
+            mode="horizontal"
+            items={items}
+            defaultSelectedKeys={['home']}
+          />
+        </Col>
+        <Col span={6}>
+          {userName ?? <span>{userName}</span>}
+          {userIsLoggedIn() ? (
+            <button onClick={logout}>Logout</button>
+          ) : (
+            <button onClick={goToHomePage}>Login</button>
+          )}
+          <Avatar gap={8} src={user?.pictureUrl} alt={`${userName}`}>
+            <UserOutlined rev />
+          </Avatar>
+          {/* <div style={userInfoStyle}>
+            <img
+            src={user?.pictureUrl || defaultImg}
+              alt={userName}
+              style={avatarStyle}
+            />
+            {userIsLoggedIn() ? (
+              <button onClick={logout}>Logout</button>
+            ) : (
+              <button onClick={goToHomePage}>Login</button>
+            )}
+          </div> */}
+        </Col>
+      </Row>
+    </Header>
   );
 };
 

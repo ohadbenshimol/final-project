@@ -1,9 +1,12 @@
 import { FC } from 'react';
+import { Input, Layout } from 'antd';
 import './Footer.less';
 
-const Footer: FC = () => {
+const { Footer } = Layout;
+const FooterCopm: FC = () => {
+  //TODO: add logic when email added
   return (
-    <footer className="bg-white">
+    <Footer>
       <div className="lg:flex lg:items-start lg:gap-8">
         <div className="text-teal-600">
           <svg
@@ -27,8 +30,8 @@ const Footer: FC = () => {
               </h2>
 
               <p className="mt-4 text-gray-500">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse
-                non cupiditate quae nam molestias.
+                sign now out newsletter and be the first to know about our new
+                features.
               </p>
             </div>
           </div>
@@ -40,7 +43,7 @@ const Footer: FC = () => {
               </label>
 
               <div className="border border-gray-100 p-2 focus-within:ring sm:flex sm:items-center sm:gap-4">
-                <input
+                <Input
                   type="email"
                   id="UserEmail"
                   placeholder="john@rhcp.com"
@@ -63,7 +66,7 @@ const Footer: FC = () => {
                   href="#"
                   className="text-gray-700 transition hover:opacity-75"
                 >
-                  1on1 Coaching
+                  Pricing
                 </a>
               </li>
 
@@ -73,33 +76,6 @@ const Footer: FC = () => {
                   className="text-gray-700 transition hover:opacity-75"
                 >
                   Company Review
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  Accounts Review
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  HR Consulting
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  SEO Optimisation
                 </a>
               </li>
             </ul>
@@ -124,15 +100,6 @@ const Footer: FC = () => {
                   className="text-gray-700 transition hover:opacity-75"
                 >
                   Meet the Team
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  Accounts Review
                 </a>
               </li>
             </ul>
@@ -171,73 +138,7 @@ const Footer: FC = () => {
             </ul>
           </div>
 
-          <div className="col-span-2 sm:col-span-1">
-            <p className="font-medium text-gray-900">Legal</p>
-
-            <ul className="mt-6 space-y-4 text-sm">
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  Accessibility
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  Returns Policy
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  Refund Policy
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  Hiring Statistics
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="col-span-2 sm:col-span-1">
-            <p className="font-medium text-gray-900">Downloads</p>
-
-            <ul className="mt-6 space-y-4 text-sm">
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  Marketing Calendar
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-700 transition hover:opacity-75"
-                >
-                  SEO Infographics
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <ul className="col-span-2 flex justify-start gap-6 lg:col-span-5 lg:justify-end">
+          <ul className="col-span-2 flex center gap-6 lg:col-span-5 lg:justify-end">
             <li>
               <a
                 href="/"
@@ -359,7 +260,7 @@ const Footer: FC = () => {
       <div className="mt-8 border-t border-gray-100 pt-8">
         <div className="sm:flex sm:justify-between">
           <p className="text-xs text-gray-500">
-            &copy; 2022. Company Name. All rights reserved.
+            &copy; 2023. Only me. All rights reserved.
           </p>
 
           <ul className="mt-8 flex flex-wrap justify-start gap-4 text-xs sm:mt-0 lg:justify-end">
@@ -383,8 +284,8 @@ const Footer: FC = () => {
           </ul>
         </div>
       </div>
-    </footer>
+    </Footer>
   );
 };
 
-export default Footer;
+export default FooterCopm;
