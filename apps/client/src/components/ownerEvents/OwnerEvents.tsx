@@ -21,7 +21,7 @@ import { useCookies } from 'react-cookie';
 import { CreateEvent } from '../createEvent/CreateEvent';
 import { ShareEvent } from '../shareEvent/ShareEvent';
 import defaultImg from '../../assets/default.svg';
-import { Avatar, Col, Row, Tooltip } from 'antd';
+import { Avatar, Col, Row, Skeleton, Tooltip } from 'antd';
 import {
   AppstoreAddOutlined,
   CarryOutOutlined,
@@ -45,6 +45,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
   const [shareEventOpen, setShareEventOpen] = useState(false);
   const [link, setLink] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!(user.email && cookies.user.email)) {
@@ -82,6 +83,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         Object.fromEntries(
           Object.entries(data).filter(([k, event]) => event.owner === userID)
         );
+      setLoading(false);
       setOwnerEvents(EventsByUserID);
       setFilteredEvents(EventsByUserID);
     });
@@ -132,10 +134,36 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       console.log('Share not supported on this browser, do it manually!');
     }
   };
+  const a = new Array(15).fill(null).map((_, index) => {
+    return (
+      <Card key={index}>
+        <Skeleton.Image active style={{ width: '100%', height: '14em' }} />
+        <Card.Content>
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+        </Card.Content>
+        <Card.Content extra>
+          <div className="c">
+            <div className="cc">
+              <Skeleton.Avatar active />
+              <Skeleton.Avatar active />
+              <Skeleton.Avatar active />
+            </div>
 
+            <div className="buttons">
+              <ShareAltOutlined rev onClick={shareClick} />
+              <FormOutlined rev />
+              <CloudUploadOutlined rev />
+            </div>
+          </div>
+        </Card.Content>
+      </Card>
+    );
+  });
   return (
     <>
-      {ownerEvents && (
+      {ownerEvents && !loading ? (
         <>
           <Card.Group centered>
             <Row className="temp">
@@ -143,7 +171,12 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                 <Tooltip title="create new event">
                   <AppstoreAddOutlined
                     rev
-                    style={{ fontSize: '2em' }}
+                    style={{
+                      fontSize: '2.2em',
+                      borderColor: 'var(--main-color)',
+                      borderRadius: '20%',
+                      borderWidth: '2px',
+                    }}
                     onClick={onClickAddEvent}
                   />
                 </Tooltip>
@@ -155,7 +188,11 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                     placeholder="enter event id or name"
                     onKeyUp={debounceInputChange}
                   />
-                  <i aria-hidden="true" className="search icon"></i>
+                  <i
+                    aria-hidden="true"
+                    className="search icon"
+                    style={{ color: 'var(--main-color)', opacity: 0.9 }}
+                  />
                 </div>
               </Col>
             </Row>
@@ -214,6 +251,10 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
               )
             )}
           </Card.Group>
+        </>
+      ) : (
+        <>
+          <Card.Group centered>{a}</Card.Group>
         </>
       )}
 

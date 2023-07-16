@@ -33,9 +33,9 @@ export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
     <>
       {participantsEvents && (
         <>
-          <Grid columns={3}>
-            {Object.values(participantsEvents).length ? (
-              Object.values(participantsEvents).map(
+          {Object.values(participantsEvents).length ? (
+            <Grid columns={3}>
+              {Object.values(participantsEvents).map(
                 (event: NewEvent, index) => (
                   <Grid.Row key={index}>
                     <Grid.Column width={4}>
@@ -55,14 +55,14 @@ export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
                     </Grid.Column>
                   </Grid.Row>
                 )
-              )
-            ) : (
-              <div className="empty">
-                <h1>there is no events that shares with you yet.</h1>
-                <h1>but don't worry we are here for you</h1>
-              </div>
-            )}
-          </Grid>
+              )}
+            </Grid>
+          ) : (
+            <div className="empty">
+              <h1>there is no events that shares with you yet.</h1>
+              <h1>but don't worry we are here for you</h1>
+            </div>
+          )}
         </>
       )}
     </>
