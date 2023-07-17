@@ -57,8 +57,8 @@ const Header: FC = () => {
   const defaultImg =
     'https://w7.pngwing.com/pngs/81/570/png-transparent-profile-logo-computer-icons-user-user-blue-heroes-logo-thumbnail.png';
 
-  const goToHomePage = () => {
-    navigate('/');
+  const goToLoginPage = () => {
+    navigate('/login');
   };
   const [current, setCurrent] = useState('mail');
 
@@ -96,7 +96,9 @@ const Header: FC = () => {
       label: 'about us',
       key: 'about-us',
       icon: <InfoCircleOutlined rev />,
-      onClick: () => {},
+      onClick: () => {
+        navigate('/about-us');
+      },
     },
   ];
   const { Header } = Layout;
@@ -139,7 +141,7 @@ const Header: FC = () => {
           {userIsLoggedIn() ? (
             <button onClick={logout}>Logout</button>
           ) : (
-            <button onClick={goToHomePage}>Login</button>
+            <button onClick={goToLoginPage}>Login</button>
           )}
           <Avatar gap={8} src={user?.pictureUrl} alt={`${userName}`}>
             <UserOutlined rev />

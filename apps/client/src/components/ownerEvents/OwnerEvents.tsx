@@ -49,7 +49,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
   useEffect(() => {
     if (!(user.email && cookies.user.email)) {
-      navigate('/', { state: { from: '/own-events' } });
+      navigate('/login', { state: { from: '/own-events' } });
     } else {
       // toast.success(`user store , ${user.email}`);
       // toast.success(`user cookie , ${cookies.user.email}`);

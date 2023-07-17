@@ -41,7 +41,7 @@ const EventRegistrationPage = () => {
 
   useEffect(() => {
     if (!cookies?.user?.email) {
-      navigate('/', { state: { from: `/register-event/${eventId}` } });
+      navigate('/login', { state: { from: `/register-event/${eventId}` } });
     }
   }, [cookies]);
 
@@ -71,7 +71,7 @@ const EventRegistrationPage = () => {
   };
 
   const navigateToEvents = () => {
-    navigate('/', { state: { from: '/own-events' } });
+    navigate('/own-events');
   };
 
   const handleSubmit = async () => {
