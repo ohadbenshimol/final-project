@@ -31,25 +31,6 @@ const Header: FC = () => {
     removeCookie('user', { path: '/' });
   };
 
-  const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px',
-  };
-
-  const userInfoStyle = {
-    display: 'flex',
-    alignItems: 'center',
-  };
-
-  const avatarStyle = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    marginLeft: '10px',
-  };
-
   const userName = user?.fullName
     ? `${user.firstName} ${user.lastName}`
     : 'אורח';
@@ -106,12 +87,7 @@ const Header: FC = () => {
   return (
     <Header
       style={{
-        zIndex: 1,
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
         backgroundColor: 'inherit',
-        paddingInline: '1em',
         padding: 0,
       }}
     >

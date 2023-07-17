@@ -13,16 +13,7 @@ import UploadButton, { asUploadButton } from '@rpldy/upload-button';
 import UploadDropZone from '@rpldy/upload-drop-zone';
 
 import retryEnhancer from '@rpldy/retry-hooks';
-import {
-  Button,
-  Card,
-  Col,
-  Row,
-  Progress,
-  Layout,
-  UploadProps,
-  message,
-} from 'antd';
+import { Button, Card, Col, Row, Progress, Layout } from 'antd';
 import { StopOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons';
 import { SERVER_URL } from '../../helpers/config';
 import './FileUploader.less';
@@ -164,24 +155,6 @@ const UploadUi = () => {
     console.log(batch.items);
   });
 
-  const props: UploadProps = {
-    name: 'file',
-    multiple: true,
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files);
-    },
-  };
   return (
     <Layout>
       <Layout.Header

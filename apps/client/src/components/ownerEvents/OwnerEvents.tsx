@@ -177,7 +177,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                       fontSize: '2.2em',
                       borderColor: 'var(--main-color)',
                       borderRadius: '20%',
-                      borderWidth: '2px',
+                      borderWidth: '4px',
                     }}
                     onClick={onClickAddEvent}
                   />
