@@ -26,6 +26,7 @@ import {
   CarryOutOutlined,
   CloudUploadOutlined,
   FormOutlined,
+  MinusCircleOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons';
 import './ParticipantsEvents.less';
@@ -218,14 +219,12 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                           <Tooltip title="share">
                             <ShareAltOutlined rev onClick={shareClick} />
                           </Tooltip>
-                          <Tooltip title="edit">
-                            <FormOutlined rev />
-                          </Tooltip>
+
                           {event.isActive ? (
-                            <Tooltip title="end event">
+                            <Tooltip title="upload images">
                               <CloudUploadOutlined
                                 rev
-                                onClick={() => endEvent(id)}
+                                onClick={() => navigate(`/uploadFile/${id}`)}
                               />
                             </Tooltip>
                           ) : (

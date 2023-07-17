@@ -46,7 +46,7 @@ const FooterCopm: FC = () => {
                 <Input
                   type="email"
                   id="UserEmail"
-                  placeholder="john@rhcp.com"
+                  placeholder="onlyme@gmail.com"
                   className="w-full border-none focus:border-transparent focus:ring-transparent sm:text-sm"
                 />
 

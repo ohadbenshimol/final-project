@@ -27,6 +27,7 @@ import {
   CarryOutOutlined,
   CloudUploadOutlined,
   FormOutlined,
+  MinusCircleOutlined,
   ShareAltOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -135,7 +136,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     }
   };
 
-  const a = new Array(15).fill(null).map((_, index) => {
+  const loadingCards = new Array(15).fill(null).map((_, index) => {
     return (
       <Card key={index}>
         <Skeleton.Image active style={{ width: '100%', height: '14em' }} />
@@ -229,12 +230,15 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                           <Tooltip title="share">
                             <ShareAltOutlined rev onClick={shareClick} />
                           </Tooltip>
-                          <Tooltip title="edit">
-                            <FormOutlined rev />
+                          <Tooltip title="upload images">
+                            <CloudUploadOutlined
+                              rev
+                              onClick={() => navigate(`/uploadFile/${id}`)}
+                            />
                           </Tooltip>
                           {event.isActive ? (
                             <Tooltip title="end event">
-                              <CloudUploadOutlined
+                              <MinusCircleOutlined
                                 rev
                                 onClick={() => endEvent(id)}
                               />
@@ -255,7 +259,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         </>
       )}
 
-      {loading && <Card.Group centered>{a}</Card.Group>}
+      {loading && <Card.Group centered>{loadingCards}</Card.Group>}
 
       {ownerEvents && Object.keys(ownerEvents)?.length < 1 && (
         <div className="empty">
@@ -315,7 +319,7 @@ export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
     >
       {users &&
         Object.entries(users)
-          // ?.filter(([k, v]) => ids.includes(k))//TODO
+          ?.filter(([k, v]) => ids.includes(k)) //TODO
           .map(([k, v], index) => (
             <>
               <Avatar
