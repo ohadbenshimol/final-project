@@ -134,6 +134,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       console.log('Share not supported on this browser, do it manually!');
     }
   };
+
   const a = new Array(15).fill(null).map((_, index) => {
     return (
       <Card key={index}>
@@ -163,7 +164,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   });
   return (
     <>
-      {ownerEvents && !loading ? (
+      {ownerEvents && (
         <>
           <Card.Group centered>
             <Row className="temp">
@@ -252,10 +253,26 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
             )}
           </Card.Group>
         </>
-      ) : (
-        <>
-          <Card.Group centered>{a}</Card.Group>
-        </>
+      )}
+
+      {loading && <Card.Group centered>{a}</Card.Group>}
+
+      {ownerEvents && Object.keys(ownerEvents)?.length < 1 && (
+        <div className="empty">
+          there isnt event yet click the button to create one ={'>'}
+          <Tooltip title="create new event">
+            <AppstoreAddOutlined
+              rev
+              style={{
+                fontSize: '2.2em',
+                borderColor: 'var(--main-color)',
+                borderRadius: '20%',
+                borderWidth: '2px',
+              }}
+              onClick={onClickAddEvent}
+            />
+          </Tooltip>
+        </div>
       )}
 
       <Modal
@@ -280,7 +297,8 @@ interface UsersPhotosProps {
   users?: Record<string, UserState>;
 }
 
-const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
+//TODO move
+export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
   const ids = Object.keys(subscribers);
   const a = useRef<any>();
   const handleImageError = () => {

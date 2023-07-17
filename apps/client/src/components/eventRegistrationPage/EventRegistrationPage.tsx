@@ -71,7 +71,7 @@ const EventRegistrationPage = () => {
   };
 
   const navigateToEvents = () => {
-    navigate('/own-events');
+    navigate('/shared-events');
   };
 
   const handleSubmit = async () => {

@@ -13,7 +13,7 @@ import FacebookLogin from '@greatsumini/react-facebook-login';
 import AppleLogin from 'react-apple-login';
 
 import './Login.less';
-import { AppleOutlined } from '@ant-design/icons';
+import { AppleFilled, AppleOutlined } from '@ant-design/icons';
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -74,42 +74,29 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="MainPage">
-      <h1>lets get startes </h1>
-      <GoogleLogin
-        useOneTap
-        onSuccess={(response) => handleSuccess(response, location.state?.from)}
-        onError={handleError}
-      />
-
-      <div className="apple">
-        <AppleLogin
-          clientId="YOUR_CLIENT_ID"
-          redirectURI="YOUR_REDIRECT_URL"
-          usePopup
-          callback={handleError} // Catch the response
-          scope="email name"
-          responseMode="query"
-          render={(
-            renderProps //Custom Apple Sign in Button
-          ) => (
-            <button
-              onClick={renderProps.onClick}
-              style={{
-                backgroundColor: 'white',
-                padding: 10,
-                border: '1px solid black',
-                fontFamily: 'none',
-                lineHeight: '25px',
-                fontSize: '25px',
-              }}
-            >
-              <AppleOutlined rev />
-              Continue with Apple
-            </button>
-          )}
+    <div className="main-page">
+      <h1>lets get started </h1>
+      <div className="googke-signon">
+        <GoogleLogin
+          useOneTap
+          onSuccess={(response) =>
+            handleSuccess(response, location.state?.from)
+          }
+          onError={handleError}
         />
       </div>
+
+      <button className="apple-signin-button">
+        <div className="apple-logo-wrapper">
+          <AppleFilled
+            rev
+            src="apple-logo.png"
+            alt="Apple logo"
+            className="apple-logo"
+          />
+        </div>
+        <span className="apple-signin-text">Sign in with Apple</span>
+      </button>
       <div className="facebook">
         <FacebookLogin
           appId={'appId'}
@@ -117,10 +104,10 @@ const Login: React.FC = () => {
             version: 'v10.0',
           }}
           style={{
+            fontSize: '1.1em',
             backgroundColor: '#4267b2',
             color: '#fff',
-            fontSize: '16px',
-            padding: '12px 24px',
+            padding: '0.5em 2.1em',
             border: 'none',
             borderRadius: '4px',
           }}
