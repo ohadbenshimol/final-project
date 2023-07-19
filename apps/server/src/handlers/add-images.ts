@@ -1,20 +1,28 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
-import { IndexAndUploadImage } from '../api/index-and-upload-image';
+import { IndexAndUploadImage } from '../app/add-images/index-and-upload-image';
 import { AddImagesBody } from '../app/types';
+import { initAws } from "../services/init-aws";
 
 export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
+  await initAws();
+
     try {
-        console.log(`Run add-images-handler - ${JSON.stringify(event.body)}`);
         const body: AddImagesBody = JSON.parse(event.body);
+        console.log(`Run add-images-handler to event - ${body.eventId}, indexing ${body.images.length} images`);
         const res = await IndexAndUploadImage(body);
-        console.log(`End add-images-handler`, event);
+        console.log(`End add-images-handler to event - ${body.eventId}`);
 
         return {
             statusCode: 200,
+            headers: {
+              "Access-Control-Allow-Headers" : "Content-Type",
+              "Access-Control-Allow-Origin": "*", // Allow from anywhere
+              "Access-Control-Allow-Methods": "OPTIONS,POST,GET" // Allow these HTTP methods
+            },
             body: JSON.stringify(res),
         };
     } catch (error) {
-        console.log(`Failed to run add-images-handler - ${error}`, JSON.stringify(event.body));
+        console.log(`Failed to run add-images-handler to event ${JSON.parse(event.body).eventId} with error - ${error}`);
         throw error;
     }
 };

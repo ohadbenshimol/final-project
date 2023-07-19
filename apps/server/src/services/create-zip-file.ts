@@ -1,11 +1,13 @@
 import archiver from 'archiver';
 
-export const createZipFile = async (username: string, faces: AWS.Rekognition.FaceMatch[]): Promise<Buffer> => {
-  return new Promise((resolve, reject) => {
+export const createZipFile = async (username: string, images: string[]): Promise<Buffer> => {
+  console.log(`Starting create zip file`);
+
+  return await new Promise<Buffer>((resolve, reject) => {
     const archive = archiver('zip', { zlib: { level: 9 } });
     const buffers: Buffer[] = [];
 
-    archive.on('error', (error: any) => {
+    archive.on('error', (error: Error) => {
       console.error(`Error creating zip file: ${error}`);
       reject(error);
     });
@@ -16,16 +18,21 @@ export const createZipFile = async (username: string, faces: AWS.Rekognition.Fac
 
     archive.on('end', () => {
       const zipBuffer = Buffer.concat(buffers);
-      console.log(`Created zip file for event ${username}`);
+      console.log(`Created zip file for user ${username}`);
       resolve(zipBuffer);
     });
 
-    for (const [index, face] of faces.entries()) {
-      const matchedImage = face.Face?.ExternalImageId || index;
-      const buffer = Buffer.from(matchedImage as string, 'base64'); // Decode base64 image data
-      archive.append(buffer, { name: `matched-image-${matchedImage}.jpg` });
+    for (const [index, image] of images.entries()) {
+      try {
+        const base64Data = image.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+        const buffer = Buffer.from(base64Data, 'base64');
+        archive.append(buffer, { name: `matched-image-${index}.jpg` });
+      } catch (error) {
+        console.error(`Error processing image data: ${error}`);
+        reject(error);
+      }
     }
 
     archive.finalize();
   });
-}
+};

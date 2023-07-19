@@ -16,6 +16,8 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       BucketName: "photo-face-events-bucket"
+      VersioningConfiguration:
+        Status: Enabled
 
   AddUserToEventFunction:
     Type: AWS::Serverless::Function
@@ -56,11 +58,10 @@ Resources:
         - S3WritePolicy:
             BucketName: !Ref EventsBucket
         - Statement:
-            - Effect: Allow
-              Resource: '*'
-              Action:
-                - lambda:InvokeFunction
-                - events:PutEvents
+          - Effect: Allow
+            Action:
+              - rekognition:IndexFaces
+            Resource: '*'
       Events:
         Api:
           Type: Api
@@ -95,6 +96,37 @@ Resources:
             Path: /close/event
             Method: POST
 
+  CreateEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/create-event.handler
+      Description: create event by event admin
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
+            - Effect: Allow
+              Resource: '*'
+              Action:
+                - lambda:InvokeFunction
+                - events:PutEvents
+        - Statement:
+            - Effect: Allow
+              Action:
+                - rekognition:CreateCollection
+              Resource: '*'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyServerlessApi
+            Path: /create/event
+            Method: POST
+
   MyServerlessApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -120,7 +152,7 @@ Resources:
 Outputs:
   HttpBaseUrl:
     Description: "API Gateway endpoint URL"
-    Value: !Sub "https://${MyServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Value: !Sub "https://photo-face-server-api.execute-api.${AWS::Region}.amazonaws.com/"
     Export:
       Name:
         Fn::Sub: "${AWS::StackName}-url"
