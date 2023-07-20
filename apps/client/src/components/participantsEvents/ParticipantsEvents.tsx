@@ -1,14 +1,7 @@
-import { db, eventsRef, usersRef } from '../../helpers/firebase';
+import defaultImg from '../../assets/default.svg';
+import { eventsRef, usersRef } from '../../helpers/firebase';
 import { FC, useEffect, useState } from 'react';
-import {
-  equalTo,
-  get,
-  onValue,
-  orderByChild,
-  query,
-  ref,
-  update,
-} from 'firebase/database';
+import { equalTo, get, onValue, orderByChild, query } from 'firebase/database';
 import { Card, Image, Modal } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
 import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
@@ -19,18 +12,17 @@ import { debounce } from 'ts-debounce';
 import { useCookies } from 'react-cookie';
 import { CreateEvent } from '../createEvent/CreateEvent';
 import { ShareEvent } from '../shareEvent/ShareEvent';
-import defaultImg from '../../assets/default.svg';
-import { Col, Row, Skeleton, Tooltip } from 'antd';
+import { Row, Skeleton, Tooltip } from 'antd';
+import { UsersPhotos } from '../ownerEvents/OwnerEvents';
 import {
-  AppstoreAddOutlined,
   CarryOutOutlined,
   CloudUploadOutlined,
   FormOutlined,
-  MinusCircleOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons';
 import './ParticipantsEvents.less';
-import { UsersPhotos } from '../ownerEvents/OwnerEvents';
+import { useNavigation } from '../../hooks/navigate';
+
 interface ParticipantsEventsProps {}
 
 const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
@@ -41,7 +33,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
   const [filteredEvents, setFilteredEvents] =
     useState<Record<string, NewEvent>>();
   const [users, setUsers] = useState<Record<string, UserState>>();
-  const navigate = useNavigate();
+  const { goToLoginPage, goToUploadFilePage } = useNavigation('/shared-events');
   const [cookies] = useCookies(['user']);
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
   const [shareEventOpen, setShareEventOpen] = useState(false);
@@ -50,7 +42,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
 
   useEffect(() => {
     if (!(user.email && cookies.user.email)) {
-      navigate('/login', { state: { from: 'shared-events' } });
+      goToLoginPage();
     } else {
       // toast.success(`user store , ${user.email}`);
       // toast.success(`user cookie , ${cookies.user.email}`);
@@ -70,8 +62,6 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
   const onCancel = () => {
     setCreateEventIsOpen(false);
   };
-
-  const onClickAddEvent = () => setCreateEventIsOpen(true);
 
   useEffect(() => {
     if (!userID) return;
@@ -110,24 +100,6 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
 
   const debounceInputChange = debounce(handleInputChange, 300);
 
-  const getEvent = async (eventId: string) => {
-    const snapshot = await get(ref(db, `/events/${eventId}`));
-    return snapshot.val();
-  };
-
-  const endEvent = async (eventId: string) => {
-    console.log(eventId);
-    //TODO: send request to server
-
-    const event: NewEvent = await getEvent(eventId);
-    if (event) {
-      await update(ref(db, `events/${eventId}`), {
-        ...event,
-        isActive: false,
-      });
-    }
-  };
-
   const shareClick = () => {
     if (navigator.share) {
       navigator.share({
@@ -140,7 +112,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
     }
   };
 
-  const a = new Array(15).fill(null).map((_, index) => {
+  const loadingCards = new Array(15).fill(null).map((_, index) => {
     return (
       <Card key={index}>
         <Skeleton.Image active style={{ width: '100%', height: '14em' }} />
@@ -224,7 +196,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                             <Tooltip title="upload images">
                               <CloudUploadOutlined
                                 rev
-                                onClick={() => navigate(`/uploadFile/${id}`)}
+                                onClick={() => goToUploadFilePage(id)}
                               />
                             </Tooltip>
                           ) : (
@@ -243,7 +215,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
         </>
       )}
 
-      {loading && <Card.Group centered>{a}</Card.Group>}
+      {loading && <Card.Group centered>{loadingCards}</Card.Group>}
 
       {participantsEvents && Object.keys(participantsEvents)?.length < 1 && (
         <div className="empty">there isnt shared event yet</div>
@@ -267,88 +239,3 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
 };
 
 export default ParticipantsEvents;
-
-// import { useSelector } from 'react-redux';
-// import { getUser, getUserID } from '../../store/reducers/userSlice';
-// import { FC, useEffect, useState } from 'react';
-// import { NewEvent } from '../../shared/models/event';
-// import { equalTo, onValue, orderByChild, query } from 'firebase/database';
-// import { eventsRef } from '../../helpers/firebase';
-// import { Button, Container, Grid } from 'semantic-ui-react';
-// import './ParticipantsEvents.less';
-// import { useCookies } from 'react-cookie';
-// import { useNavigate } from 'react-router-dom';
-
-// export interface ParticipantsProps {}
-
-// export const ParticipantsEvents: FC<ParticipantsProps> = ({}) => {
-//   const userID = useSelector(getUserID);
-//   const user = useSelector(getUser);
-//   const navigate = useNavigate();
-//   const [participantsEvents, setParticipantsEvents] = useState<NewEvent[]>([]);
-
-//   const [cookies] = useCookies(['user']);
-
-//   useEffect(() => {
-//     if (!(user.email && cookies.user.email)) {
-//       navigate('/login', { state: { from: 'shared-events' } });
-//     } else {
-//       // toast.success(`user store , ${user.email}`);
-//       // toast.success(`user cookie , ${cookies.user.email}`);
-//     }
-//   }, [user, cookies]);
-
-//   useEffect(() => {
-//     const eventQuery = query(
-//       eventsRef,
-//       orderByChild(`subscribers/${userID}`),
-//       equalTo(true)
-//     );
-
-//     onValue(eventQuery, (snapshot) => {
-//       const data = snapshot.val() as Record<string, NewEvent>;
-//       const EventsByUserID: NewEvent[] =
-//         data && Object.values(data).filter((event) => event.owner !== userID);
-//       setParticipantsEvents(EventsByUserID);
-//     });
-//   }, [userID]);
-
-//   return (
-//     <>
-//       {participantsEvents && (
-//         <>
-//           {Object.values(participantsEvents).length ? (
-//             <Grid columns={3}>
-//               {Object.values(participantsEvents).map(
-//                 (event: NewEvent, index) => (
-//                   <Grid.Row key={index}>
-//                     <Grid.Column width={4}>
-//                       <img
-//                         className="ui tiny image"
-//                         src="../../assets/69DFE2D3-0914-4DDB-94BC-E425304646E7.jpg"
-//                       />
-//                     </Grid.Column>
-//                     <Grid.Column width={8}>
-//                       <p>{event.name}</p>
-//                       <p>{event.description}</p>
-//                       <p>{event.creationDate}</p>
-//                     </Grid.Column>
-//                     <Grid.Column width={4}>
-//                       <Button primary>Edit event</Button>
-//                       <Button>Details</Button>
-//                     </Grid.Column>
-//                   </Grid.Row>
-//                 )
-//               )}
-//             </Grid>
-//           ) : (
-//             <div className="empty">
-//               <h1>there is no events that shares with you yet.</h1>
-//               <h1>but don't worry we are here for you</h1>
-//             </div>
-//           )}
-//         </>
-//       )}
-//     </>
-//   );
-// };

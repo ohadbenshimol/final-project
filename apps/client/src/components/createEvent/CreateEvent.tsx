@@ -5,8 +5,8 @@ import { push } from 'firebase/database';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
 import { getUser } from '../../store/reducers/userSlice';
-import { useNavigate } from 'react-router-dom';
 import { CLIENT_URL } from '../../helpers/config';
+import { createEvent } from '../../helpers/requests';
 import './CreateEvent.less';
 
 interface CreateEventProps {
@@ -29,7 +29,6 @@ export const CreateEvent: FC<CreateEventProps> = ({
   onCancel,
 }) => {
   const user = useSelector(getUser);
-  const navigate = useNavigate();
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
   const [image, setImage] = useState<string>('');
 
@@ -65,6 +64,7 @@ export const CreateEvent: FC<CreateEventProps> = ({
 
       setLink(`${CLIENT_URL}/register-event/${newEventRef.key}`);
       setFormValues(DEFAULT_FORM_DATA);
+      await createEvent({ eventId: newEventRef.key! });
       onSubmit();
     } catch (error) {
       console.error(error);

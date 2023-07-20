@@ -5,6 +5,7 @@ import FileUploader from '../components/fileUploader/FileUploader';
 import ParticipantsEvents from '../components/participantsEvents/ParticipantsEvents';
 import FooterComp from '../components/footer/Footer';
 import AboutUs from '../components/aboutUs/AboutUs';
+import Login from '../components/login/Login';
 import { Route, Routes } from 'react-router-dom';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { FC, useEffect } from 'react';
@@ -14,9 +15,9 @@ import { OwnerEvents } from '../components/ownerEvents/OwnerEvents';
 import { Layout } from 'antd';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../store/reducers/userSlice';
+import { GOOGLE_OAUTH } from '../helpers/config';
 import './App.less';
 import '../styles.less';
-import Login from '../components/login/Login';
 
 const queryClient = new QueryClient();
 
@@ -25,17 +26,14 @@ const App: FC = () => {
   const [cookies] = useCookies(['user']);
 
   useEffect(() => {
-    if (cookies.user) {
-      console.log(cookies.user);
-      dispatch(setUser(cookies.user));
-    }
+    if (cookies.user) dispatch(setUser(cookies.user));
   }, [cookies, dispatch]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GoogleOAuthProvider clientId="624101518081-djj69l3n9h3h3g516vj32jhri3ehahaa.apps.googleusercontent.com">
+      <GoogleOAuthProvider clientId={GOOGLE_OAUTH}>
         <CookiesProvider>
-          <Layout className="layout" style={{ padding: '1em' }}>
+          <Layout className="layout" style={{ minHeight: '100vh' }}>
             <HeaderComp />
             <Layout.Content>
               <Routes>

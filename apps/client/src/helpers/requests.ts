@@ -13,6 +13,10 @@ export interface AddUserToEvent {
   image: string;
 }
 
+export interface CreateEventBody {
+  eventId: string;
+}
+
 export interface CloseEventBody {
   eventId: string;
 }
@@ -23,7 +27,7 @@ export const URL = 'https://2ipqts95ri.execute-api.eu-central-1.amazonaws.com/pr
 const CLOSE_EVENT_URL = `${URL}/close/event`;
 const ADD_USER_URL = `${URL}/add/user`;
 const ADD_IMAGES_URL = `${URL}/add/images`;
-const CREATE_EVENT_URL = `${URL}/create/event`;//TODO
+const CREATE_EVENT_URL = `${URL}/create/event`;
 
 const accessKeyId = 'AKIAY2YE4MY2SXERX35Q';
 const secretAccessKey = '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';
@@ -61,6 +65,16 @@ export const addUserToEvent = async (body:AddUserToEvent) => {
   try {
     const res = await axios.post(ADD_USER_URL, body);
     toast.success('add user to event successfully');
+    console.log('res', res);
+  } catch (error:any) {
+    console.log('error', error);
+    throw error
+  };
+}
+export const createEvent = async (body:CreateEventBody) => {
+  try {
+    const res = await axios.post(CREATE_EVENT_URL, body);
+    toast.success('create event successfully');
     console.log('res', res);
   } catch (error:any) {
     toast.error(`error ${error?.toString()}`);

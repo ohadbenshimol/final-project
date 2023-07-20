@@ -9,14 +9,15 @@ import { useCookies } from 'react-cookie';
 import { orderByChild, push, equalTo, query, get } from 'firebase/database';
 import { usersRef } from '../../helpers/firebase';
 import FacebookLogin from '@greatsumini/react-facebook-login';
-
 import AppleLogin from 'react-apple-login';
-
+import { AppleFilled } from '@ant-design/icons';
+import { useNavigation } from '../../hooks/navigate';
+import { redirect } from 'react-router-dom';
 import './Login.less';
-import { AppleFilled, AppleOutlined } from '@ant-design/icons';
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
+  const { goToMyEventsPage } = useNavigation();
   const navigate = useNavigate();
   const location = useLocation();
   const [cookies, setCookie] = useCookies(['user']);
@@ -26,7 +27,7 @@ const Login: React.FC = () => {
       console.log(cookies.user);
 
       dispatch(setUser(cookies.user));
-      navigate('/own-events'); //TODO
+      goToMyEventsPage();
     }
   }, [cookies, dispatch]);
 

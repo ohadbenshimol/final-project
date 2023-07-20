@@ -2,8 +2,6 @@ import { FirebaseApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref } from 'firebase/database';
 import { getStorage } from 'firebase/storage';
-
-//Now import this
 import 'firebase/firestore';
 
 const firebaseConfig = {

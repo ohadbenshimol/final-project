@@ -1,4 +1,4 @@
-// import QRCode from 'react-qr-code';
+// import QRCode from 'react-qr-code';// TODO remove
 import { FC, useRef } from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { WhatsappShareButton } from 'react-share';
@@ -71,13 +71,11 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
                 width: '100%',
               }}
             >
-              <QRCode value={link} icon="../../assets/logo.png" />
-              {/* <QRCode
-                size={256}
-                style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+              <QRCode
                 value={link}
-                viewBox={`0 0 256 256`}
-              /> */}
+                icon="../../assets/default.svg"
+                errorLevel="H"
+              />
             </div>
           </Form>
         </Modal.Content>

@@ -1,4 +1,17 @@
+import UploadButton, { asUploadButton } from '@rpldy/upload-button';
+import UploadDropZone from '@rpldy/upload-drop-zone';
+import UploadPreview from '@rpldy/upload-preview';
+import retryEnhancer, { useRetry } from '@rpldy/retry-hooks';
 import { useState, useCallback, useRef, memo, FC } from 'react';
+import { composeEnhancers } from '@rpldy/uploader';
+import { getMockSenderEnhancer } from '@rpldy/mock-sender';
+import { StopOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SERVER_URL } from '../../helpers/config';
+import { AddImagesToEvent } from '../../helpers/requests';
+import { get, ref } from 'firebase/database';
+import { db } from '../../helpers/firebase';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import Uploady, {
   useItemProgressListener,
   useItemFinalizeListener,
@@ -6,17 +19,18 @@ import Uploady, {
   useAbortItem,
   useBatchStartListener,
 } from '@rpldy/uploady';
-import { composeEnhancers } from '@rpldy/uploader';
-import UploadPreview from '@rpldy/upload-preview';
-import { getMockSenderEnhancer } from '@rpldy/mock-sender';
-import UploadButton, { asUploadButton } from '@rpldy/upload-button';
-import UploadDropZone from '@rpldy/upload-drop-zone';
-
-import retryEnhancer from '@rpldy/retry-hooks';
-import { Button, Card, Col, Row, Progress, Layout } from 'antd';
-import { StopOutlined, RedoOutlined, DeleteOutlined } from '@ant-design/icons';
-import { SERVER_URL } from '../../helpers/config';
+import {
+  Button,
+  Card,
+  Col,
+  Row,
+  Progress,
+  Layout,
+  Modal,
+  ModalFuncProps,
+} from 'antd';
 import './FileUploader.less';
+import { useNavigation } from '../../hooks/navigate';
 
 const STATES = {
   PROGRESS: 'PROGRESS',
@@ -31,9 +45,8 @@ const isItemError = (state: any) =>
 const PreviewCard = memo(({ id, url, name }: any) => {
   const [percent, setPercent] = useState(0);
   const [itemState, setItemState] = useState(STATES.PROGRESS);
-
   const abortItem = useAbortItem();
-  // const retry = useRetry();
+  const retry = useRetry();
 
   useItemProgressListener((item) => {
     setPercent(item.completed);
@@ -57,9 +70,9 @@ const PreviewCard = memo(({ id, url, name }: any) => {
     abortItem(id);
   }, [abortItem, id]);
 
-  // const onRetry = useCallback(() => {
-  //   retry(id);
-  // }, [retry, id]);
+  const onRetry = useCallback(() => {
+    retry(id);
+  }, [retry, id]);
 
   return (
     <Col>
@@ -78,7 +91,7 @@ const PreviewCard = memo(({ id, url, name }: any) => {
           <Button
             key="retry"
             icon={<RedoOutlined rev />}
-            // onClick={onRetry}
+            onClick={onRetry}
             disabled={!isItemError(itemState)}
             type="link"
           />,
@@ -127,7 +140,7 @@ const UploadPreviewCards = ({ previewMethodsRef, setPreviews }: any) => {
   );
 };
 
-const AA: FC = () => {
+const DragAndDrop: FC = () => {
   return (
     <UploadButton className="drag">
       <UploadDropZone
@@ -141,9 +154,10 @@ const AA: FC = () => {
     </UploadButton>
   );
 };
-const UploadButton2 = asUploadButton(AA);
 
-const UploadUi = () => {
+const DragAndClickUpload = asUploadButton(DragAndDrop);
+
+const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
   const previewMethodsRef = useRef();
   const [previews, setPreviews] = useState([]);
 
@@ -152,21 +166,33 @@ const UploadUi = () => {
   }, [previewMethodsRef]);
 
   useBatchStartListener((batch) => {
-    console.log(batch.items);
+    const promises = batch.items.map((item) => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          resolve(reader.result as string);
+        };
+        reader.onerror = reject;
+
+        reader.readAsDataURL(item.file as any);
+      });
+    });
+
+    Promise.all(promises)
+      .then(async (base64Array: string[]) => {
+        console.log(base64Array);
+
+        await AddImagesToEvent({ eventId, images: base64Array });
+      })
+      .catch((error) => {
+        console.error('Error reading files:', error);
+      });
   });
 
   return (
-    <Layout>
-      <Layout.Header
-        style={{
-          background: 'inherit',
-          display: 'flex',
-          alignItems: 'center',
-          justifyItems: 'center',
-        }}
-      >
-        <div
-          className="d"
+    <div>
+      <Layout>
+        <Layout.Header
           style={{
             background: 'inherit',
             display: 'flex',
@@ -186,139 +212,54 @@ const UploadUi = () => {
           <span style={{ marginLeft: '2em' }}>
             total images: {previews.length}
           </span>
-        </div>
-      </Layout.Header>
-      <Layout.Content>
-        {!previews.length && <UploadButton2 key="upload-button" />}
+        </Layout.Header>
+        <Layout.Content>
+          {!previews.length && <DragAndClickUpload key="upload-button" />}
 
-        <UploadPreviewCards
-          setPreviews={setPreviews}
-          previewMethodsRef={previewMethodsRef}
-        />
-      </Layout.Content>
-    </Layout>
+          <UploadPreviewCards
+            setPreviews={setPreviews}
+            previewMethodsRef={previewMethodsRef}
+          />
+        </Layout.Content>
+      </Layout>
+    </div>
   );
 };
 
 const mockEnhancer = getMockSenderEnhancer({ delay: 2000 });
-const enhancer = composeEnhancers(retryEnhancer, mockEnhancer);
-// const enhancer = composeEnhancers(mockEnhancer); //TODO=:USE UNTIL SERVER
+const enhancer = composeEnhancers(retryEnhancer, mockEnhancer); //TODO=:USE UNTIL SERVER
 
 const FileUploader = () => {
+  const { eventId } = useParams();
+  const { goToMyEventsPage } = useNavigation();
+
+  const getEvent = async () => {
+    const snapshot = await get(ref(db, `/events/${eventId}`));
+    return snapshot.val();
+  };
+
+  useQuery('events', async () => await getEvent(), {
+    onSuccess: (data) => {
+      if (!data) Modal.error({ ...errorModalConf, onOk: goToMyEventsPage });
+    },
+  });
+
   return (
     <Uploady enhancer={enhancer} destination={{ url: SERVER_URL }}>
-      <UploadUi />
+      <>{eventId && <UploadUi eventId={eventId} />}</>
     </Uploady>
   );
 };
-// const FileUploader = () => {
-//   const [previewOpen, setPreviewOpen] = useState(false);
-//   const [previewImage, setPreviewImage] = useState('');
-//   const [previewTitle, setPreviewTitle] = useState('');
-//   const [fileList, setFileList] = useState<UploadFile[]>([]);
-
-//   const handleCancel = () => setPreviewOpen(false);
-//   const [uploading, setUploading] = useState(false);
-
-//   const getBase64 = (file: RcFile): Promise<string> =>
-//     new Promise((resolve, reject) => {
-//       const reader = new FileReader();
-//       reader.readAsDataURL(file);
-//       reader.onload = () => resolve(reader.result as string);
-//       reader.onerror = (error) => reject(error);
-//     });
-
-//   const handlePreview = async (file: UploadFile) => {
-//     if (!file.url && !file.preview) {
-//       file.preview = await getBase64(file.originFileObj as RcFile);
-//     }
-
-//     setPreviewImage(file.url || (file.preview as string));
-//     setPreviewOpen(true);
-//     setPreviewTitle(
-//       file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1)
-//     );
-//   };
-
-//   const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
-//     setFileList(newFileList);
-
-//   const uploadButton = (
-//     <div>
-//       <PlusOutlined rev={undefined} />
-//       <div style={{ marginTop: 8 }}>Upload</div>
-//     </div>
-//   );
-
-//   const handleUpload = () => {
-//     const formData = new FormData();
-//     fileList.forEach((file) => {
-//       formData.append('files[]', file as RcFile);
-//     });
-//     setUploading(true);
-//     // You can use any AJAX library you like
-//     fetch('https://www.mocky.io/v2/5cc8019d300000980a055e76', {
-//       method: 'POST',
-//       body: formData,
-//     })
-//       .then((res) => res.json())
-//       .then(() => {
-//         setFileList([]);
-//         message.success('upload successfully.');
-//       })
-//       .catch(() => {
-//         message.error('upload failed.');
-//       })
-//       .finally(() => {
-//         setUploading(false);
-//       });
-//   };
-
-//   const props: UploadProps = {
-//     onRemove: (file) => {
-//       const index = fileList.indexOf(file);
-//       const newFileList = fileList.slice();
-//       newFileList.splice(index, 1);
-//       setFileList(newFileList);
-//     },
-//     beforeUpload: (file) => {
-//       setFileList([...fileList, file]);
-
-//       return false;
-//     },
-//     fileList,
-//   };
-
-//   return (
-//     <>
-//       <Upload
-//         {...props}
-//         listType="picture-card"
-//         multiple
-//         fileList={fileList}
-//         onPreview={handlePreview}
-//         onChange={handleChange}
-//       >
-//         {fileList.length >= 1000 ? null : uploadButton}
-//       </Upload>
-//       <Button
-//         type="primary"
-//         onClick={handleUpload}
-//         disabled={fileList.length === 0}
-//         loading={uploading}
-//         style={{
-//           marginTop: 16,
-//           // background: 'var(--main-color)',
-//           color: 'white',
-//         }}
-//       >
-//         {uploading ? 'Uploading' : 'Start Upload'}
-//       </Button>
-//       <Modal open={previewOpen} title={previewTitle} onCancel={handleCancel}>
-//         <img alt="example" style={{ width: '100%' }} src={previewImage} />
-//       </Modal>
-//     </>
-//   );
-// };
 
 export default FileUploader;
+
+const errorModalConf: ModalFuncProps = {
+  title: 'This event does not exist',
+  content: 'someone give you wrong id :(',
+  okText: 'go to your events',
+  okType: 'primary',
+  centered: true,
+  okButtonProps: {
+    ghost: true,
+  },
+};

@@ -32,6 +32,8 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import './OwnerEvents.less';
+import { closeEvent } from '../../helpers/requests';
+import { useNavigation } from '../../hooks/navigate';
 interface OwnerEventsProps {}
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
@@ -41,7 +43,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const [fIlteredEvents, setFilteredEvents] =
     useState<Record<string, NewEvent>>();
   const [users, setUsers] = useState<Record<string, UserState>>();
-  const navigate = useNavigate();
+  const { goToLoginPage, goToUploadFilePage } = useNavigation('/own-events');
   const [cookies] = useCookies(['user']);
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
   const [shareEventOpen, setShareEventOpen] = useState(false);
@@ -50,7 +52,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
   useEffect(() => {
     if (!(user.email && cookies.user.email)) {
-      navigate('/login', { state: { from: '/own-events' } });
+      goToLoginPage();
     } else {
       // toast.success(`user store , ${user.email}`);
       // toast.success(`user cookie , ${cookies.user.email}`);
@@ -113,7 +115,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
   const endEvent = async (eventId: string) => {
     console.log(eventId);
-    //TODO: send request to server
 
     const event: NewEvent = await getEvent(eventId);
     if (event) {
@@ -121,6 +122,8 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         ...event,
         isActive: false,
       });
+
+      await closeEvent({ eventId });
     }
   };
 
@@ -147,7 +150,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         </Card.Content>
         <Card.Content extra>
           <div className="c">
-            <div className="cc">
+            <div className="avatars">
               <Skeleton.Avatar active />
               <Skeleton.Avatar active />
               <Skeleton.Avatar active />
@@ -216,9 +219,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                       </Card.Meta>
                       <Card.Description>{event.description}</Card.Description>
                       <Card.Description>{id}</Card.Description>
-                      <Card.Description>
-                        "ds"{event.isActive ? 'Active' : 'not'}
-                      </Card.Description>
                     </Card.Content>
                     <Card.Content extra>
                       <div className="c">
@@ -233,7 +233,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                           <Tooltip title="upload images">
                             <CloudUploadOutlined
                               rev
-                              onClick={() => navigate(`/uploadFile/${id}`)}
+                              onClick={() => goToUploadFilePage(id)}
                             />
                           </Tooltip>
                           {event.isActive ? (

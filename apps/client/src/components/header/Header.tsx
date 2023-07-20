@@ -1,3 +1,4 @@
+import LOGO from '../../assets/logo.png';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getUser,
@@ -7,7 +8,6 @@ import {
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { FC, useState } from 'react';
-import LOGO from '../../assets/logo.png';
 import { Col, Layout, Menu, MenuProps, Row } from 'antd';
 import {
   HomeOutlined,
@@ -15,19 +15,25 @@ import {
   ShareAltOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-
-import './Header.less';
 import Avatar from 'antd/es/avatar/avatar';
+import './Header.less';
+import { useNavigation } from '../../hooks/navigate';
 
 const Header: FC = () => {
   const user = useSelector(getUser);
   const [, , removeCookie] = useCookies(['user']);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const {
+    goToHomePage,
+    goToLoginPage,
+    goToAboutUsPage: goToToAboutUsPage,
+    goToMyEventsPage: goToToMyEventsPage,
+    goToSharedEventsPage: goToToSharedEventsPage,
+  } = useNavigation();
 
   const logout = () => {
     dispatch(setUser({}));
-    navigate('/');
+    goToHomePage();
     removeCookie('user', { path: '/' });
   };
 
@@ -35,12 +41,6 @@ const Header: FC = () => {
     ? `${user.firstName} ${user.lastName}`
     : 'אורח';
 
-  const defaultImg =
-    'https://w7.pngwing.com/pngs/81/570/png-transparent-profile-logo-computer-icons-user-user-blue-heroes-logo-thumbnail.png';
-
-  const goToLoginPage = () => {
-    navigate('/login');
-  };
   const [current, setCurrent] = useState('mail');
 
   const onClick: MenuProps['onClick'] = (e) => {
@@ -53,42 +53,33 @@ const Header: FC = () => {
       label: 'home',
       key: 'home',
       icon: <HomeOutlined rev />,
-      onClick: () => {
-        navigate('/');
-      },
+      onClick: goToHomePage,
     },
     {
       label: 'My events',
       key: 'my-events',
       icon: <ShareAltOutlined rev />,
-      onClick: () => {
-        navigate('/own-events');
-      },
+      onClick: goToToMyEventsPage,
     },
     {
       label: 'shared events',
       key: 'shared-events',
       icon: <ShareAltOutlined rev />,
-      onClick: () => {
-        navigate('/shared-events');
-      },
+      onClick: goToToSharedEventsPage,
     },
     {
       label: 'about us',
       key: 'about-us',
       icon: <InfoCircleOutlined rev />,
-      onClick: () => {
-        navigate('/about-us');
-      },
+      onClick: goToToAboutUsPage,
     },
   ];
-  const { Header } = Layout;
 
   return (
-    <Header
+    <Layout.Header
       style={{
         backgroundColor: 'inherit',
-        padding: 0,
+        padding: '1em',
       }}
     >
       <Row
@@ -122,21 +113,9 @@ const Header: FC = () => {
           <Avatar gap={8} src={user?.pictureUrl} alt={`${userName}`}>
             <UserOutlined rev />
           </Avatar>
-          {/* <div style={userInfoStyle}>
-            <img
-            src={user?.pictureUrl || defaultImg}
-              alt={userName}
-              style={avatarStyle}
-            />
-            {userIsLoggedIn() ? (
-              <button onClick={logout}>Logout</button>
-            ) : (
-              <button onClick={goToHomePage}>Login</button>
-            )}
-          </div> */}
         </Col>
       </Row>
-    </Header>
+    </Layout.Header>
   );
 };
 

@@ -1,15 +1,13 @@
 import React from 'react';
 import { userIsLoggedIn } from '../../store/reducers/userSlice';
-import { useNavigate } from 'react-router-dom';
-import './MainPage.less';
 import { Button } from 'antd';
+import { useNavigation } from '../../hooks/navigate';
+import './MainPage.less';
 
 const MainPage: React.FC = () => {
   const user = userIsLoggedIn();
-  const navigate = useNavigate();
-
-  const goToLoginPage = () => navigate('/login');
-  const goToOwnEventsPage = () => navigate('/own-events');
+  const { goToLoginPage, goToMyEventsPage: goToToMyEventsPage } =
+    useNavigation();
 
   return (
     <div>
@@ -27,7 +25,7 @@ const MainPage: React.FC = () => {
       {!user ? (
         <Button onClick={goToLoginPage}>login</Button>
       ) : (
-        <Button onClick={goToOwnEventsPage}>your-events</Button>
+        <Button onClick={goToToMyEventsPage}>your-events</Button>
       )}
     </div>
   );
