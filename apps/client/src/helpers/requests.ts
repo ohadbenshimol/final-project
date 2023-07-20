@@ -21,7 +21,8 @@ export interface CloseEventBody {
   eventId: string;
 }
 
-export const URL = 'https://2ipqts95ri.execute-api.eu-central-1.amazonaws.com/prod';//OHAD API
+export const URL = 'https://ca82so4kc5.execute-api.eu-central-1.amazonaws.com/prod';//OHAD API
+// export const URL = 'https://2ipqts95ri.execute-api.eu-central-1.amazonaws.com/prod';//OHAD API
 //export const URL = 'https://d1f475jv9e.execute-api.eu-central-1.amazonaws.com/prod'; //MOSHE API
 
 const CLOSE_EVENT_URL = `${URL}/close/event`;

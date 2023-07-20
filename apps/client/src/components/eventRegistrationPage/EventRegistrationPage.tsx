@@ -178,12 +178,15 @@ const EventRegistrationPage: FC = () => {
                       fluid
                       ui={false}
                     />
+
                     <Card.Content>
                       <Card.Header>{event.name}</Card.Header>
-                      <Card.Meta>
-                        <span className="date">{event.creationDate}</span>
-                      </Card.Meta>
-                      <Card.Description>{event.description}</Card.Description>
+                      <Fade direction="up" delay={1000}>
+                        <Card.Meta>
+                          <span className="date">{event.creationDate}</span>
+                        </Card.Meta>
+                        <Card.Description>{event.description}</Card.Description>
+                      </Fade>
                     </Card.Content>
                   </Card>
                 </Fade>
@@ -226,16 +229,21 @@ const EventRegistrationPage: FC = () => {
                 <>
                   {true && (
                     <ConfettiExplosion
-                      force={0.7}
-                      particleSize={20}
-                      colors={['red', 'green']}
+                      force={0.8}
+                      particleCount={600}
+                      colors={['#408378', 'black']}
                     />
                   )}
 
                   <img src={imgSrc} alt="webcam" />
                 </>
               ) : (
-                <Webcam height={500} width={500} ref={webcamRef} />
+                <Webcam
+                  imageSmoothing
+                  height={500}
+                  width={500}
+                  ref={webcamRef}
+                />
               )}
             </div>
             <div className="buttons-container">
@@ -249,16 +257,21 @@ const EventRegistrationPage: FC = () => {
 
               {imgSrc && (
                 <>
-                  <UndoOutlined
-                    style={{ fontSize: '3em' }}
-                    rev={undefined}
-                    onClick={retake}
-                  />
-                  <SendOutlined
-                    style={{ fontSize: '3em' }}
-                    rev={undefined}
-                    onClick={handleSubmit}
-                  />
+                  <div className="flex">
+                    <UndoOutlined
+                      style={{ fontSize: '3em' }}
+                      rev={undefined}
+                      onClick={retake}
+                    />
+                    <SendOutlined
+                      style={{ fontSize: '3em' }}
+                      rev={undefined}
+                      onClick={handleSubmit}
+                    />
+                  </div>
+                  <div className="fade">
+                    <Slide direction="left">lockingoodddd</Slide>
+                  </div>
                 </>
               )}
             </div>
