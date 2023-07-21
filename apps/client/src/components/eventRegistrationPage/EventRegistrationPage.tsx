@@ -146,7 +146,7 @@ const EventRegistrationPage: FC = () => {
             <div className="first">
               <Slide direction="left">
                 <div className="flex title">
-                  <p>Welcome</p>
+                  <p className="sub">Welcome</p>
                   <p className="name">{firstName}!</p>
                 </div>
               </Slide>
@@ -237,8 +237,8 @@ const EventRegistrationPage: FC = () => {
                 ) : (
                   <Webcam
                     imageSmoothing
-                    width={'100%'}
-                    height={'100% '}
+                    width={400}
+                    height={400}
                     ref={webcamRef}
                   />
                 )}
