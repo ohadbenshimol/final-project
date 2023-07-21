@@ -271,6 +271,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           </Tooltip>
         </div>
       )}
+
       <Modal
         footer={null}
         okButtonProps={{disabled: true}}
