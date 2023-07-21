@@ -230,12 +230,14 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                           <Tooltip title="share">
                             <ShareAltOutlined rev onClick={shareClick} />
                           </Tooltip>
-                          <Tooltip title="upload images">
-                            <CloudUploadOutlined
-                              rev
-                              onClick={() => goToUploadFilePage(id)}
-                            />
-                          </Tooltip>
+                          {event.isActive && (
+                            <Tooltip title="upload images">
+                              <CloudUploadOutlined
+                                rev
+                                onClick={() => goToUploadFilePage(id)}
+                              />
+                            </Tooltip>
+                          )}
                           {event.isActive ? (
                             <Tooltip title="end event">
                               <MinusCircleOutlined

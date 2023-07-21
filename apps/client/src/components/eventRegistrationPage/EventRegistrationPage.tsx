@@ -1,7 +1,9 @@
 import Webcam from 'react-webcam';
+import defaultImg from '../../assets/default.svg';
+import ConfettiExplosion from 'react-confetti-explosion';
 import { useSelector } from 'react-redux';
 import { getUser } from '../../store/reducers/userSlice';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { get, ref, update } from 'firebase/database';
@@ -9,37 +11,14 @@ import { db } from '../../helpers/firebase';
 import { useQuery } from 'react-query';
 import { NewEvent } from '../../shared/models/event';
 import { toast } from 'react-toastify';
-import './EventRegistrationPage.less';
-import { Button, Modal, ModalFuncProps, Tooltip } from 'antd';
+import { Button, Modal, ModalFuncProps } from 'antd';
 import { Card, Image } from 'semantic-ui-react';
-import defaultImg from '../../assets/default.svg';
-import ConfettiExplosion from 'react-confetti-explosion';
-import { UsersPhotos } from '../ownerEvents/OwnerEvents';
 import { SwitchTransition, CSSTransition } from 'react-transition-group';
-
-import {
-  CameraFilled,
-  CameraOutlined,
-  CarryOutOutlined,
-  CloudUploadOutlined,
-  SendOutlined,
-  ShareAltOutlined,
-  UndoOutlined,
-} from '@ant-design/icons';
-import Reveal, {
-  Bounce,
-  Fade,
-  Flip,
-  Hinge,
-  JackInTheBox,
-  Roll,
-  Rotate,
-  Slide,
-  Zoom,
-  AttentionSeeker,
-} from 'react-awesome-reveal';
+import { CameraOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
+import { Fade, Slide, Reveal, AttentionSeeker } from 'react-awesome-reveal';
 import { addUserToEvent } from '../../helpers/requests';
 import { useNavigation } from '../../hooks/navigate';
+import './EventRegistrationPage.less';
 
 const defaultFormData = {
   creationDate: '',
@@ -115,9 +94,9 @@ const EventRegistrationPage: FC = () => {
 
   useQuery('events', async () => await getEvent(), {
     onSuccess: (data) => {
-      // if (!data) Modal.error({ ...errorModalConf, onOk: navigateToEvents });
-      // else if (data.subscribers[user.id!])
-      //   Modal.warning({ ...warningModalConf, onOk: navigateToEvents });
+      if (!data) Modal.error({ ...errorModalConf, onOk: goToSharedEventsPage });
+      else if (data.subscribers[user.id!])
+        Modal.warning({ ...warningModalConf, onOk: goToSharedEventsPage });
     },
   });
 
@@ -162,121 +141,150 @@ const EventRegistrationPage: FC = () => {
         }
         // onExited={() => setShouldAnimate(true)}
       >
-        {shouldAnimate ? (
-          <div className="first">
-            <Slide direction="left" duration={1000}>
-              <p style={{ fontSize: '5em' }}>Welcome {firstName}!</p>
-            </Slide>
-            <div className="flex" style={{ display: 'flex' }}>
-              {event && (
-                <Fade direction="up" duration={600} delay={500}>
-                  <Card style={{ flex: 50 }}>
-                    <Image
-                      className="Sad"
-                      style={{ height: '21em' }}
-                      src={event.imgUrl || defaultImg}
-                      fluid
-                      ui={false}
-                    />
+        <>
+          {shouldAnimate ? (
+            <div className="first">
+              <Slide direction="left">
+                <div className="flex title">
+                  <p>Welcome</p>
+                  <p className="name">{firstName}!</p>
+                </div>
+              </Slide>
+              <div className="flex">
+                {event && (
+                  <Fade direction="up" duration={600} delay={500}>
+                    <Card>
+                      <Image
+                        className="Sad"
+                        src={event.imgUrl || defaultImg}
+                        fluid
+                        ui={false}
+                      />
 
-                    <Card.Content>
-                      <Card.Header>{event.name}</Card.Header>
-                      <Fade direction="up" delay={1000}>
-                        <Card.Meta>
-                          <span className="date">{event.creationDate}</span>
-                        </Card.Meta>
-                        <Card.Description>{event.description}</Card.Description>
-                      </Fade>
-                    </Card.Content>
-                  </Card>
-                </Fade>
-              )}
-              <Fade direction="right" duration={700}>
+                      <Card.Content>
+                        <Card.Header>{event.name}</Card.Header>
+                        <Fade direction="up" delay={1000}>
+                          <Card.Meta>
+                            <span className="date">{event.creationDate}</span>
+                          </Card.Meta>
+                          <Card.Description>
+                            {event.description}
+                          </Card.Description>
+                        </Fade>
+                      </Card.Content>
+                    </Card>
+                  </Fade>
+                )}
+
                 <div
                   className="flex"
-                  style={{ display: 'flex', flexDirection: 'column' }}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginLeft: '2em',
+                  }}
                 >
-                  <p style={{ fontSize: '2em' }}>
-                    We will sign you up for the event in a minute!
-                  </p>
-                  <p style={{ fontSize: '5em' }}>
-                    But first, let me take a selfie
-                  </p>
-                  <Fade direction="up" duration={2000} delay={1000}>
-                    <AttentionSeeker effect="tada" duration={2000} delay={2000}>
-                      <div
-                        style={{
-                          fontSize: '3em',
-                        }}
+                  <Fade
+                    direction="right"
+                    duration={50}
+                    cascade
+                    style={{ fontSize: '2em' }}
+                  >
+                    We will sign you up for the event in a minute...
+                  </Fade>
+                  <Fade direction="right" duration={700}>
+                    <p style={{ fontSize: '3em' }}>
+                      But first, let me take a selfie
+                    </p>
+                  </Fade>
+                  <Fade direction="up" delay={1000}>
+                    <AttentionSeeker effect="shake" delay={2000}>
+                      <Button
+                        size="middle"
+                        dir="rtl"
+                        icon={
+                          <img
+                            style={{ width: '1.6em' }}
+                            src={
+                              'https://upload.wikimedia.org/wikipedia/commons/7/7a/Selfie_icon.svg'
+                            }
+                          />
+                        }
                         onClick={() => setShouldAnimate(false)}
                       >
-                        <img
-                          src={
-                            'https://upload.wikimedia.org/wikipedia/commons/7/7a/Selfie_icon.svg'
-                          }
-                        />
-                      </div>
+                        to the selfie
+                      </Button>
                     </AttentionSeeker>
                   </Fade>
                 </div>
-              </Fade>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="second">
-            <div className="camera-container">
-              {imgSrc ? (
-                <>
-                  {true && (
-                    <ConfettiExplosion
-                      force={0.8}
-                      particleCount={600}
-                      colors={['#408378', 'black']}
-                    />
-                  )}
+          ) : (
+            <div className="second">
+              <div className="camera-container">
+                {imgSrc ? (
+                  <>
+                    {true && (
+                      <ConfettiExplosion
+                        force={0.8}
+                        particleCount={600}
+                        colors={['var(--main-color)', 'black']}
+                      />
+                    )}
 
-                  <img src={imgSrc} alt="webcam" />
-                </>
-              ) : (
-                <Webcam
-                  imageSmoothing
-                  height={500}
-                  width={500}
-                  ref={webcamRef}
-                />
-              )}
-            </div>
-            <div className="buttons-container">
-              {!imgSrc && (
-                <CameraOutlined
-                  style={{ fontSize: '3em' }}
-                  rev={undefined}
-                  onClick={capture}
-                />
-              )}
+                    <img src={imgSrc} alt="webcam" />
+                  </>
+                ) : (
+                  <Webcam
+                    imageSmoothing
+                    width={'100%'}
+                    height={'100% '}
+                    ref={webcamRef}
+                  />
+                )}
+              </div>
+              <div
+                className="buttons-container"
+                style={{ justifyContent: imgSrc ? 'space-between' : 'center' }}
+              >
+                {!imgSrc && (
+                  <CameraOutlined
+                    style={{ fill: 'black' }}
+                    className="cam-btn"
+                    rev={undefined}
+                    onClick={capture}
+                  />
+                )}
 
-              {imgSrc && (
-                <>
-                  <div className="flex">
+                {imgSrc && (
+                  <>
                     <UndoOutlined
-                      style={{ fontSize: '3em' }}
+                      color="black"
+                      className="cam-btn"
                       rev={undefined}
                       onClick={retake}
                     />
                     <SendOutlined
-                      style={{ fontSize: '3em' }}
+                      color="black"
+                      className="cam-btn send"
                       rev={undefined}
                       onClick={handleSubmit}
                     />
-                  </div>
-                  <div className="fade">
-                    <Slide direction="left">lockingoodddd</Slide>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+          {imgSrc && (
+            <div className="fade" style={{ justifyContent: 'center' }}>
+              <Reveal delay={1000}>
+                <h1 style={{ fontStyle: 'italic', fontSize: 'large' }}>
+                  lockingoodddd!!!
+                </h1>
+              </Reveal>
+            </div>
+          )}
+        </>
       </CSSTransition>
     </SwitchTransition>
   );

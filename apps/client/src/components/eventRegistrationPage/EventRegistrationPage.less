@@ -30,3 +30,41 @@
 // .fade-out {
 //     animation: fadeOut 1s forwards;
 // }
+
+.title {
+  font-size: 5em;
+  .name {
+    color: var(--main-color);
+    margin-left: 0.2em;
+  }
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+.camera-container {
+  img,
+  video {
+    border-radius: 1em;
+  }
+}
+
+.cam-btn {
+  font-size: 2em;
+  border: 3px solid var(--main-color);
+  border-radius: 50%;
+  padding: 0.2em;
+
+  &.send {
+    svg {
+      padding-left: 0.2em;
+    }
+  }
+}
+
+.buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.5em;
+}

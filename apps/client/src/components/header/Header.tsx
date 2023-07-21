@@ -1,4 +1,5 @@
 import LOGO from '../../assets/logo.png';
+import Avatar from 'antd/es/avatar/avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getUser,
@@ -6,7 +7,6 @@ import {
   userIsLoggedIn,
 } from '../../store/reducers/userSlice';
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom';
 import { FC, useState } from 'react';
 import { Col, Layout, Menu, MenuProps, Row } from 'antd';
 import {
@@ -15,9 +15,8 @@ import {
   ShareAltOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import Avatar from 'antd/es/avatar/avatar';
-import './Header.less';
 import { useNavigation } from '../../hooks/navigate';
+import './Header.less';
 
 const Header: FC = () => {
   const user = useSelector(getUser);
@@ -80,6 +79,7 @@ const Header: FC = () => {
       style={{
         backgroundColor: 'inherit',
         padding: '1em',
+        height: 'auto',
       }}
     >
       <Row

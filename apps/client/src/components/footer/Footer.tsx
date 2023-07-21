@@ -171,27 +171,38 @@ const FooterComp: FC = () => {
           </a>
         </span>
       </div>
-      <div className="sm:flex sm:justify-between">
-        <p className="text-xs text-gray-500">
-          &copy; 2023. Only me. All rights reserved.
-        </p>
-        <ul className="mt-8 flex flex-wrap justify-start gap-4 text-xs sm:mt-0 lg:justify-end">
-          <span>
-            <a href="#" className="text-gray-500 transition hover:opacity-75">
-              Terms & Conditions
-            </a>
-          </span>
-          <span>
-            <a href="#" className="text-gray-500 transition hover:opacity-75">
-              Privacy Policy
-            </a>
-          </span>
-          <span>
-            <a href="#" className="text-gray-500 transition hover:opacity-75">
-              Cookies
-            </a>
-          </span>
-        </ul>
+      <div
+        className="bottom-line text-xs "
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div className="r">
+          <p className="text-gray-500">
+            &copy; 2023. Only me. All rights reserved.
+          </p>
+        </div>
+        <div className="l">
+          <a
+            href="#"
+            className="text-gray-500 transition hover:opacity-75"
+            style={{ marginRight: '1.5em' }}
+          >
+            Terms & Conditions
+          </a>
+          <a
+            href="#"
+            className="text-gray-500 transition hover:opacity-75"
+            style={{ marginRight: '1.5em' }}
+          >
+            Privacy Policy
+          </a>
+          <a href="#" className="text-gray-500 transition hover:opacity-75">
+            Cookies
+          </a>
+        </div>
       </div>
     </Layout.Footer>
   );

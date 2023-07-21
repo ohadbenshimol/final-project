@@ -35,8 +35,6 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
   const [users, setUsers] = useState<Record<string, UserState>>();
   const { goToLoginPage, goToUploadFilePage } = useNavigation('/shared-events');
   const [cookies] = useCookies(['user']);
-  const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
-  const [shareEventOpen, setShareEventOpen] = useState(false);
   const [link, setLink] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -53,15 +51,6 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
     onError: console.error,
     onSuccess: (data) => setUsers(data.val()),
   });
-
-  const onSubmit = () => {
-    setCreateEventIsOpen(false);
-    setShareEventOpen(true);
-  };
-
-  const onCancel = () => {
-    setCreateEventIsOpen(false);
-  };
 
   useEffect(() => {
     if (!userID) return;
@@ -145,7 +134,13 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
       {participantsEvents && Object.keys(participantsEvents)?.length > 0 && (
         <>
           <Card.Group centered>
-            <Row style={{ width: '100%' }}>
+            <Row
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <div className="ui icon input">
                 <input
                   type="text"
@@ -220,20 +215,6 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
       {participantsEvents && Object.keys(participantsEvents)?.length < 1 && (
         <div className="empty">there isnt shared event yet</div>
       )}
-
-      <Modal
-        open={createEventIsOpen}
-        onClose={() => setCreateEventIsOpen(true)}
-      >
-        <CreateEvent
-          onCancel={onCancel}
-          setLink={setLink}
-          onSubmit={onSubmit}
-        />
-      </Modal>
-      <Modal open={shareEventOpen} onClose={() => setShareEventOpen(false)}>
-        <ShareEvent link={link} />
-      </Modal>
     </>
   );
 };
