@@ -191,7 +191,13 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
 
   return (
     <div>
-      <Layout>
+      <Layout
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <Layout.Header
           style={{
             background: 'inherit',

@@ -75,7 +75,6 @@ const EventRegistrationPage: FC = () => {
   const [imgSrc, setImgSrc] = useState('');
   const [event, setEvent] = useState<NewEvent>(defaultFormData);
   const [shouldAnimate, setShouldAnimate] = useState(true);
-  const [submit, setSubmit] = useState(false);
   const { goToSharedEventsPage, goToLoginPage } = useNavigation(
     `/register-event/${eventId}`
   );
@@ -94,9 +93,9 @@ const EventRegistrationPage: FC = () => {
 
   useQuery('events', async () => await getEvent(), {
     onSuccess: (data) => {
-      if (!data) Modal.error({ ...errorModalConf, onOk: goToSharedEventsPage });
-      else if (data.subscribers[user.id!])
-        Modal.warning({ ...warningModalConf, onOk: goToSharedEventsPage });
+      // if (!data) Modal.error({ ...errorModalConf, onOk: goToSharedEventsPage });
+      // else if (data.subscribers[user.id!])
+      //   Modal.warning({ ...warningModalConf, onOk: goToSharedEventsPage });
     },
   });
 
@@ -111,7 +110,6 @@ const EventRegistrationPage: FC = () => {
 
   const handleSubmit = async () => {
     const event: NewEvent = await getEvent();
-    setSubmit(true);
     // !event.subscribers[user.id!]
     if (event && eventId && user.id) {
       try {
@@ -198,7 +196,7 @@ const EventRegistrationPage: FC = () => {
                     </p>
                   </Fade>
                   <Fade direction="up" delay={1000}>
-                    <AttentionSeeker effect="shake" delay={2000}>
+                    <AttentionSeeker effect="bounce" delay={2000}>
                       <Button
                         size="middle"
                         dir="rtl"

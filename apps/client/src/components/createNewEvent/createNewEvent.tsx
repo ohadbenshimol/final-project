@@ -26,7 +26,6 @@ const DEFAULT_FORM_DATA = {
 };
 export const CreateNewEvent: FC<TempProps> = () => {
   const { Dragger } = Upload;
-  const [modal2Open, setModal2Open] = useState(false);
   const [image, setImage] = useState<string>('');
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
   const user = useSelector(getUser);
