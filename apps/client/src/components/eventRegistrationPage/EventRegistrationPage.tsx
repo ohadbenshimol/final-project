@@ -196,7 +196,7 @@ const EventRegistrationPage: FC = () => {
                     </p>
                   </Fade>
                   <Fade direction="up" delay={1000}>
-                    <AttentionSeeker effect="bounce" delay={2000}>
+                    <AttentionSeeker effect="wobble" delay={2000}>
                       <Button
                         size="middle"
                         dir="rtl"
