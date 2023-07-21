@@ -36,7 +36,6 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
 
   return (
     <>
-      <Modal.Header>share your event</Modal.Header>
       <Modal.Content>
         <Modal.Content>
           <Form>

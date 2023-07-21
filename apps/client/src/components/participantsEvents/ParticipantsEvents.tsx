@@ -1,27 +1,20 @@
 import defaultImg from '../../assets/default.svg';
-import { eventsRef, usersRef } from '../../helpers/firebase';
-import { FC, useEffect, useState } from 'react';
-import { equalTo, get, onValue, orderByChild, query } from 'firebase/database';
-import { Card, Image, Modal } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
-import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
-import { useNavigate } from 'react-router-dom';
-import { NewEvent } from '../../shared/models/event';
-import { useQuery } from 'react-query';
-import { debounce } from 'ts-debounce';
-import { useCookies } from 'react-cookie';
-import { CreateEvent } from '../createEvent/CreateEvent';
-import { ShareEvent } from '../shareEvent/ShareEvent';
-import { Row, Skeleton, Tooltip } from 'antd';
-import { UsersPhotos } from '../ownerEvents/OwnerEvents';
-import {
-  CarryOutOutlined,
-  CloudUploadOutlined,
-  FormOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
+import {eventsRef, usersRef} from '../../helpers/firebase';
+import {FC, useEffect, useState} from 'react';
+import {equalTo, get, onValue, orderByChild, query} from 'firebase/database';
+import {Card, Image, Modal} from 'semantic-ui-react';
+import {useSelector} from 'react-redux';
+import {getUser, getUserID, UserState} from '../../store/reducers/userSlice';
+import {NewEvent} from '../../shared/models/event';
+import {useQuery} from 'react-query';
+import {debounce} from 'ts-debounce';
+import {useCookies} from 'react-cookie';
+import {ShareEvent} from '../shareEvent/ShareEvent';
+import {Row, Skeleton, Tooltip} from 'antd';
+import {UsersPhotos} from '../ownerEvents/OwnerEvents';
+import {CarryOutOutlined, CloudUploadOutlined, FormOutlined, ShareAltOutlined,} from '@ant-design/icons';
 import './ParticipantsEvents.less';
-import { useNavigation } from '../../hooks/navigate';
+import {useNavigation} from '../../hooks/navigate';
 
 interface ParticipantsEventsProps {}
 
