@@ -23,7 +23,7 @@ import {
 import './OwnerEvents.less';
 import {closeEvent} from '../../helpers/requests';
 import {useNavigation} from '../../hooks/navigate';
-import CreateNewEvent from "../temp/createNewEvent";
+import CreateNewEvent from "../createNewEvent/createNewEvent";
 
 interface OwnerEventsProps {
 }
