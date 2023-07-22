@@ -25,7 +25,7 @@ export const getImagesByFace = async (username: string, collection: string, user
 
     let images: string[] = [];
     for (const face of searchFacesResponse.FaceMatches) {
-      if(face.Face.Confidence > 99){
+      if(face.Face.Confidence > 90){
         const image = await getImage(collection, face.Face.FaceId);
         images.push(image);
       }

@@ -19,7 +19,7 @@ export const listItemsFromS3Path = async (path: string) => {
 export const getObjectFromS3 = async (objectKey: string): Promise<string> => {
   try {
     const getObjectResponse = await getS3().getObject({ Bucket: EVENT_BUCKET_NAME, Key: objectKey }).promise();
-    console.log(`receiving object for key: ${objectKey}, object: ${JSON.stringify(getObjectResponse.Body)}`);
+    console.log(`receiving object for key: ${objectKey}`);
 
     return getObjectResponse.Body?.toString();
   } catch (e){

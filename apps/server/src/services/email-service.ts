@@ -1,5 +1,4 @@
 import { Attachment, SENDER_EMAIL_ADDRESS } from "../app/types";
-
 const nodemailer = require('nodemailer');
 
 let transporter = nodemailer.createTransport({
@@ -26,11 +25,10 @@ export const sendEmailWithAttachment = async (email: string, username: string, z
   };
 
   console.log(`sending email to ${email}`);
-  transporter.sendMail(content, function(error: any, info: { response: string; }){
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(content);
+    console.log('Email sent: ' + info.response);
+  } catch (error) {
+    console.log(`Error while sending email to ${email}, with error: ${error}`);
+  }
 }
