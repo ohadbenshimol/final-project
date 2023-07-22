@@ -1,37 +1,33 @@
 import { getRekognitionService } from "../../services/init-aws";
-import { getObjectFromS3, listItemsFromS3Path } from "../../services/s3-service";
+import { getObjectFromS3 } from "../../services/s3-service";
 import { convertImageToBuffer } from "../utils";
 
-export const getAllUserImages = async (eventId: string, faceId: string) => {
-  const path = `events/${eventId}/images/faceId/${faceId}/`;
-  const userImages = await listItemsFromS3Path(path);
-  const imageArray: string[] = [];
+export const getImage = async (eventId: string, faceId: string) => {
+  const path = `events/${eventId}/images/faceId/${faceId}`;
+  const image = await getObjectFromS3(path);
 
-  for (const image of userImages) {
-    imageArray.push(await getObjectFromS3(image.Key));
-  }
-
-  return imageArray;
+  return image;
 };
 
 export const getImagesByFace = async (username: string, collection: string, userImage: string) => {
   try {
     console.log(`Searching for similar images for user: ${username}`);
-    const params = convertImageToBuffer(collection, userImage);
+    const params = await convertImageToBuffer(collection, userImage);
     const searchFacesResponse = await getRekognitionService()
       .searchFacesByImage(params).promise();
 
-    if(!searchFacesResponse.FaceMatches.length) {
+    if(!searchFacesResponse.FaceMatches?.length) {
       console.log(`No similar images found for user: ${username}`);
       return [];
     }
 
     console.log(`received faces for user ${username}, response: ${JSON.stringify(searchFacesResponse)}`);
 
-    let images;
+    let images: string[] = [];
     for (const face of searchFacesResponse.FaceMatches) {
       if(face.Face.Confidence > 99){
-        images = await getAllUserImages(collection, face.Face.FaceId);
+        const image = await getImage(collection, face.Face.FaceId);
+        images.push(image);
       }
     }
 

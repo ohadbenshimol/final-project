@@ -25,6 +25,7 @@ export const sendEmailWithAttachment = async (email: string, username: string, z
     attachments: [attachment]
   };
 
+  console.log(`sending email to ${email}`);
   transporter.sendMail(content, function(error: any, info: { response: string; }){
     if (error) {
       console.log(error);

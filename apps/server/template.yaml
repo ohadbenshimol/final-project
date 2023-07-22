@@ -139,15 +139,18 @@ Resources:
           Parameters:
             Location: openapi.yaml
       Auth:
+        DefaultAuthorizer: NONE
         ResourcePolicy:
-          CustomStatements: [{
-            "Effect": "Allow",
-            "Principal": {
-              "AWS": !Ref AWS::AccountId
-            },
-            "Action": "execute-api:Invoke",
-            "Resource": "execute-api:/*"
-          }]
+          CustomStatements:
+            - Effect: "Allow"
+              Principal: "*"
+              Action: "execute-api:Invoke"
+              Resource: "execute-api:/*/*/*"
+      Cors:
+        AllowMethods: "'OPTIONS,GET,PUT,POST,DELETE'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+        AllowCredentials: 'true'
 
 Outputs:
   HttpBaseUrl:
