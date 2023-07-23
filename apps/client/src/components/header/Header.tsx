@@ -8,8 +8,9 @@ import {
 } from '../../store/reducers/userSlice';
 import { useCookies } from 'react-cookie';
 import { FC, useState } from 'react';
-import { Col, Layout, Menu, MenuProps, Row } from 'antd';
+import { Col, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd';
 import {
+  FolderViewOutlined,
   HomeOutlined,
   InfoCircleOutlined,
   ShareAltOutlined,
@@ -36,9 +37,7 @@ const Header: FC = () => {
     removeCookie('user', { path: '/' });
   };
 
-  const userName = user?.fullName
-    ? `${user.firstName} ${user.lastName}`
-    : 'אורח';
+  const userName = `${user.firstName ?? 'guest'}`;
 
   const [current, setCurrent] = useState('mail');
 
@@ -49,27 +48,43 @@ const Header: FC = () => {
 
   const items: MenuProps['items'] = [
     {
-      label: 'home',
+      label: <span className="menu-item-label">home</span>,
       key: 'home',
-      icon: <HomeOutlined rev />,
+      icon: (
+        <Tooltip title="home">
+          <HomeOutlined rev />
+        </Tooltip>
+      ),
       onClick: goToHomePage,
     },
     {
-      label: 'My events',
+      label: <span className="menu-item-label">My events</span>,
       key: 'my-events',
-      icon: <ShareAltOutlined rev />,
+      icon: (
+        <Tooltip title="my-events">
+          <FolderViewOutlined rev title="my-events" />
+        </Tooltip>
+      ),
       onClick: goToToMyEventsPage,
     },
     {
-      label: 'shared events',
+      label: <span className="menu-item-label">Shared events</span>,
       key: 'shared-events',
-      icon: <ShareAltOutlined rev />,
+      icon: (
+        <Tooltip title="shared-events">
+          <ShareAltOutlined rev />
+        </Tooltip>
+      ),
       onClick: goToToSharedEventsPage,
     },
     {
-      label: 'about us',
+      label: <span className="menu-item-label">about us</span>,
       key: 'about-us',
-      icon: <InfoCircleOutlined rev />,
+      icon: (
+        <Tooltip title="about-us">
+          <InfoCircleOutlined rev />
+        </Tooltip>
+      ),
       onClick: goToToAboutUsPage,
     },
   ];
@@ -82,39 +97,42 @@ const Header: FC = () => {
         height: 'auto',
       }}
     >
-      <Row
-        style={{
-          width: '100%',
-        }}
-      >
-        <Col span={6}>
-          <img src={LOGO} style={{ width: '12em', height: '3em' }} />
-        </Col>
-        <Col span={12}>
-          <Menu
-            style={{
-              width: '100%',
-              backgroundColor: 'inherit',
-            }}
-            onClick={onClick}
-            selectedKeys={[current]}
-            mode="horizontal"
-            items={items}
-            defaultSelectedKeys={['home']}
-          />
-        </Col>
-        <Col span={6}>
-          {userName ?? <span>{userName}</span>}
-          {userIsLoggedIn() ? (
-            <button onClick={logout}>Logout</button>
-          ) : (
-            <button onClick={goToLoginPage}>Login</button>
-          )}
-          <Avatar gap={8} src={user?.pictureUrl} alt={`${userName}`}>
-            <UserOutlined rev />
-          </Avatar>
-        </Col>
-      </Row>
+      <div className="top" style={{ display: 'flex', alignItems: 'center' }}>
+        <img src={LOGO} style={{ height: '4em' }} />
+        <Menu
+          style={{
+            flexGrow: 1,
+            backgroundColor: 'inherit',
+          }}
+          onClick={onClick}
+          selectedKeys={[current]}
+          mode="horizontal"
+          items={items}
+          defaultSelectedKeys={['home']}
+        />
+        <div
+          className="user"
+          style={{ display: 'flex', alignItems: 'center', marginRight: '1em' }}
+        >
+          <Space>
+            <p>{userName}</p>
+            <Avatar gap={8} src={user?.pictureUrl} alt={`${userName}`}>
+              <UserOutlined rev />
+            </Avatar>
+            <Tooltip title={userIsLoggedIn() ? 'logout' : 'login'}>
+              <img
+                style={{
+                  height: '1.5em',
+                  transform: userIsLoggedIn() ? 'scaleX(-1)' : 'none',
+                  marginTop: '0.3em',
+                }}
+                src={'../../assets/logout.png'}
+                onClick={userIsLoggedIn() ? logout : goToLoginPage}
+              />
+            </Tooltip>
+          </Space>
+        </div>
+      </div>
     </Layout.Header>
   );
 };

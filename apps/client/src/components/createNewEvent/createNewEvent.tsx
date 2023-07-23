@@ -24,6 +24,7 @@ const DEFAULT_FORM_DATA = {
   imgUrl: '',
   isActive: false,
 };
+
 export const CreateNewEvent: FC<TempProps> = () => {
   const { Dragger } = Upload;
   const [image, setImage] = useState<string>('');
