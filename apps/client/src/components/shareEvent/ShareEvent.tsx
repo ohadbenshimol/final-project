@@ -1,9 +1,9 @@
 // import QRCode from 'react-qr-code';// TODO remove
-import {FC, useRef} from 'react';
-import {Button, Form, Modal} from 'semantic-ui-react';
-import {WhatsappShareButton} from 'react-share';
-import {toast} from 'react-toastify';
-import {QRCode} from 'antd';
+import { FC, useRef } from 'react';
+import { Button, Modal } from 'semantic-ui-react';
+import { WhatsappShareButton } from 'react-share';
+import { toast } from 'react-toastify';
+import { QRCode } from 'antd';
 
 import './ShareEvent.less';
 
@@ -11,7 +11,7 @@ interface ShareEventProps {
   link: string;
 }
 
-export const ShareEvent: FC<ShareEventProps> = ({link}) => {
+export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleCopyClick = async () => {
@@ -36,33 +36,22 @@ export const ShareEvent: FC<ShareEventProps> = ({link}) => {
 
   return (
     <>
-      <Modal.Content style={{display: 'flex',justifyContent:"space-between"}}>
-        {/* Left side with input and buttons */}
-        <div>
-
-          <label style={{fontWeight:"bold", color:"black"}}>Link</label>
-          {/*<div className="ui fluid input checkk">*/}
-            <div></div>
-            <input
-              style={{width:"70vh",marginTop:21}}
-              type="text"
-              placeholder="Search..."
-              disabled
-              value={link}
-              readOnly
-              ref={inputRef}
-            />
-          {/*</div>*/}
-          {/*<div className="d" style={{display: 'flex'}}>*/}
-          {/*  <input*/}
-          {/*    disabled*/}
-          {/*    type="text"*/}
-          {/*    value={link}*/}
-          {/*    readOnly*/}
-          {/*    ref={inputRef}*/}
-          {/*  />*/}
-          {/*</div>*/}
-          <div className={"buttons-actions"} style={{marginTop:30}}>
+      <Modal.Content
+        style={{ display: 'flex', justifyContent: 'space-between' }}
+      >
+        <div style={{ flex: '8' }}>
+          <label style={{ fontWeight: 'bold', color: 'black' }}>Link</label>
+          <div></div>
+          <input
+            style={{ width: '90%', marginTop: '1em' }}
+            type="text"
+            placeholder="Search..."
+            disabled
+            value={link}
+            readOnly
+            ref={inputRef}
+          />
+          <div className={'buttons-actions'} style={{ marginTop: 30 }}>
             <Button onClick={handleCopyClick}>
               <i className="copy outline icon"></i>
             </Button>
@@ -75,13 +64,10 @@ export const ShareEvent: FC<ShareEventProps> = ({link}) => {
               </WhatsappShareButton>
             </Button>
           </div>
-
-
         </div>
 
-        {/* Right side with QR code */}
-        <div style={{height: 'auto', marginLeft: '25%', width: '100%'}}>
-          <QRCode value={link} icon="../../assets/default.svg" errorLevel="H"/>
+        <div style={{ flex: '2' }}>
+          <QRCode value={link} icon="../../assets/logo.png" errorLevel="H" />
         </div>
       </Modal.Content>
     </>
