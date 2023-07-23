@@ -1,22 +1,23 @@
+import 'react-step-progress/dist/index.css';
 import * as Yup from 'yup';
-import { FC, useState } from 'react';
-import { Button, message, Steps, theme, Upload, UploadProps } from 'antd';
-import { Form } from 'semantic-ui-react';
-import {
-  CodeSandboxOutlined,
-  FileImageOutlined,
-  InboxOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
-import { push } from 'firebase/database';
-import { eventsRef } from '../../helpers/firebase';
-import { CLIENT_URL } from '../../helpers/config';
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
-import { createEvent } from '../../helpers/requests';
-import { ShareEvent } from '../shareEvent/ShareEvent';
+import React, {FC, useState} from "react";
+import {Button, message, Steps, theme, Upload, UploadProps} from "antd";
+import {Form} from "semantic-ui-react";
+import {CodeSandboxOutlined, FileImageOutlined, InboxOutlined, ShareAltOutlined} from "@ant-design/icons";
+import {push} from "firebase/database";
+import {eventsRef} from "../../helpers/firebase";
+import {CLIENT_URL} from "../../helpers/config";
+import {useSelector} from "react-redux";
+import {getUser} from "../../store/reducers/userSlice";
+import {createEvent} from "../../helpers/requests";
+import {ShareEvent} from "../shareEvent/ShareEvent";
+import './createNewEvent.less'
 
-export interface TempProps {}
+export interface CreateEventProps {
+  setCreateEventIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrent: React.Dispatch<React.SetStateAction<number>>;
+  current: number
+}
 
 const DEFAULT_FORM_DATA = {
   name: '',
@@ -24,16 +25,13 @@ const DEFAULT_FORM_DATA = {
   imgUrl: '',
   isActive: false,
 };
-
-export const CreateNewEvent: FC<TempProps> = () => {
-  const { Dragger } = Upload;
-  const [image, setImage] = useState<string>('');
+export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setCurrent, current}) => {
+  const {Dragger} = Upload
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
   const user = useSelector(getUser);
   const [link, setLink] = useState('');
 
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
 
   const next = () => {
     setCurrent(current + 1);
@@ -42,6 +40,7 @@ export const CreateNewEvent: FC<TempProps> = () => {
   const prev = () => {
     setCurrent(current - 1);
   };
+
 
   const handleSubmit = async () => {
     try {
@@ -70,7 +69,7 @@ export const CreateNewEvent: FC<TempProps> = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -86,7 +85,7 @@ export const CreateNewEvent: FC<TempProps> = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result?.toString();
-      setImage(base64String || '');
+      // setImage(base64String || '');
       setFormValues((prevState) => {
         return {
           ...prevState,
@@ -128,54 +127,48 @@ export const CreateNewEvent: FC<TempProps> = () => {
   const steps = [
     {
       title: 'fill the details',
-      content: (
-        <>
-          <Form.Field>
-            <label htmlFor="nameID">Name</label>
-            <input
-              className="ui  input"
-              id="nameID"
-              name="name"
-              onChange={handleChange}
-              type="text"
-              placeholder="Enter the event name"
-              required
-            />
-          </Form.Field>
+      content: <>
+        <div className={"yoel-temp"} style={{marginTop: 15}}><Form.Field>
+          <label htmlFor="nameID">Name</label>
+          <input
+            value={formData.name}
+            className="ui  input"
+            id="nameID"
+            name="name"
+            onChange={handleChange}
+            type="text"
+            placeholder="Enter the event name"
+            required/>
+        </Form.Field>
           <Form.Field>
             <label htmlFor={'descriptionId'}>description</label>
             <input
+              value={formData.description}
               id={'descriptionId'}
               name="description"
               onChange={handleChange}
               type="text"
-              placeholder="description..."
-            />
-          </Form.Field>
-        </>
-      ),
-      icon: <CodeSandboxOutlined rev={undefined} />,
+              placeholder="description..."/>
+          </Form.Field></div>
+      </>
+      ,
+      icon: <CodeSandboxOutlined rev={undefined}/>
+
     },
     {
       title: 'Upload an image',
-      content: (
-        <Form.Field>
-          <label htmlFor="imageId">Image</label>
-          <Dragger {...propsUpload}>
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined rev={true} />
-            </p>
-            <p className="ant-upload-text">
-              Click or drag file to this area to upload
-            </p>
-            <p className="ant-upload-hint">
-              Support for a single or bulk upload. Strictly prohibited from
-              uploading company data or other banned files.
-            </p>
-          </Dragger>
-        </Form.Field>
-      ),
-      icon: <FileImageOutlined rev={undefined} />,
+      content: <Form.Field className={"upload-image"}>
+        <Dragger {...propsUpload}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined rev={true}/>
+          </p>
+          <p className="ant-upload-text">Click or drag file to this area to upload</p>
+          <p className="ant-upload-hint">
+            Choosing a picture is optional, we can choose a picture for you..
+          </p>
+        </Dragger>
+      </Form.Field>,
+      icon: <FileImageOutlined rev={undefined}/>
     },
     {
       title: 'Share event',
@@ -191,9 +184,6 @@ export const CreateNewEvent: FC<TempProps> = () => {
 
   const contentStyle: React.CSSProperties = {
     color: token.colorTextTertiary,
-    backgroundColor: token.colorFillAlter,
-    borderRadius: token.borderRadiusLG,
-    border: `1px dashed ${token.colorBorder}`,
   };
 
   return (
@@ -201,9 +191,9 @@ export const CreateNewEvent: FC<TempProps> = () => {
       <Form>
         <Steps current={current} items={items} />
         <div style={contentStyle}>{steps[current].content}</div>
-        <div style={{ marginTop: 24 }}>
+        <div className={"buttons-footer"}>
           {current == 0 && (
-            <Button type="default" onClick={() => next()}>
+            <Button type="default" onClick={() => next()} disabled={!(formData.name && formData.description)}>
               Next
             </Button>
           )}
@@ -213,19 +203,16 @@ export const CreateNewEvent: FC<TempProps> = () => {
             </Button>
           )}
           {current === steps.length - 1 && (
-            <Button
-              type="default"
-              onClick={() => message.success('Processing complete!')}
-            >
-              Done
+            <Button type="default" onClick={() => {
+              setCreateEventIsOpen(false)
+              message.success('Processing complete!').then()
+              setCurrent(0)
+            }}>
+              Back to events
             </Button>
           )}
           {current > 0 && current != 2 && (
-            <Button
-              style={{ margin: '0 8px' }}
-              onClick={() => prev()}
-              type={'default'}
-            >
+            <Button style={{margin: '0 8px'}} onClick={() => prev()} type={"default"}>
               Previous
             </Button>
           )}
