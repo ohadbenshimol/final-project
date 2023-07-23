@@ -36,6 +36,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const [users, setUsers] = useState<Record<string, UserState>>();
   const {goToLoginPage, goToUploadFilePage} = useNavigation('/own-events');
   const [cookies] = useCookies(['user']);
+  const [current, setCurrent] = useState(0);
 
 
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
@@ -276,14 +277,18 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         footer={null}
         okButtonProps={{disabled: true}}
         cancelButtonProps={{disabled: true}}
-        width={1000}
+        width={860}
         title="Create new event"
         centered
         open={createEventIsOpen}
         onOk={() => setCreateEventIsOpen(false)}
-        onCancel={() => setCreateEventIsOpen(false)}
+        onCancel={() => {
+          setCurrent(0)
+          setCreateEventIsOpen(false);
+        }}
       >
-        <CreateNewEvent></CreateNewEvent>
+        <CreateNewEvent setCreateEventIsOpen={setCreateEventIsOpen} setCurrent={setCurrent}
+                        current={current}></CreateNewEvent>
       </Modal>
     </>
   );
