@@ -30,7 +30,8 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
   const user = useSelector(getUser);
   const [link, setLink] = useState('');
-  const {token} = theme.useToken();
+
+  const { token } = theme.useToken();
 
   const next = () => {
     setCurrent(current + 1);
@@ -43,7 +44,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
 
   const handleSubmit = async () => {
     try {
-      await eventSchema.validate(formData, {abortEarly: false});
+      await eventSchema.validate(formData, { abortEarly: false });
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
         date.getMonth() + 1
@@ -63,16 +64,15 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
 
       setLink(`${CLIENT_URL}/register-event/${newEventRef.key}`);
       setFormValues(DEFAULT_FORM_DATA);
-      await createEvent({eventId: newEventRef.key!});
-      next()
-
+      await createEvent({ eventId: newEventRef.key! });
+      next();
     } catch (error) {
       console.error(error);
     }
   }
 
   const handleChange = (e: any) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setFormValues((prevState) => {
       return {
         ...prevState,
@@ -101,16 +101,15 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
 
   const propsUpload: UploadProps = {
     name: 'file',
-    listType: "picture-card",
+    listType: 'picture-card',
     multiple: false,
     beforeUpload: (data) => {
-      console.log(data)
-      return false
+      console.log(data);
+      return false;
     },
     onChange(info) {
-
-      handleImageChange(info.file as any)
-      const {status} = info.file;
+      handleImageChange(info.file as any);
+      const { status } = info.file;
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
@@ -124,7 +123,6 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
       console.log('Dropped files', e.dataTransfer.files);
     },
   };
-
 
   const steps = [
     {
@@ -175,20 +173,23 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
     {
       title: 'Share event',
       content: <ShareEvent link={link}></ShareEvent>,
-      icon: <ShareAltOutlined rev={undefined}/>
+      icon: <ShareAltOutlined rev={undefined} />,
     },
   ];
-  const items = steps.map((item) => ({key: item.title, title: item.title, icon: item.icon}));
+  const items = steps.map((item) => ({
+    key: item.title,
+    title: item.title,
+    icon: item.icon,
+  }));
 
   const contentStyle: React.CSSProperties = {
     color: token.colorTextTertiary,
   };
 
-
   return (
     <>
       <Form>
-        <Steps current={current} items={items}/>
+        <Steps current={current} items={items} />
         <div style={contentStyle}>{steps[current].content}</div>
         <div className={"buttons-footer"}>
           {current == 0 && (
@@ -219,7 +220,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
       </Form>
     </>
   );
-}
+};
 
 export default CreateNewEvent;
 
