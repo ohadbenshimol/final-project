@@ -133,7 +133,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
 
   const steps = [
     {
-      title: 'fill the details',
+      title: 'Fill the details',
       content: (
         <>
           <div className={'yoel-temp'} style={{marginTop: 15}}>
@@ -161,7 +161,6 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
                 placeholder="description..."
               />
             </Form.Field>
-            {current}
           </div>
         </>
       ),
@@ -211,7 +210,6 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
   return (
     <>
       <Form>
-        {current}
         <Steps current={current} items={items}/>
         <div style={contentStyle}>{steps[current].content}</div>
         <div className={'buttons-footer'}>
