@@ -24,6 +24,7 @@ import './OwnerEvents.less';
 import {closeEvent} from '../../helpers/requests';
 import {useNavigation} from '../../hooks/navigate';
 import CreateNewEvent from "../createNewEvent/createNewEvent";
+import {Fade} from "react-awesome-reveal";
 
 interface OwnerEventsProps {
 }
@@ -96,7 +97,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         );
       })
     );
-
     setFilteredEvents(filteredEvent);
   };
 
@@ -194,6 +194,8 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   />
                 </div>
               </Col>
+
+
             </Row>
             {Object.entries(fIlteredEvents!)?.map(
               ([id, event]: [string, NewEvent], index) => (
@@ -254,7 +256,19 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       )}
 
       {loading && <Card.Group centered>{loadingCards}</Card.Group>}
-
+      {fIlteredEvents && Object.values(fIlteredEvents!)?.length === 0 && (
+        <Row>
+          <Fade
+            direction="right"
+            duration={30}
+            cascade
+            style={{ fontSize: '2em' }}
+            className={"not-found-message"}
+          >
+            Sorry, we couldn't find the event you were looking for...
+          </Fade>
+        </Row>
+      )}
       {ownerEvents && Object.keys(ownerEvents)?.length < 1 && (
         <div className="empty">
           there isnt event yet click the button to create one ={'>'}

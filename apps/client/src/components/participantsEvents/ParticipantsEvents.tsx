@@ -15,8 +15,10 @@ import {UsersPhotos} from '../ownerEvents/OwnerEvents';
 import {CarryOutOutlined, CloudUploadOutlined, FormOutlined, ShareAltOutlined,} from '@ant-design/icons';
 import './ParticipantsEvents.less';
 import {useNavigation} from '../../hooks/navigate';
+import {Fade} from "react-awesome-reveal";
 
-interface ParticipantsEventsProps {}
+interface ParticipantsEventsProps {
+}
 
 const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
   const userID = useSelector(getUserID);
@@ -26,7 +28,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
   const [filteredEvents, setFilteredEvents] =
     useState<Record<string, NewEvent>>();
   const [users, setUsers] = useState<Record<string, UserState>>();
-  const { goToLoginPage, goToUploadFilePage } = useNavigation('/shared-events');
+  const {goToLoginPage, goToUploadFilePage} = useNavigation('/shared-events');
   const [cookies] = useCookies(['user']);
   const [link, setLink] = useState('');
   const [loading, setLoading] = useState(true);
@@ -97,24 +99,24 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
   const loadingCards = new Array(15).fill(null).map((_, index) => {
     return (
       <Card key={index}>
-        <Skeleton.Image active style={{ width: '100%', height: '14em' }} />
+        <Skeleton.Image active style={{width: '100%', height: '14em'}}/>
         <Card.Content>
-          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
-          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
-          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
+          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
+          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
         </Card.Content>
         <Card.Content extra>
           <div className="c">
             <div className="cc">
-              <Skeleton.Avatar active />
-              <Skeleton.Avatar active />
-              <Skeleton.Avatar active />
+              <Skeleton.Avatar active/>
+              <Skeleton.Avatar active/>
+              <Skeleton.Avatar active/>
             </div>
 
             <div className="buttons">
-              <ShareAltOutlined rev onClick={shareClick} />
-              <FormOutlined rev />
-              <CloudUploadOutlined rev />
+              <ShareAltOutlined rev onClick={shareClick}/>
+              <FormOutlined rev/>
+              <CloudUploadOutlined rev/>
             </div>
           </div>
         </Card.Content>
@@ -143,7 +145,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                 <i
                   aria-hidden="true"
                   className="search icon"
-                  style={{ color: 'var(--main-color)', opacity: 0.9 }}
+                  style={{color: 'var(--main-color)', opacity: 0.9}}
                 />
               </div>
             </Row>
@@ -153,7 +155,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                   <Card>
                     <Image
                       className="Sad"
-                      style={{ height: '21em' }}
+                      style={{height: '21em'}}
                       src={event.imgUrl || defaultImg}
                       fluid
                       ui={false}
@@ -177,7 +179,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                         />
                         <div className="buttons">
                           <Tooltip title="share">
-                            <ShareAltOutlined rev onClick={shareClick} />
+                            <ShareAltOutlined rev onClick={shareClick}/>
                           </Tooltip>
 
                           {event.isActive ? (
@@ -189,7 +191,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                             </Tooltip>
                           ) : (
                             <Tooltip title="event is finish">
-                              <CarryOutOutlined rev />
+                              <CarryOutOutlined rev/>
                             </Tooltip>
                           )}
                         </div>
@@ -202,12 +204,25 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
           </Card.Group>
         </>
       )}
-
       {loading && <Card.Group centered>{loadingCards}</Card.Group>}
 
+      {filteredEvents && Object.values(filteredEvents).length === 0 && (
+        <Row>
+          <Fade
+            direction="right"
+            duration={30}
+            cascade
+            style={{fontSize: '2em'}}
+            className={"not-found-message"}
+          >
+            Sorry, we couldn't find the event you were looking for...
+          </Fade>
+        </Row>
+      )}
       {participantsEvents && Object.keys(participantsEvents)?.length < 1 && (
         <div className="empty">there isnt shared event yet</div>
       )}
+
     </>
   );
 };

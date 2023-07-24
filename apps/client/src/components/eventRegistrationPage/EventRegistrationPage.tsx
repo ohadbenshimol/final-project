@@ -222,7 +222,7 @@ const EventRegistrationPage: FC = () => {
               <div className="camera-container">
                 {imgSrc ? (
                   <>
-                    {true && (
+                    {(
                       <ConfettiExplosion
                         force={0.8}
                         particleCount={600}
