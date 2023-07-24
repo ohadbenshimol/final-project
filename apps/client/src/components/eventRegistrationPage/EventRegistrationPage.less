@@ -21,15 +21,6 @@
 
   transition: opacity 1s;
 }
-// @keyframes fadeOut {
-//     0%   { opacity: 1; visibility: visible; }
-//     99%  { opacity: 0; visibility: visible; }
-//     100% { opacity: 0; visibility: hidden; }
-// }
-
-// .fade-out {
-//     animation: fadeOut 1s forwards;
-// }
 
 .title {
   font-size: 5em;
@@ -70,5 +61,61 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 0.5em;
+  padding-top: 1.5em;
+}
+
+@media (max-width: 768px) {
+  main {
+    margin: unset !important;
+    .card {
+      flex-direction: column;
+      p {
+        font-size: 1.5em !important;
+      }
+      .fade-con {
+        font-size: 1.2em !important;
+      }
+    }
+
+    .second-text {
+      margin-top: 5vh;
+      margin-left: 0 !important;
+    }
+    .btn {
+      margin-top: 4vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      justify-items: center;
+      margin-left: 10vh;
+    }
+
+    .flex {
+      align-items: flex-start;
+    }
+  }
+  .second {
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    &.screen-shot {
+      justify-content: center;
+      .buttons-container {
+        padding-top: 1.5em;
+        width: 100%;
+      }
+    }
+  }
+
+  .title {
+    font-size: 2em;
+  }
+
+  .cam {
+    width: 20em;
+    height: 28em !important;
+    object-fit: cover;
+  }
 }
