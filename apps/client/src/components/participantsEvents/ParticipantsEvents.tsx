@@ -210,10 +210,6 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
           </Fade>
         </Row>
       )}
-      {participantsEvents && Object.keys(participantsEvents)?.length < 1 && (
-        <div className="empty">there isnt shared event yet</div>
-      )}
-
     </>
   );
 };

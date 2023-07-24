@@ -39,6 +39,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const {goToLoginPage, goToUploadFilePage} = useNavigation('/own-events');
   const [cookies] = useCookies(['user']);
   const [current, setCurrent] = useState(0);
+  const [searchText, setSearchText] = useState("");
 
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -62,18 +63,22 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
     onValue(eventQuery, (snapshot) => {
       const data = snapshot.val() as Record<string, NewEvent>;
-      const EventsByUserID =
+      const eventsByUserID =
         data &&
         Object.fromEntries(
           Object.entries(data).filter(([k, event]) => event.owner === userID)
         );
       setLoading(false);
-      setOwnerEvents(EventsByUserID);
-      setFilteredEvents(EventsByUserID);
+      setOwnerEvents(eventsByUserID);
+
+      console.log(eventsByUserID)
+      setFilteredEvents(eventsByUserID);
     });
   }, [userID]);
 
   const handleInputChange = (event: any) => {
+    const text = event.target.value
+    setSearchText(text);
     const filteredEvent = Object.fromEntries(
       Object.entries(ownerEvents!).filter(([id, newEvent]) => {
         const lowerCaseInput = event.target.value?.toLowerCase();
@@ -126,9 +131,9 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
             </div>
 
             <div className="buttons">
-              <ShareAltOutlined rev />
-              <FormOutlined rev />
-              <CloudUploadOutlined rev />
+              <ShareAltOutlined rev/>
+              <FormOutlined rev/>
+              <CloudUploadOutlined rev/>
             </div>
           </div>
         </Card.Content>
@@ -165,7 +170,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   <i
                     aria-hidden="true"
                     className="search icon"
-                    style={{ color: 'var(--main-color)', opacity: 0.9 }}
+                    style={{color: 'var(--main-color)', opacity: 0.9}}
                   />
                 </div>
               </Col>
@@ -176,7 +181,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   <Card>
                     <Image
                       className="Sad"
-                      style={{ height: '21em' }}
+                      style={{height: '21em'}}
                       src={event.imgUrl || defaultImg}
                       fluid
                       ui={false}
@@ -219,7 +224,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                             </Tooltip>
                           ) : (
                             <Tooltip title="event is finish">
-                              <CarryOutOutlined rev />
+                              <CarryOutOutlined rev/>
                             </Tooltip>
                           )}
                         </div>
@@ -234,22 +239,22 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       )}
 
       {loading && <Card.Group centered>{loadingCards}</Card.Group>}
-      {fIlteredEvents && Object.values(fIlteredEvents!)?.length === 0 && (
+      {searchText && fIlteredEvents && Object.values(fIlteredEvents!)?.length === 0 && (
         <Row>
           <Fade
             direction="right"
             duration={30}
             cascade
-            style={{ fontSize: '2em' }}
+            style={{fontSize: '2em'}}
             className={"not-found-message"}
           >
             Sorry, we couldn't find the event you were looking for...
           </Fade>
         </Row>
       )}
-      {ownerEvents && Object.keys(ownerEvents)?.length < 1 && (
+      {!ownerEvents && !searchText && (
         <div className="empty">
-          there isnt event yet click the button to create one ={'>'}
+          There isn't event yet click the button to create one ={'>'}
           <Tooltip title="create new event">
             <AppstoreAddOutlined
               rev
@@ -295,7 +300,7 @@ interface UsersPhotosProps {
 }
 
 //TODO move
-export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
+export const UsersPhotos: FC<UsersPhotosProps> = ({subscribers, users}) => {
   const ids = Object.keys(subscribers);
   const maxCount = 3;
 
@@ -304,7 +309,7 @@ export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
       <Avatar.Group
         maxCount={maxCount}
         maxPopoverPlacement={'bottom'}
-        maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
+        maxStyle={{color: '#f56a00', backgroundColor: '#fde3cf'}}
       >
         {users &&
           Object.entries(users)
@@ -315,7 +320,7 @@ export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
                   gap={8}
                   icon={
                     <img
-                      style={{ display: 'block' }}
+                      style={{display: 'block'}}
                       onError={(e: any) => {
                         e.target.src = '../../assets/user.png';
                         // e.target.src = <UserOutlined rev />; //TODO

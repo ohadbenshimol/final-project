@@ -1,9 +1,8 @@
 // import QRCode from 'react-qr-code';// TODO remove
-import { FC, useRef } from 'react';
-import { Button, Modal } from 'semantic-ui-react';
-import { WhatsappShareButton } from 'react-share';
-import { toast } from 'react-toastify';
-import { QRCode } from 'antd';
+import {FC, useRef} from 'react';
+import {Button, Modal} from 'semantic-ui-react';
+import {WhatsappShareButton} from 'react-share';
+import {QRCode} from 'antd';
 import {setMessage, shareClick} from '../../helpers/utils';
 import './ShareEvent.less';
 
