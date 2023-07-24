@@ -1,20 +1,20 @@
 import * as Yup from 'yup';
-import React, { FC, useState } from 'react';
-import { Button, message, Steps, theme, Upload, UploadProps } from 'antd';
-import { Form } from 'semantic-ui-react';
+import React, {FC, useState} from 'react';
+import {Button, message, Steps, theme, Upload, UploadProps} from 'antd';
+import {Form} from 'semantic-ui-react';
 import {
   CodeSandboxOutlined,
   FileImageOutlined,
   InboxOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons';
-import { push } from 'firebase/database';
-import { eventsRef } from '../../helpers/firebase';
-import { CLIENT_URL } from '../../helpers/config';
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
-import { createEvent } from '../../helpers/requests';
-import { ShareEvent } from '../shareEvent/ShareEvent';
+import {push} from 'firebase/database';
+import {eventsRef} from '../../helpers/firebase';
+import {CLIENT_URL} from '../../helpers/config';
+import {useSelector} from 'react-redux';
+import {getUser} from '../../store/reducers/userSlice';
+import {createEvent} from '../../helpers/requests';
+import {ShareEvent} from '../shareEvent/ShareEvent';
 import './createNewEvent.less';
 
 export interface CreateEventProps {
@@ -30,16 +30,16 @@ const DEFAULT_FORM_DATA = {
   isActive: false,
 };
 export const CreateNewEvent: FC<CreateEventProps> = ({
-  setCreateEventIsOpen,
-  setCurrent,
-  current,
-}) => {
-  const { Dragger } = Upload;
+                                                       setCreateEventIsOpen,
+                                                       setCurrent,
+                                                       current,
+                                                     }) => {
+  const {Dragger} = Upload;
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
   const user = useSelector(getUser);
   const [link, setLink] = useState('');
 
-  const { token } = theme.useToken();
+  const {token} = theme.useToken();
 
   const next = () => {
     setCurrent(current + 1);
@@ -51,7 +51,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
 
   const handleSubmit = async () => {
     try {
-      await eventSchema.validate(formData, { abortEarly: false });
+      await eventSchema.validate(formData, {abortEarly: false});
       const date = new Date(Date.now());
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
         date.getMonth() + 1
@@ -71,7 +71,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
 
       setLink(`${CLIENT_URL}/register-event/${newEventRef.key}`);
       setFormValues(DEFAULT_FORM_DATA);
-      await createEvent({ eventId: newEventRef.key! });
+      await createEvent({eventId: newEventRef.key!});
       next();
     } catch (error) {
       console.error(error);
@@ -79,7 +79,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
   };
 
   const handleChange = (e: any) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setFormValues((prevState) => {
       return {
         ...prevState,
@@ -116,7 +116,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
     },
     onChange(info) {
       handleImageChange(info.file as any);
-      const { status } = info.file;
+      const {status} = info.file;
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
@@ -133,10 +133,10 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
 
   const steps = [
     {
-      title: 'fill the details',
+      title: 'Fill the details',
       content: (
         <>
-          <div className={'yoel-temp'} style={{ marginTop: 15 }}>
+          <div className={'yoel-temp'} style={{marginTop: 15}}>
             <Form.Field>
               <label htmlFor="nameID">Name</label>
               <input
@@ -164,7 +164,9 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
           </div>
         </>
       ),
-      icon: <CodeSandboxOutlined rev={undefined} />,
+      icon: <img style={{width: "1.3em"}}
+                 src={current == 0 ? "../../assets/create-event-assets/fill-form.gif" :
+                   "../../assets/create-event-assets/fill-static-form.jpg"}/>,
     },
     {
       title: 'Upload an image',
@@ -172,7 +174,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
         <Form.Field className={'upload-image'}>
           <Dragger {...propsUpload}>
             <p className="ant-upload-drag-icon">
-              <InboxOutlined rev={true} />
+              <InboxOutlined rev={true}/>
             </p>
             <p className="ant-upload-text">
               Click or drag file to this area to upload
@@ -183,12 +185,16 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
           </Dragger>
         </Form.Field>
       ),
-      icon: <FileImageOutlined rev={undefined} />,
+      icon: <img style={{width: "1.3em"}}
+                 src={current == 1 ? "../../assets/create-event-assets/upload-image.gif"
+                   : "../../assets/create-event-assets/upload-image-static.jpg"}/>,
     },
     {
       title: 'Share event',
       content: <ShareEvent link={link}></ShareEvent>,
-      icon: <ShareAltOutlined rev={undefined} />,
+      icon: <img style={{width: "1.3em"}}
+                 src={current== 2 ? "../../assets/create-event-assets/shareLink.gif"
+                   : "../../assets/create-event-assets/shareLink-static.jpg"}/>,
     },
   ];
   const items = steps.map((item) => ({
@@ -204,7 +210,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
   return (
     <>
       <Form>
-        <Steps current={current} items={items} />
+        <Steps current={current} items={items}/>
         <div style={contentStyle}>{steps[current].content}</div>
         <div className={'buttons-footer'}>
           {current == 0 && (
@@ -235,7 +241,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
           )}
           {current > 0 && current != 2 && (
             <Button
-              style={{ margin: '0 8px' }}
+              style={{margin: '0 8px'}}
               onClick={() => prev()}
               type={'default'}
             >

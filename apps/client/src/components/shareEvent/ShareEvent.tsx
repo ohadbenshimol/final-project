@@ -4,7 +4,7 @@ import { Button, Modal } from 'semantic-ui-react';
 import { WhatsappShareButton } from 'react-share';
 import { toast } from 'react-toastify';
 import { QRCode } from 'antd';
-import { shareClick } from '../../helpers/utils';
+import {setMessage, shareClick} from '../../helpers/utils';
 import './ShareEvent.less';
 
 interface ShareEventProps {
@@ -18,7 +18,8 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
     if (inputRef.current) {
       inputRef.current.select();
       await navigator.clipboard.writeText(inputRef.current.value);
-      toast.success(`copy link successfully`);
+
+      setMessage(`copy link successfully`,'success')
     }
   };
 

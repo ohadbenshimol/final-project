@@ -1,23 +1,22 @@
 import Webcam from 'react-webcam';
 import defaultImg from '../../assets/default.svg';
 import ConfettiExplosion from 'react-confetti-explosion';
-import { useSelector } from 'react-redux';
-import { getUser } from '../../store/reducers/userSlice';
-import { useParams } from 'react-router-dom';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { get, ref, update } from 'firebase/database';
-import { db } from '../../helpers/firebase';
-import { useQuery } from 'react-query';
-import { NewEvent } from '../../shared/models/event';
-import { toast } from 'react-toastify';
-import { Button, Modal, ModalFuncProps } from 'antd';
-import { Card, Image } from 'semantic-ui-react';
-import { SwitchTransition, CSSTransition } from 'react-transition-group';
-import { CameraOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
-import { Fade, Slide, Reveal, AttentionSeeker } from 'react-awesome-reveal';
-import { addUserToEvent } from '../../helpers/requests';
-import { useNavigation } from '../../hooks/navigate';
+import {useSelector} from 'react-redux';
+import {getUser} from '../../store/reducers/userSlice';
+import {useParams} from 'react-router-dom';
+import {FC, useCallback, useEffect, useRef, useState} from 'react';
+import {useCookies} from 'react-cookie';
+import {get, ref, update} from 'firebase/database';
+import {db} from '../../helpers/firebase';
+import {useQuery} from 'react-query';
+import {NewEvent} from '../../shared/models/event';
+import {Button, message, ModalFuncProps} from 'antd';
+import {Card, Image} from 'semantic-ui-react';
+import {CSSTransition, SwitchTransition} from 'react-transition-group';
+import {CameraOutlined, SendOutlined, UndoOutlined} from '@ant-design/icons';
+import {AttentionSeeker, Fade, Reveal, Slide} from 'react-awesome-reveal';
+import {addUserToEvent} from '../../helpers/requests';
+import {useNavigation} from '../../hooks/navigate';
 import './EventRegistrationPage.less';
 
 const defaultFormData = {
@@ -120,9 +119,9 @@ const EventRegistrationPage: FC = () => {
           image: imgSrc,
           username: `${user.firstName} ${user.lastName}`,
         });
-        toast.success('Registration for the event was successfully completed');
+        await message.success("Registration for the event was successfully completed")
       } catch (error) {
-        toast.error('something went wrong in event registration');
+        await message.error("something went wrong in event registration")
       } finally {
         goToSharedEventsPage();
       }
