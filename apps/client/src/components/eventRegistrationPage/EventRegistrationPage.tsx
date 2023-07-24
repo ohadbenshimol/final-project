@@ -153,12 +153,44 @@ const EventRegistrationPage: FC = () => {
                 {event && (
                   <Fade direction="up" duration={600} delay={500}>
                     <Card>
-                      <Image
-                        className="Sad"
-                        src={event.imgUrl || defaultImg}
-                        fluid
-                        ui={false}
-                      />
+                      <div
+                        className="image-container"
+                        style={{
+                          position: 'relative',
+                          overflow: 'hidden',
+                          maxHeight: '18em',
+                          width: '100%',
+                        }}
+                      >
+                        <div
+                          style={{
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundImage: `url(${
+                              event.imgUrl || defaultImg
+                            })`,
+                            filter: 'blur(10px)',
+                          }}
+                        />
+                        <Image
+                          style={{
+                            position: 'relative',
+                            maxHeight: '18em',
+                            objectFit: 'contain',
+                            zIndex: 1,
+                            margin: 'auto',
+                          }}
+                          className="Sad"
+                          src={event.imgUrl || defaultImg}
+                          fluid
+                          ui={false}
+                        />
+                      </div>
 
                       <Card.Content>
                         <Card.Header>{event.name}</Card.Header>
