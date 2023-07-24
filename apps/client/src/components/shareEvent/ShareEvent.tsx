@@ -4,7 +4,7 @@ import { Button, Modal } from 'semantic-ui-react';
 import { WhatsappShareButton } from 'react-share';
 import { toast } from 'react-toastify';
 import { QRCode } from 'antd';
-
+import { shareClick } from '../../helpers/utils';
 import './ShareEvent.less';
 
 interface ShareEventProps {
@@ -19,18 +19,6 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
       inputRef.current.select();
       await navigator.clipboard.writeText(inputRef.current.value);
       toast.success(`copy link successfully`);
-    }
-  };
-
-  const shareClick = async () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Only me',
-        text: 'Register my event',
-        url: link,
-      });
-    } else {
-      console.log('Share not supported on this browser, do it manually!');
     }
   };
 
@@ -55,7 +43,7 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
             <Button onClick={handleCopyClick}>
               <i className="copy outline icon"></i>
             </Button>
-            <Button onClick={shareClick}>
+            <Button onClick={() => shareClick(link)}>
               <i className="share alternate icon"></i>
             </Button>
             <Button>

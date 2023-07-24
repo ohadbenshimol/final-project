@@ -1,16 +1,24 @@
-import userIMAGE from '../../assets/user.png';
-import {db, eventsRef, usersRef} from '../../helpers/firebase';
-import {FC, useEffect, useRef, useState} from 'react';
-import {equalTo, get, onValue, orderByChild, query, ref, update,} from 'firebase/database';
-import {Card, Image} from 'semantic-ui-react';
-import {useSelector} from 'react-redux';
-import {getUser, getUserID, UserState} from '../../store/reducers/userSlice';
-import {NewEvent} from '../../shared/models/event';
-import {useQuery} from 'react-query';
-import {debounce} from 'ts-debounce';
-import {useCookies} from 'react-cookie';
+import CreateNewEvent from '../createNewEvent/createNewEvent';
+import { db, eventsRef, usersRef } from '../../helpers/firebase';
+import { FC, useEffect, useState } from 'react';
+import {
+  equalTo,
+  get,
+  onValue,
+  orderByChild,
+  query,
+  ref,
+  update,
+} from 'firebase/database';
+import { Card, Image } from 'semantic-ui-react';
+import { useSelector } from 'react-redux';
+import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
+import { NewEvent } from '../../shared/models/event';
+import { useQuery } from 'react-query';
+import { debounce } from 'ts-debounce';
+import { useCookies } from 'react-cookie';
 import defaultImg from '../../assets/default.svg';
-import {Avatar, Col, Modal, Row, Skeleton, Tooltip} from 'antd';
+import { Avatar, Col, Modal, Row, Skeleton, Tooltip } from 'antd';
 import {
   AppstoreAddOutlined,
   CarryOutOutlined,
@@ -20,28 +28,26 @@ import {
   ShareAltOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import { closeEvent } from '../../helpers/requests';
+import { useNavigation } from '../../hooks/navigate';
+import { shareClick } from '../../helpers/utils';
+import { CLIENT_URL } from '../../helpers/config';
 import './OwnerEvents.less';
-import {closeEvent} from '../../helpers/requests';
-import {useNavigation} from '../../hooks/navigate';
-import CreateNewEvent from "../createNewEvent/createNewEvent";
 
-interface OwnerEventsProps {
-}
+interface OwnerEventsProps {}
 
 export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const userID = useSelector(getUserID);
   const user = useSelector(getUser);
   const [ownerEvents, setOwnerEvents] = useState<Record<string, NewEvent>>();
-  const [fIlteredEvents, setFilteredEvents] = useState<Record<string, NewEvent>>();
+  const [fIlteredEvents, setFilteredEvents] =
+    useState<Record<string, NewEvent>>();
   const [users, setUsers] = useState<Record<string, UserState>>();
-  const {goToLoginPage, goToUploadFilePage} = useNavigation('/own-events');
+  const { goToLoginPage, goToUploadFilePage } = useNavigation('/own-events');
   const [cookies] = useCookies(['user']);
   const [current, setCurrent] = useState(0);
 
-
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
-  const [shareEventOpen, setShareEventOpen] = useState(false);
-  const [link, setLink] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,15 +63,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     onError: console.error,
     onSuccess: (data) => setUsers(data.val()),
   });
-
-  const onSubmit = () => {
-    setCreateEventIsOpen(false);
-    setShareEventOpen(true);
-  };
-
-  const onCancel = () => {
-    setCreateEventIsOpen(false);
-  };
 
   const onClickAddEvent = () => setCreateEventIsOpen(true);
 
@@ -117,43 +114,31 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         isActive: false,
       });
 
-      await closeEvent({eventId});
-    }
-  };
-
-  const shareClick = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Only me',
-        text: 'Register my event',
-        url: link,
-      });
-    } else {
-      console.log('Share not supported on this browser, do it manually!');
+      await closeEvent({ eventId });
     }
   };
 
   const loadingCards = new Array(15).fill(null).map((_, index) => {
     return (
       <Card key={index}>
-        <Skeleton.Image active style={{width: '100%', height: '14em'}}/>
+        <Skeleton.Image active style={{ width: '100%', height: '14em' }} />
         <Card.Content>
-          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
-          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
-          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
         </Card.Content>
         <Card.Content extra>
           <div className="c">
             <div className="avatars">
-              <Skeleton.Avatar active/>
-              <Skeleton.Avatar active/>
-              <Skeleton.Avatar active/>
+              <Skeleton.Avatar active />
+              <Skeleton.Avatar active />
+              <Skeleton.Avatar active />
             </div>
 
             <div className="buttons">
-              <ShareAltOutlined rev onClick={shareClick}/>
-              <FormOutlined rev/>
-              <CloudUploadOutlined rev/>
+              <ShareAltOutlined rev />
+              <FormOutlined rev />
+              <CloudUploadOutlined rev />
             </div>
           </div>
         </Card.Content>
@@ -165,7 +150,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       {ownerEvents && (
         <>
           <Card.Group centered>
-            <Row className="temp">
+            <Row className="cards-con">
               <Col>
                 <Tooltip title="create new event">
                   <AppstoreAddOutlined
@@ -190,7 +175,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   <i
                     aria-hidden="true"
                     className="search icon"
-                    style={{color: 'var(--main-color)', opacity: 0.9}}
+                    style={{ color: 'var(--main-color)', opacity: 0.9 }}
                   />
                 </div>
               </Col>
@@ -201,7 +186,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   <Card>
                     <Image
                       className="Sad"
-                      style={{height: '21em'}}
+                      style={{ height: '21em' }}
                       src={event.imgUrl || defaultImg}
                       fluid
                       ui={false}
@@ -222,7 +207,12 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                         />
                         <div className="buttons">
                           <Tooltip title="share">
-                            <ShareAltOutlined rev onClick={shareClick}/>
+                            <ShareAltOutlined
+                              rev
+                              onClick={() =>
+                                shareClick(`${CLIENT_URL}/register-event/${id}`)
+                              }
+                            />
                           </Tooltip>
                           <Tooltip title="upload images">
                             <CloudUploadOutlined
@@ -239,7 +229,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                             </Tooltip>
                           ) : (
                             <Tooltip title="event is finish">
-                              <CarryOutOutlined rev/>
+                              <CarryOutOutlined rev />
                             </Tooltip>
                           )}
                         </div>
@@ -275,20 +265,23 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
       <Modal
         footer={null}
-        okButtonProps={{disabled: true}}
-        cancelButtonProps={{disabled: true}}
+        okButtonProps={{ disabled: true }}
+        cancelButtonProps={{ disabled: true }}
         width={860}
         title="Create new event"
         centered
         open={createEventIsOpen}
         onOk={() => setCreateEventIsOpen(false)}
         onCancel={() => {
-          setCurrent(0)
+          setCurrent(0);
           setCreateEventIsOpen(false);
         }}
       >
-        <CreateNewEvent setCreateEventIsOpen={setCreateEventIsOpen} setCurrent={setCurrent}
-                        current={current}></CreateNewEvent>
+        <CreateNewEvent
+          setCreateEventIsOpen={setCreateEventIsOpen}
+          setCurrent={setCurrent}
+          current={current}
+        ></CreateNewEvent>
       </Modal>
     </>
   );
@@ -300,21 +293,16 @@ interface UsersPhotosProps {
 }
 
 //TODO move
-export const UsersPhotos: FC<UsersPhotosProps> = ({subscribers, users}) => {
+export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
   const ids = Object.keys(subscribers);
-  const a = useRef<any>();
-  const handleImageError = () => {
-    if (a) (a as any).target.src = userIMAGE;
-    return false;
-  };
-  const maxCount = 4;
+  const maxCount = 3;
 
   return (
     <>
       <Avatar.Group
         maxCount={maxCount}
         maxPopoverPlacement={'bottom'}
-        maxStyle={{color: '#f56a00', backgroundColor: '#fde3cf'}}
+        maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
       >
         {users &&
           Object.entries(users)
@@ -322,24 +310,26 @@ export const UsersPhotos: FC<UsersPhotosProps> = ({subscribers, users}) => {
             .map(([k, v], index) => (
               <>
                 <Avatar
-                  ref={a}
                   gap={8}
-                  icon={<img
-                    style={{display: 'block'}}
-                    onError={(e: any) => {
-                      e.target.src = '../../assets/user.png';
-                      // e.target.src = <UserOutlined rev />; //TODO
-                      return true;
-                    }}
-                    src={v.pictureUrl}
-                    onClick={() => console.log('sdsd')}/>}
+                  icon={
+                    <img
+                      style={{ display: 'block' }}
+                      onError={(e: any) => {
+                        e.target.src = '../../assets/user.png';
+                        // e.target.src = <UserOutlined rev />; //TODO
+                        return true;
+                      }}
+                      src={v.pictureUrl}
+                    />
+                  }
                   key={index}
                   alt={`${v.firstName} ${v.lastName}`}
                 >
-                  <UserOutlined rev/>
+                  <UserOutlined rev />
                 </Avatar>
               </>
             ))}
-      </Avatar.Group></>
+      </Avatar.Group>
+    </>
   );
 };
