@@ -1,6 +1,5 @@
-import userIMAGE from '../../assets/user.png';
 import {db, eventsRef, usersRef} from '../../helpers/firebase';
-import {FC, useEffect, useRef, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import {equalTo, get, onValue, orderByChild, query, ref, update,} from 'firebase/database';
 import {Card, Image} from 'semantic-ui-react';
 import {useSelector} from 'react-redux';
@@ -25,8 +24,9 @@ import {closeEvent} from '../../helpers/requests';
 import {useNavigation} from '../../hooks/navigate';
 import CreateNewEvent from "../createNewEvent/createNewEvent";
 import {Fade} from "react-awesome-reveal";
-import { shareClick } from '../../helpers/utils';
-import { CLIENT_URL } from '../../helpers/config';
+import {shareClick} from '../../helpers/utils';
+import {CLIENT_URL} from '../../helpers/config';
+
 interface OwnerEventsProps {
 }
 
@@ -46,9 +46,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   useEffect(() => {
     if (!(user.email && cookies.user.email)) {
       goToLoginPage();
-    } else {
-      // toast.success(`user store , ${user.email}`);
-      // toast.success(`user cookie , ${cookies.user.email}`);
     }
   }, [user, cookies]);
 

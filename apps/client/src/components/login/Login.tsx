@@ -4,7 +4,6 @@ import {setUser, UserState} from '../../store/reducers/userSlice';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {CredentialResponse, GoogleLogin} from '@react-oauth/google';
-import {toast} from 'react-toastify';
 import {useCookies} from 'react-cookie';
 import {equalTo, get, orderByChild, push, query} from 'firebase/database';
 import {usersRef} from '../../helpers/firebase';
@@ -13,6 +12,7 @@ import {AppleFilled} from '@ant-design/icons';
 import {useNavigation} from '../../hooks/navigate';
 import './Login.less';
 import {Header} from 'semantic-ui-react';
+import {setMessage} from "../../helpers/utils";
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -61,8 +61,8 @@ const Login: React.FC = () => {
       if (from) {
         navigate(from);
       }
+      setMessage(`welcome ${user.firstName} ${user.lastName}`, "success")
 
-      toast.success(`welcome ${user.firstName} ${user.lastName}`);
       setCookie('user', JSON.stringify(user), {path: '/'});
       dispatch(setUser(user));
     }
@@ -70,14 +70,14 @@ const Login: React.FC = () => {
 
   const handleError = () => {
     console.error('LOGIN FAILED');
-    toast.error('LOGIN FAILED');
+    setMessage(`Login failed`, "error")
   };
 
   return (
     <>
       <div className="main-page">
         <Header className={"login-header"} as='h1'>Login to your account</Header>
-        <div className={"buttons-login-section"} style={{margin:'7em'}}>
+        <div className={"buttons-login-section"} style={{margin: '7em'}}>
           <div className="googke-signon">
             <GoogleLogin
               useOneTap
@@ -106,7 +106,7 @@ const Login: React.FC = () => {
                 version: 'v10.0',
               }}
               style={{
-                width:"max-content",
+                width: "max-content",
                 fontSize: '1.1em',
                 backgroundColor: '#4267b2',
                 color: '#fff',
