@@ -161,10 +161,13 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
                 placeholder="description..."
               />
             </Form.Field>
+            {current}
           </div>
         </>
       ),
-      icon: <img style={{width: "1.3em"}} src="../../assets/create-event-assets/report.png"/>,
+      icon: <img style={{width: "1.3em"}}
+                 src={current == 0 ? "../../assets/create-event-assets/fill-form.gif" :
+                   "../../assets/create-event-assets/fill-static-form.jpg"}/>,
     },
     {
       title: 'Upload an image',
@@ -183,12 +186,16 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
           </Dragger>
         </Form.Field>
       ),
-      icon: <img style={{width: "1.3em"}} src="../../assets/create-event-assets/icons8-image.gif"/>,
+      icon: <img style={{width: "1.3em"}}
+                 src={current == 1 ? "../../assets/create-event-assets/upload-image.gif"
+                   : "../../assets/create-event-assets/upload-image-static.jpg"}/>,
     },
     {
       title: 'Share event',
       content: <ShareEvent link={link}></ShareEvent>,
-      icon: <ShareAltOutlined rev={undefined}/>,
+      icon: <img style={{width: "1.3em"}}
+                 src={current== 2 ? "../../assets/create-event-assets/shareLink.gif"
+                   : "../../assets/create-event-assets/shareLink-static.jpg"}/>,
     },
   ];
   const items = steps.map((item) => ({
@@ -204,6 +211,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
   return (
     <>
       <Form>
+        {current}
         <Steps current={current} items={items}/>
         <div style={contentStyle}>{steps[current].content}</div>
         <div className={'buttons-footer'}>
