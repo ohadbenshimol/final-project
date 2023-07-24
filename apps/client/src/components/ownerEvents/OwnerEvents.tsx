@@ -25,7 +25,8 @@ import {closeEvent} from '../../helpers/requests';
 import {useNavigation} from '../../hooks/navigate';
 import CreateNewEvent from "../createNewEvent/createNewEvent";
 import {Fade} from "react-awesome-reveal";
-
+import { shareClick } from '../../helpers/utils';
+import { CLIENT_URL } from '../../helpers/config';
 interface OwnerEventsProps {
 }
 
@@ -39,10 +40,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
   const [cookies] = useCookies(['user']);
   const [current, setCurrent] = useState(0);
 
-
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
-  const [shareEventOpen, setShareEventOpen] = useState(false);
-  const [link, setLink] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -58,15 +56,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     onError: console.error,
     onSuccess: (data) => setUsers(data.val()),
   });
-
-  const onSubmit = () => {
-    setCreateEventIsOpen(false);
-    setShareEventOpen(true);
-  };
-
-  const onCancel = () => {
-    setCreateEventIsOpen(false);
-  };
 
   const onClickAddEvent = () => setCreateEventIsOpen(true);
 
@@ -97,6 +86,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         );
       })
     );
+
     setFilteredEvents(filteredEvent);
   };
 
@@ -121,18 +111,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     }
   };
 
-  const shareClick = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Only me',
-        text: 'Register my event',
-        url: link,
-      });
-    } else {
-      console.log('Share not supported on this browser, do it manually!');
-    }
-  };
-
   const loadingCards = new Array(15).fill(null).map((_, index) => {
     return (
       <Card key={index}>
@@ -151,9 +129,9 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
             </div>
 
             <div className="buttons">
-              <ShareAltOutlined rev onClick={shareClick}/>
-              <FormOutlined rev/>
-              <CloudUploadOutlined rev/>
+              <ShareAltOutlined rev />
+              <FormOutlined rev />
+              <CloudUploadOutlined rev />
             </div>
           </div>
         </Card.Content>
@@ -165,7 +143,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
       {ownerEvents && (
         <>
           <Card.Group centered>
-            <Row className="temp">
+            <Row className="cards-con">
               <Col>
                 <Tooltip title="create new event">
                   <AppstoreAddOutlined
@@ -190,12 +168,10 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   <i
                     aria-hidden="true"
                     className="search icon"
-                    style={{color: 'var(--main-color)', opacity: 0.9}}
+                    style={{ color: 'var(--main-color)', opacity: 0.9 }}
                   />
                 </div>
               </Col>
-
-
             </Row>
             {Object.entries(fIlteredEvents!)?.map(
               ([id, event]: [string, NewEvent], index) => (
@@ -203,7 +179,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                   <Card>
                     <Image
                       className="Sad"
-                      style={{height: '21em'}}
+                      style={{ height: '21em' }}
                       src={event.imgUrl || defaultImg}
                       fluid
                       ui={false}
@@ -224,7 +200,12 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                         />
                         <div className="buttons">
                           <Tooltip title="share">
-                            <ShareAltOutlined rev onClick={shareClick}/>
+                            <ShareAltOutlined
+                              rev
+                              onClick={() =>
+                                shareClick(`${CLIENT_URL}/register-event/${id}`)
+                              }
+                            />
                           </Tooltip>
                           <Tooltip title="upload images">
                             <CloudUploadOutlined
@@ -241,7 +222,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                             </Tooltip>
                           ) : (
                             <Tooltip title="event is finish">
-                              <CarryOutOutlined rev/>
+                              <CarryOutOutlined rev />
                             </Tooltip>
                           )}
                         </div>
@@ -297,12 +278,15 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
         open={createEventIsOpen}
         onOk={() => setCreateEventIsOpen(false)}
         onCancel={() => {
-          setCurrent(0)
+          setCurrent(0);
           setCreateEventIsOpen(false);
         }}
       >
-        <CreateNewEvent setCreateEventIsOpen={setCreateEventIsOpen} setCurrent={setCurrent}
-                        current={current}></CreateNewEvent>
+        <CreateNewEvent
+          setCreateEventIsOpen={setCreateEventIsOpen}
+          setCurrent={setCurrent}
+          current={current}
+        ></CreateNewEvent>
       </Modal>
     </>
   );
@@ -314,21 +298,16 @@ interface UsersPhotosProps {
 }
 
 //TODO move
-export const UsersPhotos: FC<UsersPhotosProps> = ({subscribers, users}) => {
+export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
   const ids = Object.keys(subscribers);
-  const a = useRef<any>();
-  const handleImageError = () => {
-    if (a) (a as any).target.src = userIMAGE;
-    return false;
-  };
-  const maxCount = 4;
+  const maxCount = 3;
 
   return (
     <>
       <Avatar.Group
         maxCount={maxCount}
         maxPopoverPlacement={'bottom'}
-        maxStyle={{color: '#f56a00', backgroundColor: '#fde3cf'}}
+        maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
       >
         {users &&
           Object.entries(users)
@@ -336,17 +315,18 @@ export const UsersPhotos: FC<UsersPhotosProps> = ({subscribers, users}) => {
             .map(([k, v], index) => (
               <>
                 <Avatar
-                  ref={a}
                   gap={8}
-                  icon={<img
-                    style={{display: 'block'}}
-                    onError={(e: any) => {
-                      e.target.src = '../../assets/user.png';
-                      // e.target.src = <UserOutlined rev />; //TODO
-                      return true;
-                    }}
-                    src={v.pictureUrl}
-                    onClick={() => console.log('sdsd')}/>}
+                  icon={
+                    <img
+                      style={{ display: 'block' }}
+                      onError={(e: any) => {
+                        e.target.src = '../../assets/user.png';
+                        // e.target.src = <UserOutlined rev />; //TODO
+                        return true;
+                      }}
+                      src={v.pictureUrl}
+                    />
+                  }
                   key={index}
                   alt={`${v.firstName} ${v.lastName}`}
                 >
@@ -354,6 +334,7 @@ export const UsersPhotos: FC<UsersPhotosProps> = ({subscribers, users}) => {
                 </Avatar>
               </>
             ))}
-      </Avatar.Group></>
+      </Avatar.Group>
+    </>
   );
 };

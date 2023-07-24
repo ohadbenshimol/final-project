@@ -16,6 +16,8 @@ import {CarryOutOutlined, CloudUploadOutlined, FormOutlined, ShareAltOutlined,} 
 import './ParticipantsEvents.less';
 import {useNavigation} from '../../hooks/navigate';
 import {Fade} from "react-awesome-reveal";
+import { CLIENT_URL } from '../../helpers/config';
+import { shareClick } from '../../helpers/utils';
 
 interface ParticipantsEventsProps {
 }
@@ -30,7 +32,6 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
   const [users, setUsers] = useState<Record<string, UserState>>();
   const {goToLoginPage, goToUploadFilePage} = useNavigation('/shared-events');
   const [cookies] = useCookies(['user']);
-  const [link, setLink] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -84,39 +85,27 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
 
   const debounceInputChange = debounce(handleInputChange, 300);
 
-  const shareClick = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Only me',
-        text: 'Register my event',
-        url: link,
-      });
-    } else {
-      console.log('Share not supported on this browser, do it manually!');
-    }
-  };
-
   const loadingCards = new Array(15).fill(null).map((_, index) => {
     return (
       <Card key={index}>
-        <Skeleton.Image active style={{width: '100%', height: '14em'}}/>
+        <Skeleton.Image active style={{ width: '100%', height: '14em' }} />
         <Card.Content>
-          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
-          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
-          <Skeleton.Input active style={{marginBottom: '0.2em'}}/>
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
+          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
         </Card.Content>
         <Card.Content extra>
           <div className="c">
             <div className="cc">
-              <Skeleton.Avatar active/>
-              <Skeleton.Avatar active/>
-              <Skeleton.Avatar active/>
+              <Skeleton.Avatar active />
+              <Skeleton.Avatar active />
+              <Skeleton.Avatar active />
             </div>
 
             <div className="buttons">
-              <ShareAltOutlined rev onClick={shareClick}/>
-              <FormOutlined rev/>
-              <CloudUploadOutlined rev/>
+              <ShareAltOutlined rev />
+              <FormOutlined rev />
+              <CloudUploadOutlined rev />
             </div>
           </div>
         </Card.Content>
@@ -145,7 +134,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                 <i
                   aria-hidden="true"
                   className="search icon"
-                  style={{color: 'var(--main-color)', opacity: 0.9}}
+                  style={{ color: 'var(--main-color)', opacity: 0.9 }}
                 />
               </div>
             </Row>
@@ -155,7 +144,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                   <Card>
                     <Image
                       className="Sad"
-                      style={{height: '21em'}}
+                      style={{ height: '21em' }}
                       src={event.imgUrl || defaultImg}
                       fluid
                       ui={false}
@@ -179,7 +168,12 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
                         />
                         <div className="buttons">
                           <Tooltip title="share">
-                            <ShareAltOutlined rev onClick={shareClick}/>
+                            <ShareAltOutlined
+                              rev
+                              onClick={() =>
+                                shareClick(`${CLIENT_URL}/register-event/${id}`)
+                              }
+                            />
                           </Tooltip>
 
                           {event.isActive ? (
@@ -204,6 +198,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
           </Card.Group>
         </>
       )}
+
       {loading && <Card.Group centered>{loadingCards}</Card.Group>}
 
       {filteredEvents && Object.values(filteredEvents).length === 0 && (

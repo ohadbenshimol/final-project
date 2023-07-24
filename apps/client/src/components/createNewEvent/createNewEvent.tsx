@@ -1,22 +1,26 @@
-import 'react-step-progress/dist/index.css';
 import * as Yup from 'yup';
-import React, {FC, useState} from "react";
-import {Button, message, Steps, theme, Upload, UploadProps} from "antd";
-import {Form} from "semantic-ui-react";
-import {CodeSandboxOutlined, FileImageOutlined, InboxOutlined, ShareAltOutlined} from "@ant-design/icons";
-import {push} from "firebase/database";
-import {eventsRef} from "../../helpers/firebase";
-import {CLIENT_URL} from "../../helpers/config";
-import {useSelector} from "react-redux";
-import {getUser} from "../../store/reducers/userSlice";
-import {createEvent} from "../../helpers/requests";
-import {ShareEvent} from "../shareEvent/ShareEvent";
-import './createNewEvent.less'
+import React, { FC, useState } from 'react';
+import { Button, message, Steps, theme, Upload, UploadProps } from 'antd';
+import { Form } from 'semantic-ui-react';
+import {
+  CodeSandboxOutlined,
+  FileImageOutlined,
+  InboxOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons';
+import { push } from 'firebase/database';
+import { eventsRef } from '../../helpers/firebase';
+import { CLIENT_URL } from '../../helpers/config';
+import { useSelector } from 'react-redux';
+import { getUser } from '../../store/reducers/userSlice';
+import { createEvent } from '../../helpers/requests';
+import { ShareEvent } from '../shareEvent/ShareEvent';
+import './createNewEvent.less';
 
 export interface CreateEventProps {
   setCreateEventIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrent: React.Dispatch<React.SetStateAction<number>>;
-  current: number
+  current: number;
 }
 
 const DEFAULT_FORM_DATA = {
@@ -25,8 +29,12 @@ const DEFAULT_FORM_DATA = {
   imgUrl: '',
   isActive: false,
 };
-export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setCurrent, current}) => {
-  const {Dragger} = Upload
+export const CreateNewEvent: FC<CreateEventProps> = ({
+  setCreateEventIsOpen,
+  setCurrent,
+  current,
+}) => {
+  const { Dragger } = Upload;
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
   const user = useSelector(getUser);
   const [link, setLink] = useState('');
@@ -40,7 +48,6 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
   const prev = () => {
     setCurrent(current - 1);
   };
-
 
   const handleSubmit = async () => {
     try {
@@ -69,7 +76,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -127,48 +134,56 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
   const steps = [
     {
       title: 'fill the details',
-      content: <>
-        <div className={"yoel-temp"} style={{marginTop: 15}}><Form.Field>
-          <label htmlFor="nameID">Name</label>
-          <input
-            value={formData.name}
-            className="ui  input"
-            id="nameID"
-            name="name"
-            onChange={handleChange}
-            type="text"
-            placeholder="Enter the event name"
-            required/>
-        </Form.Field>
-          <Form.Field>
-            <label htmlFor={'descriptionId'}>description</label>
-            <input
-              value={formData.description}
-              id={'descriptionId'}
-              name="description"
-              onChange={handleChange}
-              type="text"
-              placeholder="description..."/>
-          </Form.Field></div>
-      </>
-      ,
-      icon: <CodeSandboxOutlined rev={undefined}/>
-
+      content: (
+        <>
+          <div className={'yoel-temp'} style={{ marginTop: 15 }}>
+            <Form.Field>
+              <label htmlFor="nameID">Name</label>
+              <input
+                value={formData.name}
+                className="ui  input"
+                id="nameID"
+                name="name"
+                onChange={handleChange}
+                type="text"
+                placeholder="Enter the event name"
+                required
+              />
+            </Form.Field>
+            <Form.Field>
+              <label htmlFor={'descriptionId'}>Description</label>
+              <input
+                value={formData.description}
+                id={'descriptionId'}
+                name="description"
+                onChange={handleChange}
+                type="text"
+                placeholder="description..."
+              />
+            </Form.Field>
+          </div>
+        </>
+      ),
+      icon: <CodeSandboxOutlined rev={undefined} />,
     },
     {
       title: 'Upload an image',
-      content: <Form.Field className={"upload-image"}>
-        <Dragger {...propsUpload}>
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined rev={true}/>
-          </p>
-          <p className="ant-upload-text">Click or drag file to this area to upload</p>
-          <p className="ant-upload-hint">
-            Choosing a picture is optional, we can choose a picture for you..
-          </p>
-        </Dragger>
-      </Form.Field>,
-      icon: <FileImageOutlined rev={undefined}/>
+      content: (
+        <Form.Field className={'upload-image'}>
+          <Dragger {...propsUpload}>
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined rev={true} />
+            </p>
+            <p className="ant-upload-text">
+              Click or drag file to this area to upload
+            </p>
+            <p className="ant-upload-hint">
+              Choosing a picture is optional, we can choose a picture for you..
+            </p>
+          </Dragger>
+        </Form.Field>
+      ),
+      icon: <FileImageOutlined rev={undefined} />,
     },
     {
       title: 'Share event',
@@ -191,9 +206,13 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
       <Form>
         <Steps current={current} items={items} />
         <div style={contentStyle}>{steps[current].content}</div>
-        <div className={"buttons-footer"}>
+        <div className={'buttons-footer'}>
           {current == 0 && (
-            <Button type="default" onClick={() => next()} disabled={!(formData.name && formData.description)}>
+            <Button
+              type="default"
+              onClick={() => next()}
+              disabled={!(formData.name && formData.description)}
+            >
               Next
             </Button>
           )}
@@ -203,16 +222,23 @@ export const CreateNewEvent: FC<CreateEventProps> = ({setCreateEventIsOpen, setC
             </Button>
           )}
           {current === steps.length - 1 && (
-            <Button type="default" onClick={() => {
-              setCreateEventIsOpen(false)
-              message.success('Processing complete!').then()
-              setCurrent(0)
-            }}>
+            <Button
+              type="default"
+              onClick={() => {
+                setCreateEventIsOpen(false);
+                message.success('Processing complete!').then();
+                setCurrent(0);
+              }}
+            >
               Back to events
             </Button>
           )}
           {current > 0 && current != 2 && (
-            <Button style={{margin: '0 8px'}} onClick={() => prev()} type={"default"}>
+            <Button
+              style={{ margin: '0 8px' }}
+              onClick={() => prev()}
+              type={'default'}
+            >
               Previous
             </Button>
           )}
