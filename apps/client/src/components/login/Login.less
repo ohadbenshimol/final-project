@@ -1,26 +1,26 @@
-
-.main-page{
-  h1{
-  font-size: larger;
+.main-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 40vh;
+  h1 {
+    font-size: larger;
   }
-  .apple-signin-button{
+  .apple-signin-button {
     margin: 2em 0;
   }
-}
-.apple-signin-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: black;
-  color: white;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-size: 1em;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 100%;
-  max-width: 260px;
+  .apple-signin-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    color: white;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    width: 100%;
+  }
 }
 
 .apple-signin-button:hover {
@@ -30,16 +30,6 @@
 .apple-logo-wrapper {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-
-.apple-signin-text {
-  flex-grow: 1;
   text-align: center;
-
-}
-
-.login-header{
-  text-align: center;
+  justify-content: space-between;
 }

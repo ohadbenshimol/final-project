@@ -1,22 +1,22 @@
 import Webcam from 'react-webcam';
 import defaultImg from '../../assets/default.svg';
 import ConfettiExplosion from 'react-confetti-explosion';
-import {useSelector} from 'react-redux';
-import {getUser} from '../../store/reducers/userSlice';
-import {useParams} from 'react-router-dom';
-import {FC, useCallback, useEffect, useRef, useState} from 'react';
-import {useCookies} from 'react-cookie';
-import {get, ref, update} from 'firebase/database';
-import {db} from '../../helpers/firebase';
-import {useQuery} from 'react-query';
-import {NewEvent} from '../../shared/models/event';
-import {Button, message, ModalFuncProps} from 'antd';
-import {Card, Image} from 'semantic-ui-react';
-import {CSSTransition, SwitchTransition} from 'react-transition-group';
-import {CameraOutlined, SendOutlined, UndoOutlined} from '@ant-design/icons';
-import {AttentionSeeker, Fade, Reveal, Slide} from 'react-awesome-reveal';
-import {addUserToEvent} from '../../helpers/requests';
-import {useNavigation} from '../../hooks/navigate';
+import { useSelector } from 'react-redux';
+import { getUser } from '../../store/reducers/userSlice';
+import { useParams } from 'react-router-dom';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { get, ref, update } from 'firebase/database';
+import { db } from '../../helpers/firebase';
+import { useQuery } from 'react-query';
+import { NewEvent } from '../../shared/models/event';
+import { Button, message, ModalFuncProps } from 'antd';
+import { Card, Image } from 'semantic-ui-react';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import { CameraOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
+import { AttentionSeeker, Fade, Reveal, Slide } from 'react-awesome-reveal';
+import { addUserToEvent } from '../../helpers/requests';
+import { useNavigation } from '../../hooks/navigate';
 import './EventRegistrationPage.less';
 
 const defaultFormData = {
@@ -119,9 +119,11 @@ const EventRegistrationPage: FC = () => {
           image: imgSrc,
           username: `${user.firstName} ${user.lastName}`,
         });
-        await message.success("Registration for the event was successfully completed")
+        await message.success(
+          'Registration for the event was successfully completed'
+        );
       } catch (error) {
-        await message.error("something went wrong in event registration")
+        await message.error('something went wrong in event registration');
       } finally {
         goToSharedEventsPage();
       }
@@ -147,7 +149,7 @@ const EventRegistrationPage: FC = () => {
                   <p className="name">{firstName}!</p>
                 </div>
               </Slide>
-              <div className="flex">
+              <div className="flex card">
                 {event && (
                   <Fade direction="up" duration={600} delay={500}>
                     <Card>
@@ -174,7 +176,7 @@ const EventRegistrationPage: FC = () => {
                 )}
 
                 <div
-                  className="flex"
+                  className="flex second-text"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -182,6 +184,7 @@ const EventRegistrationPage: FC = () => {
                   }}
                 >
                   <Fade
+                    className="fade-con"
                     direction="right"
                     duration={50}
                     cascade
@@ -197,6 +200,7 @@ const EventRegistrationPage: FC = () => {
                   <Fade direction="up" delay={1000}>
                     <AttentionSeeker effect="wobble" delay={2000}>
                       <Button
+                        className="btn"
                         size="middle"
                         dir="rtl"
                         icon={
@@ -217,27 +221,26 @@ const EventRegistrationPage: FC = () => {
               </div>
             </div>
           ) : (
-            <div className="second">
+            <div className={`second ${imgSrc ? 'screen-shot' : ''}`}>
               <div className="camera-container">
                 {imgSrc ? (
                   <>
-                    {(
+                    {
                       <ConfettiExplosion
                         force={0.8}
                         particleCount={600}
                         colors={['var(--main-color)', 'black']}
                       />
-                    )}
+                    }
 
-                    <img src={imgSrc} alt="webcam" />
+                    <img
+                      className="img-screen-shot"
+                      src={imgSrc}
+                      alt="webcam"
+                    />
                   </>
                 ) : (
-                  <Webcam
-                    imageSmoothing
-                    width={400}
-                    height={400}
-                    ref={webcamRef}
-                  />
+                  <Webcam className="cam" ref={webcamRef} />
                 )}
               </div>
               <div
