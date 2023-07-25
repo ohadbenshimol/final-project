@@ -8,9 +8,9 @@ import {
 } from '../../store/reducers/userSlice';
 import { useCookies } from 'react-cookie';
 import { FC, useState } from 'react';
-import { Col, Layout, Menu, MenuProps, Row, Space, Tooltip } from 'antd';
+import { Layout, Menu, MenuProps, Space, Tooltip } from 'antd';
 import {
-  FolderViewOutlined,
+  CarryOutOutlined,
   HomeOutlined,
   InfoCircleOutlined,
   ShareAltOutlined,
@@ -52,7 +52,7 @@ const Header: FC = () => {
       key: 'home',
       icon: (
         <Tooltip title="home">
-          <HomeOutlined rev />
+          <HomeOutlined rev={undefined} />
         </Tooltip>
       ),
       onClick: goToHomePage,
@@ -62,7 +62,7 @@ const Header: FC = () => {
       key: 'my-events',
       icon: (
         <Tooltip title="my-events">
-          <FolderViewOutlined rev title="my-events" />
+          <CarryOutOutlined rev={undefined} title="my-events" />
         </Tooltip>
       ),
       onClick: goToToMyEventsPage,
@@ -72,7 +72,7 @@ const Header: FC = () => {
       key: 'shared-events',
       icon: (
         <Tooltip title="shared-events">
-          <ShareAltOutlined rev />
+          <ShareAltOutlined rev={undefined} />
         </Tooltip>
       ),
       onClick: goToToSharedEventsPage,
@@ -82,7 +82,7 @@ const Header: FC = () => {
       key: 'about-us',
       icon: (
         <Tooltip title="about-us">
-          <InfoCircleOutlined rev />
+          <InfoCircleOutlined rev={undefined} />
         </Tooltip>
       ),
       onClick: goToToAboutUsPage,
@@ -118,7 +118,7 @@ const Header: FC = () => {
           <Space>
             <p>{userName}</p>
             <Avatar gap={8} src={user?.pictureUrl} alt={`${userName}`}>
-              <UserOutlined rev />
+              <UserOutlined rev={undefined} />
             </Avatar>
             <Tooltip title={userIsLoggedIn() ? 'logout' : 'login'}>
               <img

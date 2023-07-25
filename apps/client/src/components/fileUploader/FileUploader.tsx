@@ -1,4 +1,4 @@
-import UploadButton, {asUploadButton} from '@rpldy/upload-button';
+import UploadButton, { asUploadButton } from '@rpldy/upload-button';
 import UploadDropZone from '@rpldy/upload-drop-zone';
 import UploadPreview from '@rpldy/upload-preview';
 import retryEnhancer, {useRetry} from '@rpldy/retry-hooks';
@@ -113,14 +113,14 @@ const PreviewCard = memo(({id, url, name}: any) => {
         actions={[
           <Button
             key="stop"
-            icon={<StopOutlined rev/>}
+            icon={<StopOutlined rev />}
             onClick={onAbort}
             disabled={itemState !== STATES.PROGRESS}
             type="link"
           />,
           <Button
             key="retry"
-            icon={<RedoOutlined rev/>}
+            icon={<RedoOutlined rev />}
             onClick={onRetry}
             disabled={!isItemError(itemState)}
             type="link"
@@ -151,7 +151,7 @@ const PreviewCard = memo(({id, url, name}: any) => {
   );
 });
 
-const UploadPreviewCards = ({previewMethodsRef, setPreviews}: any) => {
+const UploadPreviewCards = ({ previewMethodsRef, setPreviews }: any) => {
   const getPreviewProps = useCallback(
     (item: any) => ({id: item.id, name: item.file.name}),
     []
@@ -220,8 +220,6 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
       });
   });
 
-
-
   return (
     <div>
       <Layout
@@ -277,7 +275,7 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
           </span>
         </Layout.Header>
         <Layout.Content>
-          {!previews.length && <DragAndClickUpload key="upload-button"/>}
+          {!previews.length && <DragAndClickUpload key="upload-button" />}
 
           <UploadPreviewCards
             setPreviews={setPreviews}
@@ -308,8 +306,8 @@ const FileUploader = () => {
   });
 
   return (
-    <Uploady enhancer={enhancer} destination={{url: ""}}>
-      <>{eventId && <UploadUi eventId={eventId}/>}</>
+    <Uploady enhancer={enhancer} destination={{ url: SERVER_URL }}>
+      <>{eventId && <UploadUi eventId={eventId} />}</>
     </Uploady>
   );
 };

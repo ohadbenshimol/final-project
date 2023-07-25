@@ -1,5 +1,4 @@
 import Webcam from 'react-webcam';
-import defaultImg from '../../assets/default.svg';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useSelector } from 'react-redux';
 import { getUser } from '../../store/reducers/userSlice';
@@ -10,13 +9,13 @@ import { get, ref, update } from 'firebase/database';
 import { db } from '../../helpers/firebase';
 import { useQuery } from 'react-query';
 import { NewEvent } from '../../shared/models/event';
-import { Button, message, ModalFuncProps } from 'antd';
-import { Card, Image } from 'semantic-ui-react';
+import { Button, message, Modal, ModalFuncProps } from 'antd';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { CameraOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
 import { AttentionSeeker, Fade, Reveal, Slide } from 'react-awesome-reveal';
 import { addUserToEvent } from '../../helpers/requests';
 import { useNavigation } from '../../hooks/navigate';
+import { CardComp } from '../card/Card';
 import './EventRegistrationPage.less';
 import {setMessage} from "../../helpers/utils";
 
@@ -93,9 +92,9 @@ const EventRegistrationPage: FC = () => {
 
   useQuery('events', async () => await getEvent(), {
     onSuccess: (data) => {
-      // if (!data) Modal.error({ ...errorModalConf, onOk: goToSharedEventsPage });
-      // else if (data.subscribers[user.id!])
-      //   Modal.warning({ ...warningModalConf, onOk: goToSharedEventsPage });
+      if (!data) Modal.error({ ...errorModalConf, onOk: goToSharedEventsPage });
+      else if (data.subscribers[user.id!] && data.owner != user.id)
+        Modal.warning({ ...warningModalConf, onOk: goToSharedEventsPage });
     },
   });
 
@@ -151,58 +150,7 @@ const EventRegistrationPage: FC = () => {
               <div className="flex card">
                 {event && (
                   <Fade direction="up" duration={600} delay={500}>
-                    <Card>
-                      <div
-                        className="image-container"
-                        style={{
-                          position: 'relative',
-                          overflow: 'hidden',
-                          maxHeight: '18em',
-                          width: '100%',
-                        }}
-                      >
-                        <div
-                          style={{
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            backgroundImage: `url(${
-                              event.imgUrl || defaultImg
-                            })`,
-                            filter: 'blur(10px)',
-                          }}
-                        />
-                        <Image
-                          style={{
-                            position: 'relative',
-                            maxHeight: '18em',
-                            objectFit: 'contain',
-                            zIndex: 1,
-                            margin: 'auto',
-                          }}
-                          className="Sad"
-                          src={event.imgUrl || defaultImg}
-                          fluid
-                          ui={false}
-                        />
-                      </div>
-
-                      <Card.Content>
-                        <Card.Header>{event.name}</Card.Header>
-                        <Fade direction="up" delay={1000}>
-                          <Card.Meta>
-                            <span className="date">{event.creationDate}</span>
-                          </Card.Meta>
-                          <Card.Description>
-                            {event.description}
-                          </Card.Description>
-                        </Fade>
-                      </Card.Content>
-                    </Card>
+                    <CardComp event={event} id={eventId!} hideBtns />
                   </Fade>
                 )}
 
