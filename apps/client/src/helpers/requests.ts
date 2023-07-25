@@ -43,10 +43,10 @@ const service = 'execute-api';
 export const AddImagesToEvent = async (addImagesBody: AddImagesBody) => {
   try {
     const res = await axios.post(ADD_IMAGES_URL, addImagesBody);
-    setMessage('add images to event successfully', 'success')
+    setMessage('Add images to event successfully', 'success')
     console.log('res', res);
   } catch (error: any) {
-    setMessage(`error ${error?.toString()}`, 'error')
+    setMessage(`Error ${error?.toString()}`, 'error')
     console.log('error', error);
   }
 };
@@ -57,18 +57,16 @@ export const closeEvent = async (eventIdBody: CloseEventBody) => {
     setMessage('The event was closed successfully', 'success')
     console.log('res', res);
   } catch (error: any) {
-    setMessage(`error ${error?.toString()}`, 'error');
+    setMessage(`Error ${error?.toString()}`, 'error');
     console.log('error', error);
   }
 };
 
 export const addUserToEvent = async (body: AddUserToEvent) => {
   try {
-    const res = await axios.post(ADD_USER_URL, body);
-    setMessage('add user to event successfully', 'success')
-    console.log('res', res);
+     await axios.post(ADD_USER_URL, body);
   } catch (error: any) {
-    setMessage(`error ${error?.toString()}`, 'error')
+    setMessage(`Error ${error?.toString()}`, 'error')
     throw error
   }
   ;
@@ -76,10 +74,10 @@ export const addUserToEvent = async (body: AddUserToEvent) => {
 export const createEvent = async (body: CreateEventBody) => {
   try {
     const res = await axios.post(CREATE_EVENT_URL, body);
-    setMessage('create event successfully', 'success')
+    setMessage('Create event successfully', 'success')
     console.log('res', res);
   } catch (error: any) {
-    setMessage(`error ${error?.toString()}`, 'error');
+    setMessage(`Error ${error?.toString()}`, 'error');
     console.log('error', error);
   }
 };
