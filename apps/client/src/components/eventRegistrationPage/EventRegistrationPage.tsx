@@ -119,9 +119,9 @@ const EventRegistrationPage: FC = () => {
           image: imgSrc,
           username: `${user.firstName} ${user.lastName}`,
         });
-        setMessage('Registration for the event was successfully completed','success')
+        setMessage('Registration for event was successfully completed','success')
       } catch (error) {
-        setMessage('something went wrong in event registration','error')
+        setMessage('Something went wrong in event registration','error')
       } finally {
         goToSharedEventsPage();
       }

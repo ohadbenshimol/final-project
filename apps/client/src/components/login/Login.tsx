@@ -61,7 +61,7 @@ const Login: React.FC = () => {
       if (from) {
         navigate(from);
       }
-      setMessage(`welcome ${user.firstName} ${user.lastName}`, 'success');
+      setMessage(`Welcome ${user.firstName} ${user.lastName}`, 'success');
 
       setCookie('user', JSON.stringify(user), { path: '/' });
       dispatch(setUser(user));

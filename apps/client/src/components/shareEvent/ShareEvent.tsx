@@ -18,7 +18,7 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
       inputRef.current.select();
       await navigator.clipboard.writeText(inputRef.current.value);
 
-      setMessage(`copy link successfully`,'success')
+      setMessage(`Copy link successfully`,'success')
     }
   };
 
