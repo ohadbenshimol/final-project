@@ -18,6 +18,7 @@ import { AttentionSeeker, Fade, Reveal, Slide } from 'react-awesome-reveal';
 import { addUserToEvent } from '../../helpers/requests';
 import { useNavigation } from '../../hooks/navigate';
 import './EventRegistrationPage.less';
+import {setMessage} from "../../helpers/utils";
 
 const defaultFormData = {
   creationDate: '',
@@ -119,11 +120,9 @@ const EventRegistrationPage: FC = () => {
           image: imgSrc,
           username: `${user.firstName} ${user.lastName}`,
         });
-        await message.success(
-          'Registration for the event was successfully completed'
-        );
+        setMessage('Registration for the event was successfully completed','success')
       } catch (error) {
-        await message.error('something went wrong in event registration');
+        setMessage('something went wrong in event registration','error')
       } finally {
         goToSharedEventsPage();
       }

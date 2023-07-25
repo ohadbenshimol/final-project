@@ -16,6 +16,7 @@ import {getUser} from '../../store/reducers/userSlice';
 import {createEvent} from '../../helpers/requests';
 import {ShareEvent} from '../shareEvent/ShareEvent';
 import './createNewEvent.less';
+import {setMessage} from "../../helpers/utils";
 
 export interface CreateEventProps {
   setCreateEventIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -92,7 +93,6 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result?.toString();
-      // setImage(base64String || '');
       setFormValues((prevState) => {
         return {
           ...prevState,
@@ -121,9 +121,9 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
         console.log(info.file, info.fileList);
       }
       if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
+        setMessage(`${info.file.name} file uploaded successfully.`, 'success')
       } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
+        setMessage(`${info.file.name} file upload failed.`, 'error')
       }
     },
     onDrop(e) {
@@ -193,7 +193,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
       title: 'Share event',
       content: <ShareEvent link={link}></ShareEvent>,
       icon: <img style={{width: "1.3em"}}
-                 src={current== 2 ? "../../assets/create-event-assets/shareLink.gif"
+                 src={current == 2 ? "../../assets/create-event-assets/shareLink.gif"
                    : "../../assets/create-event-assets/shareLink-static.jpg"}/>,
     },
   ];
@@ -232,7 +232,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
               type="default"
               onClick={() => {
                 setCreateEventIsOpen(false);
-                message.success('Processing complete!').then();
+                setMessage('Create event successful', 'success')
                 setCurrent(0);
               }}
             >
