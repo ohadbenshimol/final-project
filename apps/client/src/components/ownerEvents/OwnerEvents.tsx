@@ -77,8 +77,8 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           Object.entries(data).filter(([k, event]) => event.owner === userID)
         );
       setLoading(false);
-      // setOwnerEvents(eventsByUserID);
-      // setFilteredEvents(eventsByUserID);
+      setOwnerEvents(eventsByUserID);
+      setFilteredEvents(eventsByUserID);
     });
   }, [userID]);
 
