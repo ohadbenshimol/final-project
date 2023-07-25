@@ -12,6 +12,13 @@
   width: 100%;
 }
 
+.empty {
+  font-size: 1.5em;
+  span {
+    margin-left: 1em;
+  }
+}
+
 .buttons {
   display: flex;
   align-items: center;
@@ -24,6 +31,19 @@
     }
   }
 }
-main{
-  justify-content: unset!important;
+main {
+  // justify-content: unset!important;
+}
+
+@media (max-width: 768px) {
+  .empty {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5em;
+    text-align: center;
+    span {
+      width: fit-content;
+    }
+  }
 }
