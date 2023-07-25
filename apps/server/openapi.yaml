@@ -1,0 +1,210 @@
+openapi: 3.0.3
+info:
+  title: Title
+  description: Title
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /add/images:
+    post:
+      tags:
+        - add images
+      summary: add images
+      operationId: addImages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddImagesRequest'
+      responses:
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddImagesResponse'
+        500:
+          description: 'internal error'
+      x-amazon-apigateway-integration:
+        httpMethod: post
+        type: aws_proxy
+        uri:
+          Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddImagesToEventFunction.Arn}/invocations
+
+  /add/user:
+    post:
+      tags:
+        - add user
+      summary: add user
+      operationId: addUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserRequest'
+      responses:
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddUserResponse'
+        500:
+          description: 'internal error'
+      x-amazon-apigateway-integration:
+        httpMethod: post
+        type: aws_proxy
+        uri:
+          Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddUserToEventFunction.Arn}/invocations
+
+  /close/event:
+    post:
+      tags:
+        - close event
+      summary: close event
+      operationId: closeEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseEventRequest'
+      responses:
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloseEventResponse'
+        500:
+          description: 'internal error'
+      x-amazon-apigateway-integration:
+        httpMethod: post
+        type: aws_proxy
+        uri:
+          Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CloseEventFunction.Arn}/invocations
+
+  /create/event:
+    post:
+      tags:
+        - create event
+      summary: create event
+      operationId: createEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+      responses:
+        400:
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEventResponse'
+        500:
+          description: 'internal error'
+      x-amazon-apigateway-integration:
+        httpMethod: post
+        type: aws_proxy
+        uri:
+          Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateEventFunction.Arn}/invocations
+
+components:
+  schemas:
+    CloseEventResponse:
+      type: object
+      properties:
+        status:
+          type: string
+    CloseEventRequest:
+      type: object
+      properties:
+        eventId:
+          type: string
+      required:
+        - eventId
+    CreateEventResponse:
+      type: object
+      properties:
+        status:
+          type: string
+    CreateEventRequest:
+      type: object
+      properties:
+        eventId:
+          type: string
+      required:
+        - eventId
+    AddUserResponse:
+      type: object
+      properties:
+        status:
+          type: string
+    AddUserRequest:
+      type: object
+      properties:
+        eventId:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        image:
+          type: string
+      required:
+        - eventId
+        - image
+        - username
+        - email
+    AddImagesResponse:
+      type: object
+      properties:
+        status:
+          type: string
+    AddImagesRequest:
+      properties:
+        eventId:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+      required:
+        - eventId
+        - images
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string

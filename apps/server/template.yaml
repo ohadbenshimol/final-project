@@ -1,0 +1,161 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  photo-face-server
+
+Globals:
+  Function:
+    Timeout: 120
+    Runtime: nodejs14.x
+    MemorySize: 1024
+    CodeUri: ./build
+
+Resources:
+  EventsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: "photo-face-events-bucket"
+      VersioningConfiguration:
+        Status: Enabled
+
+  AddUserToEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/add-user-to-event.handler
+      Description: add user subscription to event
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
+            - Effect: Allow
+              Resource: '*'
+              Action:
+                - lambda:InvokeFunction
+                - events:PutEvents
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyServerlessApi
+            Path: /add/user
+            Method: POST
+
+  AddImagesToEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/add-images.handler
+      Description: add user images to event
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
+          - Effect: Allow
+            Action:
+              - rekognition:IndexFaces
+            Resource: '*'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyServerlessApi
+            Path: /add/images
+            Method: POST
+
+  CloseEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/close-event.handler
+      Description: close event by user
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
+            - Effect: Allow
+              Resource: '*'
+              Action:
+                - lambda:InvokeFunction
+                - events:PutEvents
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyServerlessApi
+            Path: /close/event
+            Method: POST
+
+  CreateEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/create-event.handler
+      Description: create event by event admin
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonAPIGatewayInvokeFullAccess
+        - S3ReadPolicy:
+            BucketName: !Ref EventsBucket
+        - S3WritePolicy:
+            BucketName: !Ref EventsBucket
+        - Statement:
+            - Effect: Allow
+              Resource: '*'
+              Action:
+                - lambda:InvokeFunction
+                - events:PutEvents
+        - Statement:
+            - Effect: Allow
+              Action:
+                - rekognition:CreateCollection
+              Resource: '*'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyServerlessApi
+            Path: /create/event
+            Method: POST
+
+  MyServerlessApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: photo-face-api
+      StageName: prod
+      EndpointConfiguration: REGIONAL
+      DefinitionBody:
+        'Fn::Transform':
+          Name: AWS::Include
+          Parameters:
+            Location: openapi.yaml
+      Auth:
+        DefaultAuthorizer: NONE
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: "Allow"
+              Principal: "*"
+              Action: "execute-api:Invoke"
+              Resource: "execute-api:/*/*/*"
+      Cors:
+        AllowMethods: "'OPTIONS,GET,PUT,POST,DELETE'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+        AllowCredentials: 'true'
+
+Outputs:
+  HttpBaseUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://photo-face-server-api.execute-api.${AWS::Region}.amazonaws.com/"
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-url"

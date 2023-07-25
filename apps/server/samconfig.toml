@@ -1,0 +1,13 @@
+version = 0.1
+[photo-face-user]
+[photo-face-user.deploy]
+[photo-face-user.deploy.parameters]
+stack_name = "photo-face-server"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1f4u4ewnz9kll"
+s3_prefix = "photo-face-server"
+region = "eu-central-1"
+profile = "photo-face-user"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []

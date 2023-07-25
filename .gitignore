@@ -1,5 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
-
+apps/server/build
+apps/server/cache
+apps/server/coverage
+apps/server/events
 # compiled output
 dist
 tmp
