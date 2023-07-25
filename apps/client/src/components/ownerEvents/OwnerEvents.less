@@ -4,35 +4,17 @@
     width: 35vw;
   }
 }
-.cards-con {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 2em;
-  width: 100%;
-}
 
 .empty {
+  margin: auto;
   font-size: 1.5em;
   span {
     margin-left: 1em;
   }
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  svg {
-    margin-top: 1.1em;
-    font-size: 1.4em;
-    &:hover {
-      color: var(--main-color);
-    }
-  }
-}
 main {
-  // justify-content: unset!important;
+  justify-content: flex-start !important;
 }
 
 @media (max-width: 768px) {
@@ -42,8 +24,10 @@ main {
     flex-direction: column;
     font-size: 1.5em;
     text-align: center;
+    margin: auto;
     span {
       width: fit-content;
+      margin: 0.2em;
     }
   }
 }

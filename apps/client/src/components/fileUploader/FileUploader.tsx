@@ -83,14 +83,14 @@ const PreviewCard = memo(({ id, url, name }: any) => {
         actions={[
           <Button
             key="stop"
-            icon={<StopOutlined rev />}
+            icon={<StopOutlined rev={undefined} />}
             onClick={onAbort}
             disabled={itemState !== STATES.PROGRESS}
             type="link"
           />,
           <Button
             key="retry"
-            icon={<RedoOutlined rev />}
+            icon={<RedoOutlined rev={undefined} />}
             onClick={onRetry}
             disabled={!isItemError(itemState)}
             type="link"
@@ -208,7 +208,7 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
         >
           <Button
             key="clear-button"
-            icon={<DeleteOutlined rev />}
+            icon={<DeleteOutlined rev={undefined} />}
             size="large"
             disabled={!previews.length}
             onClick={onClearPreviews}

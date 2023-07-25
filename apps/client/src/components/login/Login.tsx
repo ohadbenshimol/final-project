@@ -94,7 +94,7 @@ const Login: React.FC = () => {
           <button className="apple-signin-button">
             <div className="apple-logo-wrapper">
               <AppleFilled
-                rev
+                rev={undefined}
                 src="apple-logo.png"
                 alt="Apple logo"
                 className="apple-logo"

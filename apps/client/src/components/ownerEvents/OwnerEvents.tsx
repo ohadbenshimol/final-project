@@ -1,54 +1,30 @@
-import { db, eventsRef, usersRef } from '../../helpers/firebase';
+import CreateNewEvent from '../createNewEvent/createNewEvent';
+import { eventsRef } from '../../helpers/firebase';
 import { FC, useEffect, useState } from 'react';
-import {
-  equalTo,
-  get,
-  onValue,
-  orderByChild,
-  query,
-  ref,
-  update,
-} from 'firebase/database';
-import { Card, Image } from 'semantic-ui-react';
+import { equalTo, off, onValue, orderByChild, query } from 'firebase/database';
+import { Card } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
-import { getUser, getUserID, UserState } from '../../store/reducers/userSlice';
+import { getUser, getUserID } from '../../store/reducers/userSlice';
 import { NewEvent } from '../../shared/models/event';
-import { useQuery } from 'react-query';
 import { debounce } from 'ts-debounce';
 import { useCookies } from 'react-cookie';
-import defaultImg from '../../assets/default.svg';
-import { Avatar, Col, Modal, Row, Skeleton, Tooltip } from 'antd';
-import {
-  AppstoreAddOutlined,
-  CarryOutOutlined,
-  CloudUploadOutlined,
-  FormOutlined,
-  MinusCircleOutlined,
-  ShareAltOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import './OwnerEvents.less';
-import { closeEvent } from '../../helpers/requests';
+import { Col, Modal, Row, Tooltip } from 'antd';
+import { AppstoreAddOutlined } from '@ant-design/icons';
 import { useNavigation } from '../../hooks/navigate';
-import CreateNewEvent from '../createNewEvent/createNewEvent';
 import { Fade } from 'react-awesome-reveal';
-import { shareClick } from '../../helpers/utils';
-import { CLIENT_URL } from '../../helpers/config';
+import { CardComp, LoadingCards } from '../card/Card';
+import './OwnerEvents.less';
 
-interface OwnerEventsProps {}
-
-export const OwnerEvents: FC<OwnerEventsProps> = () => {
+export const OwnerEvents: FC = () => {
   const userID = useSelector(getUserID);
   const user = useSelector(getUser);
   const [ownerEvents, setOwnerEvents] = useState<Record<string, NewEvent>>();
-  const [fIlteredEvents, setFilteredEvents] =
+  const [filteredEvents, setFilteredEvents] =
     useState<Record<string, NewEvent>>();
-  const [users, setUsers] = useState<Record<string, UserState>>();
-  const { goToLoginPage, goToUploadFilePage } = useNavigation('/own-events');
+  const { goToLoginPage } = useNavigation('/own-events');
   const [cookies] = useCookies(['user']);
   const [current, setCurrent] = useState(0);
   const [searchText, setSearchText] = useState('');
-
   const [createEventIsOpen, setCreateEventIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -58,28 +34,27 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
     }
   }, [user, cookies]);
 
-  useQuery('users', () => get(query(usersRef)), {
-    onError: console.error,
-    onSuccess: (data) => setUsers(data.val()),
-  });
-
   const onClickAddEvent = () => setCreateEventIsOpen(true);
 
   useEffect(() => {
     if (!userID) return;
     const eventQuery = query(eventsRef, orderByChild(`owner`), equalTo(userID));
 
-    onValue(eventQuery, (snapshot) => {
+    const handleValueChange = (snapshot: any) => {
       const data = snapshot.val() as Record<string, NewEvent>;
-      const eventsByUserID =
-        data &&
-        Object.fromEntries(
-          Object.entries(data).filter(([k, event]) => event.owner === userID)
-        );
+      const eventsByUserID = Object.fromEntries(
+        Object.entries(data).filter(([_, event]) => event.owner === userID)
+      );
       setLoading(false);
       setOwnerEvents(eventsByUserID);
       setFilteredEvents(eventsByUserID);
-    });
+    };
+
+    onValue(eventQuery, handleValueChange);
+
+    return () => {
+      off(eventQuery, 'value', handleValueChange);
+    };
   }, [userID]);
 
   const handleInputChange = (event: any) => {
@@ -100,52 +75,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
 
   const debounceInputChange = debounce(handleInputChange, 300);
 
-  const getEvent = async (eventId: string) => {
-    const snapshot = await get(ref(db, `/events/${eventId}`));
-    return snapshot.val();
-  };
-
-  const endEvent = async (eventId: string) => {
-    console.log(eventId);
-
-    const event: NewEvent = await getEvent(eventId);
-    if (event) {
-      await update(ref(db, `events/${eventId}`), {
-        ...event,
-        isActive: false,
-      });
-
-      await closeEvent({ eventId });
-    }
-  };
-
-  const loadingCards = new Array(15).fill(null).map((_, index) => {
-    return (
-      <Card key={index}>
-        <Skeleton.Image active style={{ width: '100%', height: '14em' }} />
-        <Card.Content>
-          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
-          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
-          <Skeleton.Input active style={{ marginBottom: '0.2em' }} />
-        </Card.Content>
-        <Card.Content extra>
-          <div className="c">
-            <div className="avatars">
-              <Skeleton.Avatar active />
-              <Skeleton.Avatar active />
-              <Skeleton.Avatar active />
-            </div>
-
-            <div className="buttons">
-              <ShareAltOutlined rev />
-              <FormOutlined rev />
-              <CloudUploadOutlined rev />
-            </div>
-          </div>
-        </Card.Content>
-      </Card>
-    );
-  });
   return (
     <>
       {ownerEvents && (
@@ -155,7 +84,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
               <Col>
                 <Tooltip title="create new event">
                   <AppstoreAddOutlined
-                    rev
+                    rev={undefined}
                     style={{
                       fontSize: '2.2em',
                       borderColor: 'var(--main-color)',
@@ -181,73 +110,19 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
                 </div>
               </Col>
             </Row>
-            {Object.entries(fIlteredEvents!)?.map(
-              ([id, event]: [string, NewEvent], index) => (
-                <>
-                  <Card>
-                    <Image
-                      className="Sad"
-                      style={{ height: '21em' }}
-                      src={event.imgUrl || defaultImg}
-                      fluid
-                      ui={false}
-                    />
-                    <Card.Content>
-                      <Card.Header>{event.name}</Card.Header>
-                      <Card.Meta>
-                        <span className="date">{event.creationDate}</span>
-                      </Card.Meta>
-                      <Card.Description>{event.description}</Card.Description>
-                      <Card.Description>{id}</Card.Description>
-                    </Card.Content>
-                    <Card.Content extra>
-                      <div className="c">
-                        <UsersPhotos
-                          subscribers={event.subscribers}
-                          users={users}
-                        />
-                        <div className="buttons">
-                          <Tooltip title="share">
-                            <ShareAltOutlined
-                              rev
-                              onClick={() =>
-                                shareClick(`${CLIENT_URL}/register-event/${id}`)
-                              }
-                            />
-                          </Tooltip>
-                          <Tooltip title="upload images">
-                            <CloudUploadOutlined
-                              rev
-                              onClick={() => goToUploadFilePage(id)}
-                            />
-                          </Tooltip>
-                          {event.isActive ? (
-                            <Tooltip title="end event">
-                              <MinusCircleOutlined
-                                rev
-                                onClick={() => endEvent(id)}
-                              />
-                            </Tooltip>
-                          ) : (
-                            <Tooltip title="event is finish">
-                              <CarryOutOutlined rev />
-                            </Tooltip>
-                          )}
-                        </div>
-                      </div>
-                    </Card.Content>
-                  </Card>
-                </>
+            {Object.entries(filteredEvents!)?.map(
+              ([id, event]: [string, NewEvent]) => (
+                <CardComp key={id} id={id} event={event} isOwner />
               )
             )}
           </Card.Group>
         </>
       )}
 
-      {loading && <Card.Group centered>{loadingCards}</Card.Group>}
+      {loading && <LoadingCards />}
       {searchText &&
-        fIlteredEvents &&
-        Object.values(fIlteredEvents!)?.length === 0 && (
+        filteredEvents &&
+        Object.values(filteredEvents!)?.length === 0 && (
           <Row>
             <Fade
               direction="right"
@@ -264,7 +139,7 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           There isn't event yet click this button to create one
           <Tooltip title="create new event">
             <AppstoreAddOutlined
-              rev
+              rev={undefined}
               style={{
                 fontSize: '2.2em',
                 borderColor: 'var(--main-color)',
@@ -297,53 +172,6 @@ export const OwnerEvents: FC<OwnerEventsProps> = () => {
           current={current}
         ></CreateNewEvent>
       </Modal>
-    </>
-  );
-};
-
-interface UsersPhotosProps {
-  subscribers: Record<string, boolean>;
-  users?: Record<string, UserState>;
-}
-
-//TODO move
-export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
-  const ids = Object.keys(subscribers);
-  const maxCount = 3;
-
-  return (
-    <>
-      <Avatar.Group
-        maxCount={maxCount}
-        maxPopoverPlacement={'bottom'}
-        maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf' }}
-      >
-        {users &&
-          Object.entries(users)
-            ?.filter(([k, v]) => ids.includes(k)) //TODO
-            .map(([k, v], index) => (
-              <>
-                <Avatar
-                  gap={8}
-                  icon={
-                    <img
-                      style={{ display: 'block' }}
-                      onError={(e: any) => {
-                        e.target.src = '../../assets/user.png';
-                        // e.target.src = <UserOutlined rev />; //TODO
-                        return true;
-                      }}
-                      src={v.pictureUrl}
-                    />
-                  }
-                  key={index}
-                  alt={`${v.firstName} ${v.lastName}`}
-                >
-                  <UserOutlined rev />
-                </Avatar>
-              </>
-            ))}
-      </Avatar.Group>
     </>
   );
 };
