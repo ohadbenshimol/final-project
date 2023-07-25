@@ -10,7 +10,7 @@ import { get, ref, update } from 'firebase/database';
 import { db } from '../../helpers/firebase';
 import { useQuery } from 'react-query';
 import { NewEvent } from '../../shared/models/event';
-import { Button, message, Modal, ModalFuncProps } from 'antd';
+import { Button, message, ModalFuncProps } from 'antd';
 import { Card, Image } from 'semantic-ui-react';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { CameraOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
@@ -92,9 +92,9 @@ const EventRegistrationPage: FC = () => {
 
   useQuery('events', async () => await getEvent(), {
     onSuccess: (data) => {
-      if (!data) Modal.error({ ...errorModalConf, onOk: goToSharedEventsPage });
-      else if (data.subscribers[user.id!])
-        Modal.warning({ ...warningModalConf, onOk: goToSharedEventsPage });
+      // if (!data) Modal.error({ ...errorModalConf, onOk: goToSharedEventsPage });
+      // else if (data.subscribers[user.id!])
+      //   Modal.warning({ ...warningModalConf, onOk: goToSharedEventsPage });
     },
   });
 
