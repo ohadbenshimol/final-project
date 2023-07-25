@@ -16,6 +16,7 @@ import { getUser } from '../../store/reducers/userSlice';
 import { createEvent } from '../../helpers/requests';
 import { ShareEvent } from '../shareEvent/ShareEvent';
 import './createNewEvent.less';
+import {setMessage} from "../../helpers/utils";
 
 export interface CreateEventProps {
   setCreateEventIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -71,7 +72,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
 
       setLink(`${CLIENT_URL}/register-event/${newEventRef.key}`);
       setFormValues(DEFAULT_FORM_DATA);
-      await createEvent({ eventId: newEventRef.key! });
+      await createEvent({eventId: newEventRef.key!});
       next();
     } catch (error) {
       console.error(error);
@@ -79,7 +80,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
   };
 
   const handleChange = (e: any) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setFormValues((prevState) => {
       return {
         ...prevState,
@@ -116,14 +117,14 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
     },
     onChange(info) {
       handleImageChange(info.file as any);
-      const { status } = info.file;
+      const {status} = info.file;
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
       if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
+        setMessage(`${info.file.name} file uploaded successfully.`, 'success')
       } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
+        setMessage(`${info.file.name} file upload failed.`, 'error')
       }
     },
     onDrop(e) {
@@ -136,7 +137,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
       title: 'Fill the details',
       content: (
         <>
-          <div className={'yoel-temp'} style={{ marginTop: 15 }}>
+          <div className={'yoel-temp'} style={{marginTop: 15}}>
             <Form.Field>
               <label htmlFor="nameID">Name</label>
               <input
@@ -181,7 +182,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
         <Form.Field className={'upload-image'}>
           <Dragger {...propsUpload}>
             <p className="ant-upload-drag-icon">
-              <InboxOutlined rev={undefined} />
+              <InboxOutlined rev />
             </p>
             <p className="ant-upload-text">
               Click or drag file to this area to upload
@@ -253,7 +254,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
               type="default"
               onClick={() => {
                 setCreateEventIsOpen(false);
-                message.success('Processing complete!').then();
+                setMessage('Create event successful', 'success')
                 setCurrent(0);
               }}
             >
@@ -262,7 +263,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
           )}
           {current > 0 && current != 2 && (
             <Button
-              style={{ margin: '0 8px' }}
+              style={{margin: '0 8px'}}
               onClick={() => prev()}
               type={'default'}
             >
