@@ -1,17 +1,23 @@
 import UploadButton, { asUploadButton } from '@rpldy/upload-button';
 import UploadDropZone from '@rpldy/upload-drop-zone';
 import UploadPreview from '@rpldy/upload-preview';
-import retryEnhancer, {useRetry} from '@rpldy/retry-hooks';
-import {FC, memo, useCallback, useRef, useState} from 'react';
-import {composeEnhancers} from '@rpldy/uploader';
-import {getMockSenderEnhancer} from '@rpldy/mock-sender';
-import {ArrowLeftOutlined, CloudUploadOutlined, DeleteOutlined, RedoOutlined, StopOutlined} from '@ant-design/icons';
-import {SERVER_URL} from '../../helpers/config';
-import {AddImagesToEvent} from '../../helpers/requests';
-import {get, ref} from 'firebase/database';
-import {db} from '../../helpers/firebase';
-import {useParams} from 'react-router-dom';
-import {useQuery} from 'react-query';
+import retryEnhancer, { useRetry } from '@rpldy/retry-hooks';
+import { FC, memo, useCallback, useRef, useState } from 'react';
+import { composeEnhancers } from '@rpldy/uploader';
+import { getMockSenderEnhancer } from '@rpldy/mock-sender';
+import {
+  ArrowLeftOutlined,
+  CloudUploadOutlined,
+  DeleteOutlined,
+  RedoOutlined,
+  StopOutlined,
+} from '@ant-design/icons';
+import { SERVER_URL } from '../../helpers/config';
+import { AddImagesToEvent } from '../../helpers/requests';
+import { get, ref } from 'firebase/database';
+import { db } from '../../helpers/firebase';
+import { useParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import Uploady, {
   useAbortItem,
   useBatchStartListener,
@@ -19,11 +25,20 @@ import Uploady, {
   useItemFinalizeListener,
   useItemProgressListener,
 } from '@rpldy/uploady';
-import {Button, Card, Col, Layout, Modal, ModalFuncProps, Progress, Row,} from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Layout,
+  Modal,
+  ModalFuncProps,
+  Progress,
+  Row,
+} from 'antd';
 import './FileUploader.less';
-import {useNavigation} from '../../hooks/navigate';
-import defaultImg from "../../assets/default.svg";
-import {Image} from "semantic-ui-react";
+import { useNavigation } from '../../hooks/navigate';
+import defaultImg from '../../assets/default.svg';
+import { Image } from 'semantic-ui-react';
 
 const STATES = {
   PROGRESS: 'PROGRESS',
@@ -35,7 +50,7 @@ const STATES = {
 const isItemError = (state: any) =>
   state === STATES.ABORTED || state === STATES.ERROR;
 
-const PreviewCard = memo(({id, url, name}: any) => {
+const PreviewCard = memo(({ id, url, name }: any) => {
   const [percent, setPercent] = useState(0);
   const [itemState, setItemState] = useState(STATES.PROGRESS);
   const abortItem = useAbortItem();
@@ -50,8 +65,8 @@ const PreviewCard = memo(({id, url, name}: any) => {
       item.state === 'finished'
         ? STATES.DONE
         : item.state === 'aborted'
-          ? STATES.ABORTED
-          : STATES.ERROR
+        ? STATES.ABORTED
+        : STATES.ERROR
     );
   }, id);
 
@@ -71,45 +86,45 @@ const PreviewCard = memo(({id, url, name}: any) => {
     <Col>
       <Card
         hoverable
-        style={{width: 240}}
-        cover={<div
-          className="image-container"
-          style={{
-            position: 'relative',
-            overflow: 'hidden',
-            maxHeight: '18em',
-            width: '100%',
-          }}
-        >
+        style={{ width: 240 }}
+        cover={
           <div
-            style={{
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundImage: `url(${
-                url || defaultImg
-              })`,
-              filter: 'blur(10px)',
-            }}
-          />
-          <Image
+            className="image-container"
             style={{
               position: 'relative',
+              overflow: 'hidden',
               maxHeight: '18em',
-              objectFit: 'contain',
-              zIndex: 1,
-              margin: 'auto',
+              width: '100%',
             }}
-            className="Sad"
-            src={url || defaultImg}
-            fluid
-            ui={false}
-          />
-        </div>}
+          >
+            <div
+              style={{
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundImage: `url(${url || defaultImg})`,
+                filter: 'blur(10px)',
+              }}
+            />
+            <Image
+              style={{
+                position: 'relative',
+                maxHeight: '18em',
+                objectFit: 'contain',
+                zIndex: 1,
+                margin: 'auto',
+              }}
+              className="Sad"
+              src={url || defaultImg}
+              fluid
+              ui={false}
+            />
+          </div>
+        }
         actions={[
           <Button
             key="stop"
@@ -138,9 +153,9 @@ const PreviewCard = memo(({id, url, name}: any) => {
                 isItemError(itemState)
                   ? '#FF4D4F'
                   : {
-                    '0%': '#108ee9',
-                    '100%': '#87d068',
-                  }
+                      '0%': '#108ee9',
+                      '100%': '#87d068',
+                    }
               }
               status={isItemError(itemState) ? 'exception' : undefined}
             />
@@ -153,7 +168,7 @@ const PreviewCard = memo(({id, url, name}: any) => {
 
 const UploadPreviewCards = ({ previewMethodsRef, setPreviews }: any) => {
   const getPreviewProps = useCallback(
-    (item: any) => ({id: item.id, name: item.file.name}),
+    (item: any) => ({ id: item.id, name: item.file.name }),
     []
   );
 
@@ -170,6 +185,7 @@ const UploadPreviewCards = ({ previewMethodsRef, setPreviews }: any) => {
   );
 };
 
+//TODO not WORK
 const DragAndDrop: FC = () => {
   return (
     <UploadButton className="drag">
@@ -187,8 +203,8 @@ const DragAndDrop: FC = () => {
 
 const DragAndClickUpload = asUploadButton(DragAndDrop);
 
-const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
-  const {goToMyEventsPage} = useNavigation();
+const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
+  const { goToMyEventsPage } = useNavigation();
   const previewMethodsRef = useRef();
   const [previews, setPreviews] = useState([]);
 
@@ -213,7 +229,7 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
       .then(async (base64Array: string[]) => {
         console.log(base64Array);
 
-        await AddImagesToEvent({eventId, images: base64Array});
+        await AddImagesToEvent({ eventId, images: base64Array });
       })
       .catch((error) => {
         console.error('Error reading files:', error);
@@ -225,23 +241,26 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
       <Layout
         style={{
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          // width: '100vw',
         }}
       >
         <Layout.Header
           style={{
             background: 'inherit',
-            display: 'flex',
-            alignItems: 'center',
-            justifyItems: 'center',
+            height: '100%',
+            marginBottom: '1em',
+            textAlign: 'center',
           }}
         >
+          {previews?.length ? (
+            <span style={{}} className={'total-images-text'}>
+              Total images uploaded: {previews.length}
+            </span>
+          ) : null}
           <div className="button-container">
             <div className="button-wrapper">
               <Button
-                icon={<ArrowLeftOutlined rev/>}
-                size="large"
+                icon={<ArrowLeftOutlined rev />}
                 onClick={goToMyEventsPage}
               >
                 Back to events
@@ -249,10 +268,9 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
             </div>
             <div className="button-wrapper">
               <Button
-                type={"default"}
-                icon={<CloudUploadOutlined rev/>}
-                size={"large"}
-                key={"upload-button"}
+                type="default"
+                icon={<CloudUploadOutlined rev />}
+                key={'upload-button'}
               >
                 <UploadButton key="upload-button" />
               </Button>
@@ -260,8 +278,7 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
             <div className="button-wrapper">
               <Button
                 key="clear-button"
-                icon={<DeleteOutlined rev/>}
-                size="large"
+                icon={<DeleteOutlined rev />}
                 disabled={!previews.length}
                 onClick={onClearPreviews}
               >
@@ -269,12 +286,8 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
               </Button>
             </div>
           </div>
-
-          <span style={{marginLeft: '2em'}} className={"total-images-text"}>
-            Total images uploaded: {previews.length}
-          </span>
         </Layout.Header>
-        <Layout.Content>
+        <Layout.Content style={{ display: 'flex', justifyContent: 'center' }}>
           {!previews.length && <DragAndClickUpload key="upload-button" />}
 
           <UploadPreviewCards
@@ -287,12 +300,12 @@ const UploadUi: FC<{ eventId: string }> = ({eventId}) => {
   );
 };
 
-const mockEnhancer = getMockSenderEnhancer({delay: 2000});
+const mockEnhancer = getMockSenderEnhancer({ delay: 2000 });
 const enhancer = composeEnhancers(retryEnhancer, mockEnhancer); //TODO=:USE UNTIL SERVER
 
 const FileUploader = () => {
-  const {eventId} = useParams();
-  const {goToMyEventsPage} = useNavigation();
+  const { eventId } = useParams();
+  const { goToMyEventsPage } = useNavigation();
 
   const getEvent = async () => {
     const snapshot = await get(ref(db, `/events/${eventId}`));
@@ -301,7 +314,7 @@ const FileUploader = () => {
 
   useQuery('events', async () => await getEvent(), {
     onSuccess: (data) => {
-      if (!data) Modal.error({...errorModalConf, onOk: goToMyEventsPage});
+      if (!data) Modal.error({ ...errorModalConf, onOk: goToMyEventsPage });
     },
   });
 

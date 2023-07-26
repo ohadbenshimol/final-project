@@ -1,7 +1,6 @@
 .drag {
   border: 2px dashed var(--main-color);
-  width: 40vw;
-  height: 40vh;
+  padding: 20vh 20vw;
 }
 
 .header-con {
@@ -25,9 +24,21 @@
   align-items: center;
 }
 
-.ant-card-cover{
-  height: 13em!important;
+.ant-card-cover {
+  height: 13em !important;
 }
-.image-container{
+.image-container {
   height: 100%;
+}
+
+@media (max-width: 768px) {
+  .button-wrapper {
+    margin-left: 0.3em;
+    .ant-btn {
+      padding: 0.1em 0.3em;
+    }
+  }
+  .drag {
+    padding: 20vw;
+  }
 }

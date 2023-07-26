@@ -35,7 +35,7 @@ const App: FC = () => {
         <CookiesProvider>
           <Layout className="layout" style={{ minHeight: '100vh' }}>
             <HeaderComp />
-            <Layout.Content style={{ margin: 'auto' }}>
+            <Layout.Content style={{ margin: 'auto' }} className="main-con">
               <Routes>
                 <Route path="/" Component={MainPage} />
                 <Route path="/login" Component={Login} />

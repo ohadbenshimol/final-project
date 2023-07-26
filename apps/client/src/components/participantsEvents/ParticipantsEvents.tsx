@@ -7,7 +7,7 @@ import { getUser, getUserID } from '../../store/reducers/userSlice';
 import { NewEvent } from '../../shared/models/event';
 import { debounce } from 'ts-debounce';
 import { useCookies } from 'react-cookie';
-import { Row } from 'antd';
+import { Row, Tooltip } from 'antd';
 import { useNavigation } from '../../hooks/navigate';
 import { Fade } from 'react-awesome-reveal';
 import { CardComp, LoadingCards } from '../card/Card';
@@ -42,14 +42,14 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
 
     const handleValueChange = (snapshot: any) => {
       const data = snapshot.val() as Record<string, NewEvent>;
-      const EventsByUserID =
-        data &&
-        Object.fromEntries(
+      if (data) {
+        const EventsByUserID = Object.fromEntries(
           Object.entries(data).filter(([k, event]) => event.owner !== userID)
         );
+        setParticipantsEvents(EventsByUserID);
+        setFilteredEvents(EventsByUserID);
+      }
       setLoading(false);
-      setParticipantsEvents(EventsByUserID);
-      setFilteredEvents(EventsByUserID);
     };
 
     onValue(eventQuery, handleValueChange);
@@ -108,9 +108,7 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
           </Card.Group>
         </>
       )}
-
       {loading && <LoadingCards />}
-
       {filteredEvents && Object.values(filteredEvents).length === 0 && (
         <Row>
           <Fade
@@ -122,6 +120,9 @@ const ParticipantsEvents: FC<ParticipantsEventsProps> = () => {
             Sorry, we couldn't find the event you were looking for...
           </Fade>
         </Row>
+      )}
+      {!participantsEvents && (
+        <div className="empty">There isn't event that sheared with you yet</div>
       )}
     </>
   );

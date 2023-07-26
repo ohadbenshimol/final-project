@@ -42,12 +42,14 @@ export const OwnerEvents: FC = () => {
 
     const handleValueChange = (snapshot: any) => {
       const data = snapshot.val() as Record<string, NewEvent>;
-      const eventsByUserID = Object.fromEntries(
-        Object.entries(data).filter(([_, event]) => event.owner === userID)
-      );
+      if (data) {
+        const eventsByUserID = Object.fromEntries(
+          Object.entries(data).filter(([_, event]) => event.owner === userID)
+        );
+        setOwnerEvents(eventsByUserID);
+        setFilteredEvents(eventsByUserID);
+      }
       setLoading(false);
-      setOwnerEvents(eventsByUserID);
-      setFilteredEvents(eventsByUserID);
     };
 
     onValue(eventQuery, handleValueChange);

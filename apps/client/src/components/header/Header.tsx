@@ -124,7 +124,7 @@ const Header: FC = () => {
               <img
                 style={{
                   height: '1.5em',
-                  transform: userIsLoggedIn() ? 'scaleX(-1)' : 'none',
+                  transform: !userIsLoggedIn() ? 'scaleX(-1)' : 'none',
                   marginTop: '0.3em',
                 }}
                 src={'../../assets/logout.png'}
