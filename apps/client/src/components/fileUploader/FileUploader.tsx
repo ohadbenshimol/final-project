@@ -1,44 +1,31 @@
-import UploadButton, { asUploadButton } from '@rpldy/upload-button';
-import UploadDropZone from '@rpldy/upload-drop-zone';
+import UploadButton, {asUploadButton} from '@rpldy/upload-button';
 import UploadPreview from '@rpldy/upload-preview';
-import retryEnhancer, { useRetry } from '@rpldy/retry-hooks';
-import { FC, memo, useCallback, useRef, useState } from 'react';
-import { composeEnhancers } from '@rpldy/uploader';
-import { getMockSenderEnhancer } from '@rpldy/mock-sender';
-import {
-  ArrowLeftOutlined,
-  CloudUploadOutlined,
-  DeleteOutlined,
-  RedoOutlined,
-  StopOutlined,
-} from '@ant-design/icons';
-import { SERVER_URL } from '../../helpers/config';
-import { AddImagesToEvent } from '../../helpers/requests';
-import { get, ref } from 'firebase/database';
-import { db } from '../../helpers/firebase';
-import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import retryEnhancer, {useRetry} from '@rpldy/retry-hooks';
+import {FC, memo, useCallback, useRef, useState} from 'react';
+import {composeEnhancers} from '@rpldy/uploader';
+import {getMockSenderEnhancer} from '@rpldy/mock-sender';
+import {ArrowLeftOutlined, CloudUploadOutlined, DeleteOutlined, RedoOutlined, StopOutlined} from '@ant-design/icons';
+import {SERVER_URL} from '../../helpers/config';
+import {AddImagesToEvent} from '../../helpers/requests';
+import {get, ref} from 'firebase/database';
+import {db} from '../../helpers/firebase';
+import {useParams} from 'react-router-dom';
+import {useQuery} from 'react-query';
+import {DndProvider, useDrop} from "react-dnd";
+import {HTML5Backend, NativeTypes} from "react-dnd-html5-backend";
 import Uploady, {
   useAbortItem,
   useBatchStartListener,
   useItemAbortListener,
   useItemFinalizeListener,
   useItemProgressListener,
+  useUploady,
 } from '@rpldy/uploady';
-import {
-  Button,
-  Card,
-  Col,
-  Layout,
-  Modal,
-  ModalFuncProps,
-  Progress,
-  Row,
-} from 'antd';
+import {Button, Card, Col, Layout, Modal, ModalFuncProps, Progress, Row,} from 'antd';
 import './FileUploader.less';
-import { useNavigation } from '../../hooks/navigate';
-import defaultImg from '../../assets/default.svg';
-import { Image } from 'semantic-ui-react';
+import {useNavigation} from '../../hooks/navigate';
+import defaultImg from "../../assets/default.svg";
+import {Image} from "semantic-ui-react";
 
 const STATES = {
   PROGRESS: 'PROGRESS',
@@ -50,7 +37,29 @@ const STATES = {
 const isItemError = (state: any) =>
   state === STATES.ABORTED || state === STATES.ERROR;
 
-const PreviewCard = memo(({ id, url, name }: any) => {
+const DropZone = () => {
+  const {upload} = useUploady();
+
+  const [{isDragging}, dropRef] = useDrop({
+    accept: NativeTypes.FILE,
+    collect: ((monitor) => ({
+      isDragging: monitor.isOver()
+    })),
+    drop: (item) => {
+      // @ts-ignore
+      console.log(item)
+      // @ts-ignore
+      upload(item.files);
+    },
+  });
+
+  return <div ref={dropRef} className={isDragging ? "drag-over" : ""}>
+    <p>Drop File(s) Here</p>
+  </div>;
+};
+
+
+const PreviewCard = memo(({id, url, name}: any) => {
   const [percent, setPercent] = useState(0);
   const [itemState, setItemState] = useState(STATES.PROGRESS);
   const abortItem = useAbortItem();
@@ -168,7 +177,7 @@ const PreviewCard = memo(({ id, url, name }: any) => {
 
 const UploadPreviewCards = ({ previewMethodsRef, setPreviews }: any) => {
   const getPreviewProps = useCallback(
-    (item: any) => ({ id: item.id, name: item.file.name }),
+    (item: any) => ({id: item.id, name: item.file.name}),
     []
   );
 
@@ -185,18 +194,10 @@ const UploadPreviewCards = ({ previewMethodsRef, setPreviews }: any) => {
   );
 };
 
-//TODO not WORK
 const DragAndDrop: FC = () => {
   return (
     <UploadButton className="drag">
-      <UploadDropZone
-        onDragOverClassName="drag-over"
-        grouped
-        maxGroupSize={100}
-        autoUpload={false}
-      >
-        <span>Drag&amp;Drop File(s) Here</span>
-      </UploadDropZone>
+      <DropZone/>
     </UploadButton>
   );
 };
@@ -241,7 +242,6 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
       <Layout
         style={{
           display: 'flex',
-          // width: '100vw',
         }}
       >
         <Layout.Header
@@ -272,7 +272,7 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
                 icon={<CloudUploadOutlined rev />}
                 key={'upload-button'}
               >
-                <UploadButton key="upload-button" />
+                <UploadButton key="upload-button"/>
               </Button>
             </div>
             <div className="button-wrapper">
@@ -319,9 +319,14 @@ const FileUploader = () => {
   });
 
   return (
-    <Uploady enhancer={enhancer} destination={{ url: SERVER_URL }}>
-      <>{eventId && <UploadUi eventId={eventId} />}</>
-    </Uploady>
+    <>
+      <DndProvider backend={HTML5Backend}>
+        <Uploady enhancer={enhancer} destination={{url: SERVER_URL}}>
+
+          <>{eventId && <UploadUi eventId={eventId}/>}</>
+        </Uploady>
+      </DndProvider>
+    </>
   );
 };
 
