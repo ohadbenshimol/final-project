@@ -1,8 +1,9 @@
 import React from 'react';
 import { userIsLoggedIn } from '../../store/reducers/userSlice';
-import { Button } from 'antd';
 import { useNavigation } from '../../hooks/navigate';
 import './MainPage.less';
+import { Button, Image } from 'antd';
+import { AttentionSeeker, Fade, Reveal, Slide } from 'react-awesome-reveal';
 
 const MainPage: React.FC = () => {
   const user = userIsLoggedIn();
@@ -10,23 +11,37 @@ const MainPage: React.FC = () => {
     useNavigation();
 
   return (
-    <div>
-      <h1>מלא טקסט עם אנימציות ואיזה תמונת רקע </h1>
-      <h1>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam</h1>
-      <h1>
-        doloremque sequi explicabo, laborum cumque atque perspiciatis impedit
-      </h1>
+    <div className="main-con">
+      <div className="text-and-btn">
+        <div className="first-text" style={{ display: 'flex' }}>
+          <Fade cascade direction="left">
+            <p>Capture.</p>
+            <p>Share.</p>
+            <p>Cherish.</p>
+          </Fade>
+        </div>
+        <div className="second-text">
+          <Fade delay={5500} direction="left" fraction={0.2} triggerOnce>
+            Making Every Adventure Unforgettable!
+          </Fade>
+        </div>
 
-      <h1>
-        voluptates quisquam debitis blanditiis repellat. Est consequatur ea
-        molestias nemo, saepe vel ipsam?
-      </h1>
-
-      {!user ? (
-        <Button onClick={goToLoginPage}>login</Button>
-      ) : (
-        <Button onClick={goToToMyEventsPage}>your-events</Button>
-      )}
+        {!user ? (
+          <Button size="large" onClick={goToLoginPage}>
+            login
+          </Button>
+        ) : (
+          <Button size="large" onClick={goToToMyEventsPage}>
+            Get Started
+          </Button>
+        )}
+      </div>
+      <div className="iphone">
+        <Fade triggerOnce delay={1000} direction="up">
+          {/* <Image height={'40vh'} width={'30vh'} src={'../../assets/NIG.png'} /> */}
+          <img src={'../../assets/NIG.png'} />
+        </Fade>
+      </div>
     </div>
   );
 };
