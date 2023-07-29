@@ -2,25 +2,8 @@ import React from 'react';
 import { userIsLoggedIn } from '../../store/reducers/userSlice';
 import { useNavigation } from '../../hooks/navigate';
 import './MainPage.less';
-
-interface BezelsIphoneProps {
-  color: string;
-  className: string; // The 'className' prop is optional and has a default type of 'string'
-}
-export const BezelsIphone: React.FC<BezelsIphoneProps> = ({
-  color,
-  className,
-}) => {
-  return (
-    <div className={`bezels-iphone ${className}`}>
-      <img
-        className="iphone-pro-deep"
-        alt="Iphone pro deep"
-        src={'../../assets/NIG.png'}
-      />
-    </div>
-  );
-};
+import { Button, Image } from 'antd';
+import { AttentionSeeker, Fade, Reveal, Slide } from 'react-awesome-reveal';
 
 const MainPage: React.FC = () => {
   const user = userIsLoggedIn();
@@ -28,20 +11,37 @@ const MainPage: React.FC = () => {
     useNavigation();
 
   return (
-    <div>
-      <div className="d">
-        <h1>hwerewre</h1>
-        <button className="button-65" role="button">
-          Get Started
-        </button>
-        <BezelsIphone className="color-gray" color="gray" />;
-      </div>
+    <div className="main-con">
+      <div className="text-and-btn">
+        <div className="first-text" style={{ display: 'flex' }}>
+          <Fade cascade direction="left">
+            <p>Capture.</p>
+            <p>Share.</p>
+            <p>Cherish.</p>
+          </Fade>
+        </div>
+        <div className="second-text">
+          <Fade delay={5500} direction="left" fraction={0.2} triggerOnce>
+            Making Every Adventure Unforgettable!
+          </Fade>
+        </div>
 
-      {/* {!user ? (
-        <Button onClick={goToLoginPage}>login</Button>
-      ) : (
-        <Button onClick={goToToMyEventsPage}>your-events</Button>
-      )} */}
+        {!user ? (
+          <Button size="large" onClick={goToLoginPage}>
+            login
+          </Button>
+        ) : (
+          <Button size="large" onClick={goToToMyEventsPage}>
+            Get Started
+          </Button>
+        )}
+      </div>
+      <div className="iphone">
+        <Fade triggerOnce delay={1000} direction="up">
+          {/* <Image height={'40vh'} width={'30vh'} src={'../../assets/NIG.png'} /> */}
+          <img src={'../../assets/NIG.png'} />
+        </Fade>
+      </div>
     </div>
   );
 };
