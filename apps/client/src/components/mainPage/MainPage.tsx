@@ -17,97 +17,87 @@ const MainPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="main-page-con" style={{ width: '100%', height: '100%' }}>
-      <div
+    <div className="main-page-con">
+      <Particles
         style={{
-          position: 'relative',
-          overflow: 'hidden',
-          height: '100%',
           width: '100%',
+          height: '100%',
         }}
-      >
-        <Particles
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-          width="10%"
-          height="10%"
-          id="tsparticles"
-          init={particlesInit}
-          options={{
-            background: {
-              color: {
-                value: 'transparent',
-              },
+        width="10%"
+        height="10%"
+        id="tsparticles"
+        init={particlesInit}
+        options={{
+          background: {
+            color: {
+              value: 'transparent',
             },
-            fpsLimit: 120,
-            interactivity: {
-              events: {
-                onClick: {
-                  enable: true,
-                  mode: 'push',
-                },
-                onHover: {
-                  enable: true,
-                  mode: 'repulse',
-                },
-                resize: true,
-              },
-              modes: {
-                push: {
-                  quantity: 4,
-                },
-                repulse: {
-                  distance: 200,
-                  duration: 0.4,
-                },
-              },
-            },
-            particles: {
-              color: {
-                value: 'black',
-              },
-              links: {
-                color: '#408378',
-                distance: 300,
+          },
+          fpsLimit: 120,
+          interactivity: {
+            events: {
+              onClick: {
                 enable: true,
-                opacity: 1,
-
-                width: 2,
+                mode: 'push',
               },
-              move: {
-                direction: 'none',
+              onHover: {
                 enable: true,
-                outModes: {
-                  default: 'bounce',
-                },
-                random: false,
-                speed: 2,
-                straight: false,
+                mode: 'repulse',
               },
-              number: {
-                density: {
-                  enable: true,
-                  area: 1000,
-                },
-                value: 80,
+              resize: true,
+            },
+            modes: {
+              push: {
+                quantity: 4,
               },
-              opacity: {
-                value: 0.5,
-              },
-              shape: {
-                type: 'circle',
-              },
-              size: {
-                value: { min: 1, max: 5 },
+              repulse: {
+                distance: 200,
+                duration: 0.4,
               },
             },
-            detectRetina: true,
-          }}
-        />
-      </div>
+          },
+          particles: {
+            color: {
+              value: 'black',
+            },
+            links: {
+              color: '#408378',
+              distance: 300,
+              enable: true,
+              opacity: 1,
 
+              width: 2,
+            },
+            move: {
+              direction: 'none',
+              enable: true,
+              outModes: {
+                default: 'bounce',
+              },
+              random: false,
+              speed: 2,
+              straight: false,
+            },
+            number: {
+              density: {
+                enable: true,
+                area: 1000,
+              },
+              value: 80,
+            },
+            opacity: {
+              value: 0.5,
+            },
+            shape: {
+              type: 'circle',
+            },
+            size: {
+              value: { min: 1, max: 5 },
+            },
+          },
+          detectRetina: true,
+        }}
+      />
       <div className="text-and-btn">
         <div className="first-text" style={{ display: 'flex' }}>
           <Fade cascade direction="left">
