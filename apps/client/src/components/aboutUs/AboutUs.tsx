@@ -12,28 +12,29 @@ export const AboutUs: FC<AboutUsProps> = ({}) => {
       <Row className="images-con" gutter={16}>
         <Card
           hoverable
-          cover={<img src="../../assets/pic.jpeg"/>}
+          cover={<img  className={"image-card"}
+                      src="../../assets/about-us/yoel.jpg"/>}
           style={{margin: '1em'}}
         >
           <Card.Meta title="Yoel Ahroni" description="Chief Fun Officer"/>
         </Card>
         <Card
           hoverable
-          cover={<img src="../../assets/pic.jpeg"/>}
+          cover={<img className={"image-card"} src="../../assets/about-us/ohad.jpg"/>}
           style={{margin: '1em'}}
         >
           <Card.Meta title="Ohad Ben Shimol" description="Digital Ninja"/>
         </Card>
         <Card
           hoverable
-          cover={<img src="../../assets/pic.jpeg"/>}
+          cover={<img className={"image-card"} src="../../assets/about-us/oriel.jpg"/>}
           style={{margin: '1em'}}
         >
           <Card.Meta title="Oriel Yemini" description="Algorithm DJ"/>
         </Card>
         <Card
           hoverable
-          cover={<img src="../../assets/pic.jpeg"/>}
+          cover={<img className={"image-card"} src="../../assets/about-us/moshe.jpg"/>}
           style={{margin: '1em'}}
         >
           <Card.Meta title="Moshe Avitan" description="404 Error Therapist"/>

@@ -112,15 +112,11 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
     listType: 'picture-card',
     multiple: false,
     beforeUpload: (data) => {
-      console.log(data);
       return false;
     },
     onChange(info) {
       handleImageChange(info.file as any);
       const {status} = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
       if (status === 'done') {
         setMessage(`${info.file.name} file uploaded successfully.`, 'success')
       } else if (status === 'error') {
