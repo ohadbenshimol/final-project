@@ -1,28 +1,27 @@
 import axios from "axios";
 import {setMessage} from "./utils";
 
-export interface AddImagesBody {
+ interface AddImagesBody {
   eventId: string;
   images: string[];
 }
 
-export interface AddUserToEvent {
+ interface AddUserToEvent {
   eventId: string;
   username: string;
   email: string;
   image: string;
 }
 
-export interface CreateEventBody {
+ interface CreateEventBody {
   eventId: string;
 }
 
-export interface CloseEventBody {
+ interface CloseEventBody {
   eventId: string;
 }
 
  const URL = 'https://ca82so4kc5.execute-api.eu-central-1.amazonaws.com/prod';
-
 const CLOSE_EVENT_URL = `${URL}/close/event`;
 const ADD_USER_URL = `${URL}/add/user`;
 const ADD_IMAGES_URL = `${URL}/add/images`;
@@ -30,7 +29,7 @@ const CREATE_EVENT_URL = `${URL}/create/event`;
 
 export const AddImagesToEvent = async (addImagesBody: AddImagesBody) => {
   try {
-    const res = await axios.post(ADD_IMAGES_URL, addImagesBody);
+    await axios.post(ADD_IMAGES_URL, addImagesBody);
   } catch (error: any) {
     setMessage(`Error ${error?.toString()}`, 'error')
     console.error('error', error);
@@ -56,6 +55,7 @@ export const addUserToEvent = async (body: AddUserToEvent) => {
   }
   ;
 }
+
 export const createEvent = async (body: CreateEventBody) => {
   try {
     const res = await axios.post(CREATE_EVENT_URL, body);
