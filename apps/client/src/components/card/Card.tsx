@@ -21,12 +21,19 @@ import { CLIENT_URL } from '../../helpers/config';
 import { UsersPhotos } from '../usersPhotos/UsersPhotos';
 import './Card.less';
 
-export const CardComp: FC<{
+interface CardCompProps {
   id: string;
   event: NewEvent;
   hideBtns?: boolean;
   isOwner?: boolean;
-}> = ({ event, id, hideBtns, isOwner }) => {
+}
+
+export const CardComp: FC<CardCompProps> = ({
+  event,
+  id,
+  hideBtns,
+  isOwner,
+}) => {
   const { goToUploadFilePage } = useNavigation('/own-events');
   const users = useRealtimeQuery<Record<string, UserState>>('users');
 

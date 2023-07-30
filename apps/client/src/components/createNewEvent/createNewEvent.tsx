@@ -1,13 +1,8 @@
-import * as Yup from 'yup';
 import React, { FC, useState } from 'react';
-import { Button, message, Steps, theme, Upload, UploadProps } from 'antd';
+import * as Yup from 'yup';
+import { Button, Steps, theme, Upload, UploadProps } from 'antd';
 import { Form } from 'semantic-ui-react';
-import {
-  CodeSandboxOutlined,
-  FileImageOutlined,
-  InboxOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
+import { InboxOutlined } from '@ant-design/icons';
 import { push } from 'firebase/database';
 import { eventsRef } from '../../helpers/firebase';
 import { CLIENT_URL } from '../../helpers/config';
@@ -15,8 +10,8 @@ import { useSelector } from 'react-redux';
 import { getUser } from '../../store/reducers/userSlice';
 import { createEvent } from '../../helpers/requests';
 import { ShareEvent } from '../shareEvent/ShareEvent';
-import './createNewEvent.less';
 import { setMessage } from '../../helpers/utils';
+import './createNewEvent.less';
 
 export interface CreateEventProps {
   setCreateEventIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -93,7 +88,6 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result?.toString();
-      // setImage(base64String || '');
       setFormValues((prevState) => {
         return {
           ...prevState,
