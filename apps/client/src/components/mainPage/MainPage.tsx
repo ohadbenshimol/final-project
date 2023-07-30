@@ -20,10 +20,10 @@ const MainPage: React.FC = () => {
     <div className="main-page-con">
       <Particles
         style={{
-          width: '100%',
+          width: '10vw',
           height: '100%',
         }}
-        width="10%"
+        width="10vw"
         height="10%"
         id="tsparticles"
         init={particlesInit}
@@ -65,7 +65,6 @@ const MainPage: React.FC = () => {
               distance: 300,
               enable: true,
               opacity: 1,
-
               width: 2,
             },
             move: {
