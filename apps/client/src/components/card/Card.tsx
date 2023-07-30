@@ -15,7 +15,7 @@ import {
   ShareAltOutlined,
 } from '@ant-design/icons';
 import { closeEvent } from '../../helpers/requests';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import { shareClick } from '../../helpers/utils';
 import { CLIENT_URL } from '../../helpers/config';
 import { UsersPhotos } from '../usersPhotos/UsersPhotos';

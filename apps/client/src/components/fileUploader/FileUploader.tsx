@@ -11,7 +11,6 @@ import {
   RedoOutlined,
   StopOutlined,
 } from '@ant-design/icons';
-import { SERVER_URL } from '../../helpers/config';
 import { AddImagesToEvent } from '../../helpers/requests';
 import { get, ref } from 'firebase/database';
 import { db } from '../../helpers/firebase';
@@ -40,7 +39,7 @@ import {
   message,
 } from 'antd';
 import './FileUploader.less';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import defaultImg from '../../assets/default.svg';
 import { Image } from 'semantic-ui-react';
 import { setMessage } from '../../helpers/utils';
@@ -64,8 +63,6 @@ const DropZone = () => {
       isDragging: monitor.isOver(),
     }),
     drop: (item) => {
-      // @ts-ignore
-      console.log(item);
       // @ts-ignore
       upload(item.files);
     },
@@ -251,8 +248,6 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
 
     Promise.all(promises)
       .then(async (base64Array: string[]) => {
-        console.log(base64Array);
-
         await AddImagesToEvent({ eventId, images: base64Array });
       })
       .catch((error) => {
@@ -283,7 +278,7 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
           <div className="button-container">
             <div className="button-wrapper">
               <Button
-                icon={<ArrowLeftOutlined rev />}
+                icon={<ArrowLeftOutlined rev={undefined} />}
                 onClick={goToMyEventsPage}
               >
                 Back to events
@@ -344,7 +339,7 @@ const FileUploader = () => {
   return (
     <>
       <DndProvider backend={HTML5Backend}>
-        <Uploady enhancer={enhancer} destination={{ url: SERVER_URL }}>
+        <Uploady enhancer={enhancer}>
           <>{eventId && <UploadUi eventId={eventId} />}</>
         </Uploady>
       </DndProvider>

@@ -16,7 +16,7 @@ import {
   ShareAltOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import './Header.less';
 
 const Header: FC = () => {
@@ -42,7 +42,6 @@ const Header: FC = () => {
   const [current, setCurrent] = useState('mail');
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e);
     setCurrent(e.key);
   };
 

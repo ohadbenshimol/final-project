@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
+import Particles from 'react-particles';
 import { userIsLoggedIn } from '../../store/reducers/userSlice';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import { Button } from 'antd';
 import { Fade } from 'react-awesome-reveal';
-import Particles from 'react-particles';
 import { loadSlim } from 'tsparticles-slim';
 import './MainPage.less';
 
@@ -13,20 +13,20 @@ const MainPage: React.FC = () => {
     useNavigation();
 
   const particlesInit = useCallback(async (engine: any) => {
-    console.log(engine);
     await loadSlim(engine);
-  }, []);
-
-  const particlesLoaded = useCallback(async (container: any) => {
-    console.log(container);
   }, []);
 
   return (
     <div className="main-page-con">
       <Particles
+        style={{
+          width: '20%!important',
+          height: '20%',
+        }}
+        width="10%"
+        height="10%"
         id="tsparticles"
         init={particlesInit}
-        loaded={particlesLoaded}
         options={{
           background: {
             color: {
@@ -65,6 +65,7 @@ const MainPage: React.FC = () => {
               distance: 300,
               enable: true,
               opacity: 1,
+
               width: 2,
             },
             move: {
@@ -123,8 +124,7 @@ const MainPage: React.FC = () => {
       </div>
       <div className="iphone">
         <Fade triggerOnce delay={1000} direction="up">
-          {/* <Image height={'40vh'} width={'30vh'} src={'../../assets/NIG.png'} /> */}
-          <img src={'../../assets/NIG.png'} />
+          <img src={'../../assets/iphone.png'} />
         </Fade>
       </div>
     </div>

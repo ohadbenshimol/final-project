@@ -14,10 +14,10 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { CameraOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
 import { AttentionSeeker, Fade, Reveal, Slide } from 'react-awesome-reveal';
 import { addUserToEvent } from '../../helpers/requests';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import { CardComp } from '../card/Card';
 import './EventRegistrationPage.less';
-import {setMessage} from "../../helpers/utils";
+import { setMessage } from '../../helpers/utils';
 
 const defaultFormData = {
   creationDate: '',
@@ -119,9 +119,12 @@ const EventRegistrationPage: FC = () => {
           image: imgSrc,
           username: `${user.firstName} ${user.lastName}`,
         });
-        setMessage('Registration for event was successfully completed','success')
+        setMessage(
+          'Registration for event was successfully completed',
+          'success'
+        );
       } catch (error) {
-        setMessage('Something went wrong in event registration','error')
+        setMessage('Something went wrong in event registration', 'error');
       } finally {
         goToSharedEventsPage();
       }
