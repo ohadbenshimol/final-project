@@ -208,4 +208,4 @@ const FooterComp: FC = () => {
   );
 };
 
-export default FooterComp; //TODO take all the svg's out to files
+export default FooterComp;

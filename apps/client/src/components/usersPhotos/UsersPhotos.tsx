@@ -22,8 +22,8 @@ export const UsersPhotos: FC<UsersPhotosProps> = ({ subscribers, users }) => {
       >
         {users &&
           Object.entries(users)
-            ?.filter(([k, v]) => ids.includes(k)) //TODO
-            .map(([k, v], index) => (
+            ?.filter(([k, v]) => ids.includes(k))
+            .map(([k, v]) => (
               <div key={k}>
                 <Avatar
                   gap={8}

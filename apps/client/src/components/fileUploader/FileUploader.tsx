@@ -319,7 +319,7 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
 };
 
 const mockEnhancer = getMockSenderEnhancer({ delay: 2000 });
-const enhancer = composeEnhancers(retryEnhancer, mockEnhancer); //TODO=:USE UNTIL SERVER
+const enhancer = composeEnhancers(retryEnhancer, mockEnhancer);
 
 const FileUploader = () => {
   const { eventId } = useParams();
