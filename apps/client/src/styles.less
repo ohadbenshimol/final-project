@@ -1,10 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@font-face {
+  font-family: Heebo;
+  src: url(./assets/Heebo.ttf);
+}
+@font-face {
+  font-family: Omnes;
+  src: url(./assets/Omnes-Bold.otf);
+}
+
 :root {
   --main-color: #408378;
 }
 
 #root {
   height: 100vh;
+  h1,
+  div,
+  p,
+  button,
+  span {
+    font-family: Heebo;
+  }
 }

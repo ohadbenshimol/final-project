@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 
 module.exports = (config, context) => {
-    nrwlConfig(config, context); // Pass both config and context
+    nrwlConfig(config, context); 
     return merge(config, {
         plugins: [
             new webpack.IgnorePlugin({
@@ -29,36 +29,3 @@ module.exports = (config, context) => {
                     }
     });
 };
-
-
-// module.exports = composePlugins(
-//     withNx(),
-//     withReact(),
-//     (config, { options, context }) => {
-//       console.log(getWebpackConfig(config));
-//     return {
-//         ...config,
-//         resolve: {
-//             ...config.resolve,
-//             alias: {
-//                 ...config.resolve.alias,
-//                 'crypto': 'crypto-browserify',
-//             },
-//             fallback:{
-//                 ...config.resolve.fallback,
-//                 "stream": false ,
-//                 "querystring": false 
-//             }
-//         },
-//         plugins: [
-//             ...config.plugins,
-//             new webpack.ProvidePlugin({
-//                 process: 'process/browser',
-//             }),
-//         ],
-//     }
- 
-
-     
-//   }
-// );

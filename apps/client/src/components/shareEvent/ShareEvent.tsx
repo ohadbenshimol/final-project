@@ -1,10 +1,10 @@
-// import QRCode from 'react-qr-code';// TODO remove
-import {FC, useRef} from 'react';
-import {Button, Modal} from 'semantic-ui-react';
-import {WhatsappShareButton} from 'react-share';
-import {QRCode} from 'antd';
-import {setMessage, shareClick} from '../../helpers/utils';
+import { FC, useRef } from 'react';
+import { Modal } from 'semantic-ui-react';
+import { WhatsappShareButton } from 'react-share';
+import { Button, QRCode } from 'antd';
+import { setMessage, shareClick } from '../../helpers/utils';
 import './ShareEvent.less';
+import { WhatsAppOutlined } from '@ant-design/icons';
 
 interface ShareEventProps {
   link: string;
@@ -18,7 +18,7 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
       inputRef.current.select();
       await navigator.clipboard.writeText(inputRef.current.value);
 
-      setMessage(`Copy link successfully`,'success')
+      setMessage(`Copy link successfully`, 'success');
     }
   };
 
@@ -41,14 +41,14 @@ export const ShareEvent: FC<ShareEventProps> = ({ link }) => {
           />
           <div className={'buttons-actions'} style={{ marginTop: 30 }}>
             <Button onClick={handleCopyClick}>
-              <i className="copy outline icon"></i>
+              <i className="copy icon"></i>
             </Button>
             <Button onClick={() => shareClick(link)}>
               <i className="share alternate icon"></i>
             </Button>
             <Button>
               <WhatsappShareButton url={link}>
-                <i className="whatsapp icon"></i>
+                <WhatsAppOutlined rev={undefined} className="whatsapp" />
               </WhatsappShareButton>
             </Button>
           </div>

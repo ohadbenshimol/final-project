@@ -1,13 +1,8 @@
-import * as Yup from 'yup';
 import React, { FC, useState } from 'react';
-import { Button, message, Steps, theme, Upload, UploadProps } from 'antd';
+import * as Yup from 'yup';
+import { Button, Steps, theme, Upload, UploadProps } from 'antd';
 import { Form } from 'semantic-ui-react';
-import {
-  CodeSandboxOutlined,
-  FileImageOutlined,
-  InboxOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
+import { InboxOutlined } from '@ant-design/icons';
 import { push } from 'firebase/database';
 import { eventsRef } from '../../helpers/firebase';
 import { CLIENT_URL } from '../../helpers/config';
@@ -15,8 +10,8 @@ import { useSelector } from 'react-redux';
 import { getUser } from '../../store/reducers/userSlice';
 import { createEvent } from '../../helpers/requests';
 import { ShareEvent } from '../shareEvent/ShareEvent';
+import { setMessage } from '../../helpers/utils';
 import './createNewEvent.less';
-import {setMessage} from "../../helpers/utils";
 
 export interface CreateEventProps {
   setCreateEventIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -72,7 +67,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
 
       setLink(`${CLIENT_URL}/register-event/${newEventRef.key}`);
       setFormValues(DEFAULT_FORM_DATA);
-      await createEvent({eventId: newEventRef.key!});
+      await createEvent({ eventId: newEventRef.key! });
       next();
     } catch (error) {
       console.error(error);
@@ -80,7 +75,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
   };
 
   const handleChange = (e: any) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setFormValues((prevState) => {
       return {
         ...prevState,
@@ -93,7 +88,6 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result?.toString();
-      // setImage(base64String || '');
       setFormValues((prevState) => {
         return {
           ...prevState,
@@ -111,20 +105,18 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
     name: 'file',
     listType: 'picture-card',
     multiple: false,
-    beforeUpload: (data) => {
+    beforeUpload: () => {
       return false;
     },
     onChange(info) {
       handleImageChange(info.file as any);
-      const {status} = info.file;
+      const { status } = info.file;
+
       if (status === 'done') {
-        setMessage(`${info.file.name} file uploaded successfully.`, 'success')
+        setMessage(`${info.file.name} file uploaded successfully.`, 'success');
       } else if (status === 'error') {
-        setMessage(`${info.file.name} file upload failed.`, 'error')
+        setMessage(`${info.file.name} file upload failed.`, 'error');
       }
-    },
-    onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files);
     },
   };
 
@@ -133,7 +125,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
       title: 'Fill the details',
       content: (
         <>
-          <div className={'yoel-temp'} style={{marginTop: 15}}>
+          <div className={'yoel-temp'} style={{ marginTop: 15 }}>
             <Form.Field>
               <label htmlFor="nameID">Name</label>
               <input
@@ -250,7 +242,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
               type="default"
               onClick={() => {
                 setCreateEventIsOpen(false);
-                setMessage('Create event successful', 'success')
+                setMessage('Create event successful', 'success');
                 setCurrent(0);
               }}
             >
@@ -259,7 +251,7 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
           )}
           {current > 0 && current != 2 && (
             <Button
-              style={{margin: '0 8px'}}
+              style={{ margin: '0 8px' }}
               onClick={() => prev()}
               type={'default'}
             >

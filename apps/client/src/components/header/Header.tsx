@@ -16,7 +16,7 @@ import {
   ShareAltOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import './Header.less';
 
 const Header: FC = () => {

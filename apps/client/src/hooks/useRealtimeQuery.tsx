@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { onValue, ref, off } from 'firebase/database';
+import { onValue, ref, off, DataSnapshot } from 'firebase/database';
 import { db } from '../helpers/firebase';
 
 const useRealtimeQuery = <T extends any>(path: string) => {
@@ -7,7 +7,7 @@ const useRealtimeQuery = <T extends any>(path: string) => {
 
   useEffect(() => {
     const dbRef = ref(db, path);
-    const handleValueChange = (snapshot: any) => {
+    const handleValueChange = (snapshot: DataSnapshot) => {
       setData(snapshot.val());
     };
 

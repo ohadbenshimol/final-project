@@ -8,7 +8,7 @@ import { NewEvent } from '../../shared/models/event';
 import { debounce } from 'ts-debounce';
 import { useCookies } from 'react-cookie';
 import { Row, Tooltip } from 'antd';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import { Fade } from 'react-awesome-reveal';
 import { CardComp, LoadingCards } from '../card/Card';
 import './ParticipantsEvents.less';

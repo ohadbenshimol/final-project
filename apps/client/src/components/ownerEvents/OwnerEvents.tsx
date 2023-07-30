@@ -10,7 +10,7 @@ import { debounce } from 'ts-debounce';
 import { useCookies } from 'react-cookie';
 import { Col, Modal, Row, Tooltip } from 'antd';
 import { AppstoreAddOutlined } from '@ant-design/icons';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import { Fade } from 'react-awesome-reveal';
 import { CardComp, LoadingCards } from '../card/Card';
 import './OwnerEvents.less';

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import FacebookLogin from '@greatsumini/react-facebook-login';
 import jwt_decode from 'jwt-decode';
 import { setUser, UserState } from '../../store/reducers/userSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -7,12 +8,11 @@ import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { useCookies } from 'react-cookie';
 import { equalTo, get, orderByChild, push, query } from 'firebase/database';
 import { usersRef } from '../../helpers/firebase';
-import FacebookLogin from '@greatsumini/react-facebook-login';
 import { AppleFilled } from '@ant-design/icons';
-import { useNavigation } from '../../hooks/navigate';
-import './Login.less';
+import { useNavigation } from '../../hooks/useNavigation';
 import { Header } from 'semantic-ui-react';
 import { setMessage } from '../../helpers/utils';
+import './Login.less';
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -23,8 +23,6 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (cookies.user) {
-      console.log(cookies.user);
-
       dispatch(setUser(cookies.user));
       goToMyEventsPage();
     }

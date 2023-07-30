@@ -9,15 +9,15 @@ import { get, ref, update } from 'firebase/database';
 import { db } from '../../helpers/firebase';
 import { useQuery } from 'react-query';
 import { NewEvent } from '../../shared/models/event';
-import { Button, message, Modal, ModalFuncProps } from 'antd';
+import { Button, Modal, ModalFuncProps } from 'antd';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { CameraOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
 import { AttentionSeeker, Fade, Reveal, Slide } from 'react-awesome-reveal';
 import { addUserToEvent } from '../../helpers/requests';
-import { useNavigation } from '../../hooks/navigate';
+import { useNavigation } from '../../hooks/useNavigation';
 import { CardComp } from '../card/Card';
+import { setMessage } from '../../helpers/utils';
 import './EventRegistrationPage.less';
-import {setMessage} from "../../helpers/utils";
 
 const defaultFormData = {
   creationDate: '',
@@ -74,9 +74,8 @@ const EventRegistrationPage: FC = () => {
   const [imgSrc, setImgSrc] = useState('');
   const [event, setEvent] = useState<NewEvent>(defaultFormData);
   const [shouldAnimate, setShouldAnimate] = useState(true);
-  const { goToSharedEventsPage, goToLoginPage } = useNavigation(
-    `/register-event/${eventId}`
-  );
+  const { goToSharedEventsPage, goToLoginPage, goToMyEventsPage } =
+    useNavigation(`/register-event/${eventId}`);
 
   const getEvent = async () => {
     const snapshot = await get(ref(db, `/events/${eventId}`));
@@ -109,7 +108,6 @@ const EventRegistrationPage: FC = () => {
 
   const handleSubmit = async () => {
     const event: NewEvent = await getEvent();
-    // !event.subscribers[user.id!]
     if (event && eventId && user.id) {
       try {
         await addUserToEventOnDb(event, eventId, user.id);
@@ -119,11 +117,14 @@ const EventRegistrationPage: FC = () => {
           image: imgSrc,
           username: `${user.firstName} ${user.lastName}`,
         });
-        setMessage('Registration for event was successfully completed','success')
+        setMessage(
+          'Registration for event was successfully completed',
+          'success'
+        );
       } catch (error) {
-        setMessage('Something went wrong in event registration','error')
+        setMessage('Something went wrong in event registration', 'error');
       } finally {
-        goToSharedEventsPage();
+        event.owner == user.id ? goToMyEventsPage() : goToSharedEventsPage();
       }
     }
   };
@@ -140,7 +141,7 @@ const EventRegistrationPage: FC = () => {
       >
         <>
           {shouldAnimate ? (
-            <div className="first">
+            <div className="first" style={{ fontFamily: "'Omnes'" }}>
               <Slide direction="left">
                 <div className="flex title">
                   <p className="sub">Welcome</p>
