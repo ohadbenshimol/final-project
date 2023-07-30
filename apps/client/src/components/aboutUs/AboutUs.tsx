@@ -13,14 +13,14 @@ export const AboutUs: FC<AboutUsProps> = ({}) => {
         <Card
           hoverable
           cover={<img  className={"image-card"}
-                      src="../../assets/about-us/yoel.jpg"/>}
+                      src="../../assets/about-us/yoel-transformed.jpeg"/>}
           style={{margin: '1em'}}
         >
           <Card.Meta title="Yoel Ahroni" description="Chief Fun Officer"/>
         </Card>
         <Card
           hoverable
-          cover={<img className={"image-card"} src="../../assets/about-us/ohad.jpg"/>}
+          cover={<img className={"image-card"} src="../../assets/about-us/ohad.jpeg"/>}
           style={{margin: '1em'}}
         >
           <Card.Meta title="Ohad Ben Shimol" description="Digital Ninja"/>
