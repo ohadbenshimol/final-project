@@ -43,7 +43,6 @@ const service = 'execute-api';
 export const AddImagesToEvent = async (addImagesBody: AddImagesBody) => {
   try {
     const res = await axios.post(ADD_IMAGES_URL, addImagesBody);
-    setMessage('Add images to event successfully', 'success')
     console.log('res', res);
   } catch (error: any) {
     setMessage(`Error ${error?.toString()}`, 'error')

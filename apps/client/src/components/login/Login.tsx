@@ -82,7 +82,7 @@ const Login: React.FC = () => {
         <div className="buttons-login-section">
           <div className="google-sign" style={{ width: '2em' }}>
             <GoogleLogin
-              width="266"
+              width={266 as any}
               useOneTap
               onSuccess={(response) =>
                 handleSuccess(response, location.state?.from)

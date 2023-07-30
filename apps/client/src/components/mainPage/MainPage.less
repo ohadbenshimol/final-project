@@ -1,0 +1,51 @@
+.main-page-con {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-family: 'Oriel';
+  height: 60vh;
+  width: 90vw;
+  .text-and-btn {
+    flex: 7;
+    .first-text,
+    .second-text {
+      font-family: 'Oriel';
+      font-size: 5em;
+    }
+    .second-text {
+      font-size: 2em;
+    }
+    button {
+      margin-top: 2em;
+      background-color: var(--main-color) !important;
+      color: white !important;
+    }
+  }
+  .iphone {
+    flex: 3;
+    img {
+      max-height: 50vh;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  main {
+    // margin: unset !important;
+  }
+
+  .main-page-con {
+    .text-and-btn {
+      .first-text,
+      .second-text {
+        font-size: unset;
+      }
+      .second-text {
+        // font-size: 2em;
+      }
+      font-size: 1.5em;
+      p {
+      }
+    }
+  }
+}
