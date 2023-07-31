@@ -11,7 +11,7 @@ import {
   RedoOutlined,
   StopOutlined,
 } from '@ant-design/icons';
-import { AddImagesToEvent } from '../../helpers/requests';
+import { ADD_IMAGES_URL, AddImagesToEvent } from '../../helpers/requests';
 import { get, ref } from 'firebase/database';
 import { db } from '../../helpers/firebase';
 import { useParams } from 'react-router-dom';
@@ -81,7 +81,7 @@ const PreviewCard = memo(({ id, url, name }: any) => {
   const [percent, setPercent] = useState(0);
   const [itemState, setItemState] = useState(STATES.PROGRESS);
   const abortItem = useAbortItem();
-  const retry = useRetry();
+  // const retry = useRetry();
 
   useItemProgressListener((item) => {
     setPercent(item.completed);
@@ -106,8 +106,8 @@ const PreviewCard = memo(({ id, url, name }: any) => {
   }, [abortItem, id]);
 
   const onRetry = useCallback(() => {
-    retry(id);
-  }, [retry, id]);
+    // retry(id);
+  }, [id]);
 
   return (
     <Col>
@@ -251,15 +251,23 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
     });
 
     Promise.all(promises)
-      .then(async (base64Array: string[]) => {
-        await AddImagesToEvent({
-          eventId,
-          images: base64Array,
-          username: user.firstName! + user.lastName!,
-        });
+      .then(async (base64Array) => {
+        const imageBatches = createBatches(base64Array, 1);
+        for (let i = 0; i < imageBatches.length; i++) {
+          try {
+            await AddImagesToEvent({
+              eventId,
+              images: imageBatches[i],
+              username: user.firstName! + user.lastName!,
+            });
+          } catch (error) {
+            console.error('Error reading files:', error);
+            throw error;
+          }
+        }
       })
       .catch((error) => {
-        console.error('Error reading files:', error);
+        console.error('Error in Promise.all:', error);
       });
   });
 
@@ -343,6 +351,7 @@ const FileUploader = () => {
       if (!data) Modal.error({ ...errorModalConf, onOk: goToMyEventsPage });
     },
   });
+  const user = useSelector(getUser);
 
   return (
     <>
@@ -366,4 +375,12 @@ const errorModalConf: ModalFuncProps = {
   okButtonProps: {
     ghost: true,
   },
+};
+
+const createBatches = (array: string[], batchSize: number) => {
+  const batches = [];
+  while (array.length) {
+    batches.push(array.splice(0, batchSize));
+  }
+  return batches;
 };
