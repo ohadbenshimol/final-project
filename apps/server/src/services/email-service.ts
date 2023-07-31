@@ -5,7 +5,7 @@ let transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'finalproject072@gmail.com',
-    pass: 'xyiumgghlwfqcbos'
+    pass: 'skwhomxmcdyhniqu'
   }
 });
 
@@ -20,7 +20,7 @@ export const sendEmailWithAttachment = async (email: string, username: string, z
     from: SENDER_EMAIL_ADDRESS,
     to: email,
     subject: 'Images from event',
-    text: `Hey ${username}, \nPlease find the attached zip file.`,
+    text: `Hey ${username}, \nPlease find your images in the attached zip file. \n\nThanks for using our app! \nOnly Me Team.`,
     attachments: [attachment]
   };
 

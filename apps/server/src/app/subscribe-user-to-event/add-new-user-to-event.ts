@@ -12,8 +12,6 @@ export const subscribeUserToEvent = async (body: AddUserToEvent) => {
     username: body.username
   })
 
-  console.log(`moshe ${objectKey} \n and body ${objectBody}`);
-
   await uploadObjectToS3(objectKey, objectBody)
   console.log(`Event with ID ${body.eventId} saved to S3 successfully for user: ${body.username}.`);
 }

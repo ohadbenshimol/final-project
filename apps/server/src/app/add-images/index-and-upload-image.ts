@@ -11,7 +11,6 @@ export const IndexAndUploadImage = async (body: AddImagesBody) => {
 
     try {
       const data = await getRekognitionService().indexFaces(params).promise();
-      console.log(`Image was successfully indexed and saved to collection: ${collectionName}, with response: ${JSON.stringify(data)}`);
 
       for (const faceRecord of data.FaceRecords) {
         await uploadIndexedImage(collectionName, encodedImage, faceRecord.Face.FaceId)
