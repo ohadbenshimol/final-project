@@ -8,7 +8,8 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
 
     try {
         const body: AddImagesBody = JSON.parse(event.body);
-        console.log(`Run add-images-handler to event - ${body.eventId}, indexing ${body.images.length} images`);
+        console.log(`Run add-images-handler to event - ${body.eventId}`);
+        console.log(`start to indexing ${body.images.length} images from user ${body.username}`);
         const res = await IndexAndUploadImage(body);
         console.log(`End add-images-handler to event - ${body.eventId}`);
 

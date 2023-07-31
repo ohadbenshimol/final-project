@@ -194,6 +194,8 @@ components:
       properties:
         eventId:
           type: string
+        username:
+          type: string
         images:
           type: array
           items:

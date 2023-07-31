@@ -1,5 +1,6 @@
 export interface AddImagesBody {
     eventId: string;
+    username: string;
     images: string[];
 }
 

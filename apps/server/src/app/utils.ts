@@ -1,7 +1,7 @@
 const sharp = require('sharp');
 
 export const convertImageToBuffer = async (collection: string, image: string) => {
-  console.log(`convert image to buffer with collection: ${collection} and image: ${image}`);
+  console.log(`convert image to buffer with collection: ${collection}`);
 
   const isWebp = image.includes('webp');
   const base64Data = image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, '');
@@ -22,10 +22,3 @@ const convertWebpToJpegBase64 = async (webpBase64: string) => {
   const jpgPromise = sharp(webpBuffer).jpeg();
   return await jpgPromise.toBuffer();
 };
-
-//
-//
-// (async () => {
-//   const collectionName = 'test';
-//   const params = convertImageToBuffer(collectionName, imageToBase64);
-// })();

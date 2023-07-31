@@ -20,7 +20,15 @@ export const sendEmailWithAttachment = async (email: string, username: string, z
     from: SENDER_EMAIL_ADDRESS,
     to: email,
     subject: 'Images from event',
-    text: `Hey ${username}, \nPlease find your images in the attached zip file. \n\nThanks for using our app! \nOnly Me Team.`,
+    html: `
+    <div>
+      <p>Hey ${username},</p>
+      <p>Please find your images in the attached zip file.</p>
+      <p>Thanks for using our app!</p>
+      <p>Only Me Team.</p>
+      <img src="https://i.ibb.co/4VV6mJp/b5b2ca62ac3abf47.jpg" style="width: 150px; height: 150px;" />
+    </div>
+    `,
     attachments: [attachment]
   };
 
