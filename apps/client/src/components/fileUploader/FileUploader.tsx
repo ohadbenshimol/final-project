@@ -43,6 +43,8 @@ import { useNavigation } from '../../hooks/useNavigation';
 import defaultImg from '../../assets/default.svg';
 import { Image } from 'semantic-ui-react';
 import { setMessage } from '../../helpers/utils';
+import { useSelector } from 'react-redux';
+import { getUser } from '../../store/reducers/userSlice';
 
 const STATES = {
   PROGRESS: 'PROGRESS',
@@ -222,6 +224,8 @@ const DragAndClickUpload = asUploadButton(DragAndDrop);
 
 const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
   const { goToMyEventsPage } = useNavigation();
+  const user = useSelector(getUser);
+
   const previewMethodsRef = useRef();
   const [previews, setPreviews] = useState([]);
 
@@ -248,7 +252,11 @@ const UploadUi: FC<{ eventId: string }> = ({ eventId }) => {
 
     Promise.all(promises)
       .then(async (base64Array: string[]) => {
-        await AddImagesToEvent({ eventId, images: base64Array });
+        await AddImagesToEvent({
+          eventId,
+          images: base64Array,
+          username: user.firstName! + user.lastName!,
+        });
       })
       .catch((error) => {
         console.error('Error reading files:', error);

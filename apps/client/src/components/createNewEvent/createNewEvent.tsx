@@ -32,8 +32,8 @@ export const CreateNewEvent: FC<CreateEventProps> = ({
 }) => {
   const { Dragger } = Upload;
   const [formData, setFormValues] = useState(DEFAULT_FORM_DATA);
-  const user = useSelector(getUser);
   const [link, setLink] = useState('');
+  const user = useSelector(getUser);
 
   const { token } = theme.useToken();
 

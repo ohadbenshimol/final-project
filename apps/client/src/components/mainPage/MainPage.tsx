@@ -23,7 +23,7 @@ const MainPage: React.FC = () => {
           width: '10vw',
           height: '100%',
         }}
-        width="10vw"
+        width="10px"
         height="10%"
         id="tsparticles"
         init={particlesInit}

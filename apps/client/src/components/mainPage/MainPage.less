@@ -35,18 +35,11 @@
 }
 
 @media (max-width: 768px) {
-  main {
-    // margin: unset !important;
-  }
-
   .main-page-con {
     .text-and-btn {
       .first-text,
       .second-text {
         font-size: unset;
-      }
-      .second-text {
-        // font-size: 2em;
       }
       font-size: 1.5em;
       p {
@@ -55,8 +48,10 @@
   }
 }
 
-.tsparticles {
-  canvas {
-    width: 30em !important;
+#tsparticles {
+ /deep/ canvas {
+    width: 3em deeps;
   }
 }
+
+
