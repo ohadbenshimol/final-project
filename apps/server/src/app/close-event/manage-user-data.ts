@@ -14,7 +14,7 @@ export const listAllEventUsers = async (eventId: string) => {
 }
 
 export const buildAndSendImages = async (images: string[], username: string, email: string) => {
-  if (images.length > 0) {
+  if (images?.length > 0) {
     const zipBuffer = await createZipFile(username, images);
     await sendEmailWithAttachment(email, username, zipBuffer);
   } else {

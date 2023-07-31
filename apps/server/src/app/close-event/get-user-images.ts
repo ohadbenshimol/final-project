@@ -16,7 +16,7 @@ export const getImagesByFace = async (username: string, collection: string, user
     const searchFacesResponse = await getRekognitionService()
       .searchFacesByImage(params).promise();
 
-    if(!searchFacesResponse.FaceMatches?.length) {
+    if(!searchFacesResponse?.FaceMatches?.length) {
       console.log(`No similar images found for user: ${username}`);
       return [];
     }
