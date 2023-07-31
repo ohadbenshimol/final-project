@@ -78,7 +78,7 @@ const Login: React.FC = () => {
           Login to your account
         </Header>
         <div className="buttons-login-section">
-          <div className="google-sign" style={{ width: '2em' }}>
+          <div className="google-sign">
             <GoogleLogin
               width={266 as any}
               useOneTap
